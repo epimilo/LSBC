@@ -581,30 +581,27 @@ function teleportToPoint(point) {
   animateCameraTo(nextX, nextZ);
 }
 
-function getTeleportIntersection(evt) {
-  if (!evt || !evt.detail) return null;
+function getTeleportIntersection(el, evt) {
+  if (!el) return null;
 
-  const intersectedEl = evt.detail.intersectedEl;
-  if (!intersectedEl || !intersectedEl.classList.contains("teleportable")) return null;
-
-  const directIntersection = evt.detail.intersection;
+  const directIntersection = evt && evt.detail && evt.detail.intersection;
   if (directIntersection && directIntersection.point) {
     return {
       x: directIntersection.point.x,
       z: directIntersection.point.z,
-      surface: intersectedEl.dataset.surface || "floor"
+      surface: el.dataset.surface || "floor"
     };
   }
 
   if (!mouseCursor || !mouseCursor.components || !mouseCursor.components.raycaster) return null;
 
-  const fallbackIntersection = mouseCursor.components.raycaster.getIntersection(intersectedEl);
+  const fallbackIntersection = mouseCursor.components.raycaster.getIntersection(el);
   if (!fallbackIntersection || !fallbackIntersection.point) return null;
 
   return {
     x: fallbackIntersection.point.x,
     z: fallbackIntersection.point.z,
-    surface: intersectedEl.dataset.surface || "floor"
+    surface: el.dataset.surface || "floor"
   };
 }
 
@@ -775,13 +772,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Teleportable surfaces via shared mouse raycaster.
-  if (mouseCursor) {
-    mouseCursor.addEventListener("click", (event) => {
-      const targetPoint = getTeleportIntersection(event);
+  // Teleportable surfaces use their own click events, with the shared mouse raycaster as fallback.
+  document.querySelectorAll(".teleportable").forEach(node => {
+    node.addEventListener("click", (event) => {
+      const targetPoint = getTeleportIntersection(node, event);
       if (targetPoint) teleportToPoint(targetPoint);
     });
-  }
+  });
 
   // Data-action buttons
   document.querySelectorAll("[data-action]").forEach(btn => {
