@@ -86,8 +86,8 @@ const focusPoints = {
   newspaper:       { x:  0,    z: -2.95 }
 };
 
-const TELEPORT_OFFSETS = { floor: 1.35, wall: 2.9, pedestal: 2.15 };
-const MAX_TELEPORT_STEP = 2.1;
+const TELEPORT_OFFSETS = { floor: 1.2, wall: 2.55, pedestal: 1.95 };
+const MAX_TELEPORT_STEP = 2.75;
 const ROOM_LIMITS = { x: 7.5, z: 7.5 };
 const TOTAL_ARTIFACTS = 7;
 
