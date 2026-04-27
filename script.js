@@ -107,6 +107,7 @@ const newspaperView   = document.getElementById("newspaperView");
 const newspaperFrame  = document.getElementById("newspaperFrame");
 const sceneWrap       = document.getElementById("sceneWrap");
 const cameraRig       = document.getElementById("cameraRig");
+const mouseCursor     = document.getElementById("mouseCursor");
 const audioButton     = document.getElementById("audioButton");
 const sceneEl         = document.querySelector("a-scene");
 const introSplash     = document.getElementById("introSplash");
@@ -580,6 +581,33 @@ function teleportToPoint(point) {
   animateCameraTo(nextX, nextZ);
 }
 
+function getTeleportIntersection(evt) {
+  if (!evt || !evt.detail) return null;
+
+  const intersectedEl = evt.detail.intersectedEl;
+  if (!intersectedEl || !intersectedEl.classList.contains("teleportable")) return null;
+
+  const directIntersection = evt.detail.intersection;
+  if (directIntersection && directIntersection.point) {
+    return {
+      x: directIntersection.point.x,
+      z: directIntersection.point.z,
+      surface: intersectedEl.dataset.surface || "floor"
+    };
+  }
+
+  if (!mouseCursor || !mouseCursor.components || !mouseCursor.components.raycaster) return null;
+
+  const fallbackIntersection = mouseCursor.components.raycaster.getIntersection(intersectedEl);
+  if (!fallbackIntersection || !fallbackIntersection.point) return null;
+
+  return {
+    x: fallbackIntersection.point.x,
+    z: fallbackIntersection.point.z,
+    surface: intersectedEl.dataset.surface || "floor"
+  };
+}
+
 /* ════════════════════════════════════════
    FULLSCREEN
 ════════════════════════════════════════ */
@@ -747,15 +775,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Teleportable surfaces
-  document.querySelectorAll(".teleportable").forEach(node => {
-    node.addEventListener("click", (event) => {
-      const intersection = event.detail && event.detail.intersection;
-      const point = intersection && intersection.point;
-      if (!point) return;
-      teleportToPoint({ x: point.x, z: point.z, surface: node.dataset.surface || "floor" });
+  // Teleportable surfaces via shared mouse raycaster.
+  if (mouseCursor) {
+    mouseCursor.addEventListener("click", (event) => {
+      const targetPoint = getTeleportIntersection(event);
+      if (targetPoint) teleportToPoint(targetPoint);
     });
-  });
+  }
 
   // Data-action buttons
   document.querySelectorAll("[data-action]").forEach(btn => {
