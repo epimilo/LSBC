@@ -68,7 +68,7 @@ const artifactContent = {
   newspaper: {
     tag: "Trang báo",
     title: "Số báo giấy cuối cùng",
-    subtitle: "Vật phẩm ở điểm cuối hành trình, bấm vào để mở file báo HTML thật của bạn.",
+    subtitle: "Vật phẩm gần lối vào phòng, bấm vào để mở file báo HTML thật của bạn.",
     body: [
       "Khác với bản mock trước, hotspot này mở trực tiếp file to-bao-cuoi-cung.html được nhúng vào overlay toàn màn hình.",
       "Nghĩa là khi bạn sửa file báo gốc, phần triển lãm này tự động lấy đúng phiên bản mới nhất mà không cần viết lại giao diện."
@@ -77,19 +77,23 @@ const artifactContent = {
 };
 
 const focusPoints = {
-  timeline:        { x: -1.95, z: 1.7  },
-  archive:         { x:  1.95, z: 1.45 },
-  voice:           { x: -1.35, z: -0.75 },
-  typewriter:      { x:  1.35, z: -0.8 },
+  timeline:        { x: -4.95, z: 2.05 },
+  archive:         { x:  4.95, z: 2.05 },
+  voice:           { x: -3.65, z: -1.05 },
+  typewriter:      { x:  3.65, z: -1.05 },
   "painting-dawn": { x: -5.9,  z: -1.75 },
   "painting-night":{ x:  5.95, z: -1.55 },
-  newspaper:       { x:  0,    z: -2.95 }
+  newspaper:       { x:  0,    z:  2.35 }
 };
 
 const TELEPORT_OFFSETS = { floor: 1.2, wall: 2.55, pedestal: 1.95 };
 const MAX_TELEPORT_STEP = 2.75;
-const ROOM_LIMITS = { x: 7.5, z: 7.5 };
+const ROOM_LIMITS = { x: 7.5, z: 8.55 };
 const TOTAL_ARTIFACTS = 7;
+const MOBILE_MAX_PIXEL_RATIO = 1.25;
+const isTouchDevice = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+const isMobileDevice = /Android|iPhone|iPad|iPod|Mobile|Windows Phone|BlackBerry|Opera Mini/i.test(navigator.userAgent) || isTouchDevice;
+const hasDeviceOrientationAPI = typeof window.DeviceOrientationEvent !== "undefined";
 
 /* ── DOM refs ── */
 const artifactPanel   = document.getElementById("artifactPanel");
@@ -107,7 +111,7 @@ const newspaperView   = document.getElementById("newspaperView");
 const newspaperFrame  = document.getElementById("newspaperFrame");
 const sceneWrap       = document.getElementById("sceneWrap");
 const cameraRig       = document.getElementById("cameraRig");
-const mouseCursor     = document.getElementById("mouseCursor");
+const mainCursor      = document.getElementById("mainCursor");
 const audioButton     = document.getElementById("audioButton");
 const sceneEl         = document.querySelector("a-scene");
 const introSplash     = document.getElementById("introSplash");
@@ -116,6 +120,151 @@ const cursorRing      = document.getElementById("cursorRing");
 const artifactTooltip = document.getElementById("artifactTooltip");
 const progressCount   = document.getElementById("progressCount");
 const progressFill    = document.getElementById("progressFill");
+const gyroPrompt      = document.getElementById("gyroPrompt");
+const gyroEnableBtn   = document.getElementById("gyroEnableBtn");
+const rotatePrompt    = document.getElementById("rotatePrompt");
+const topBar          = document.querySelector(".top-bar");
+const topBarToggle    = document.getElementById("topBarToggle");
+const topBarToggleMark= document.getElementById("topBarToggleMark");
+let hasEnteredRoom = false;
+
+function isKeyboardWalkBlocked() {
+  if (introSplash) {
+    const dismissed = introSplash.style.display === "none" || introSplash.classList.contains("is-exiting");
+    if (!dismissed) return true;
+  }
+  if (isNewspaperOpen()) return true;
+  const ae = document.activeElement;
+  if (ae && (ae.tagName === "INPUT" || ae.tagName === "TEXTAREA" || ae.tagName === "SELECT" || ae.isContentEditable)) return true;
+  return false;
+}
+
+if (typeof AFRAME !== "undefined" && !AFRAME.components["hazmat-display"]) {
+  AFRAME.registerComponent("hazmat-display", {
+    schema: { fallbackSelector: { type: "string", default: "#hazmatFallback" } },
+    init() {
+      const THREE = AFRAME.THREE;
+      const apply = () => {
+        this.el.object3D.traverse((node) => {
+          if (!node.isMesh || !node.material) return;
+          node.renderOrder = 2;
+          const mats = Array.isArray(node.material) ? node.material : [node.material];
+          mats.forEach((m) => {
+            if (!m) return;
+            m.side = THREE.DoubleSide;
+            m.depthTest = true;
+            m.depthWrite = true;
+            m.needsUpdate = true;
+          });
+        });
+      };
+      this.el.addEventListener("model-loaded", () => {
+        apply();
+        const fb = document.querySelector(this.data.fallbackSelector);
+        if (fb) fb.setAttribute("visible", false);
+      });
+      this.el.addEventListener("model-error", (evt) => {
+        console.error("hazmat glTF:", (evt && evt.detail) || evt);
+        const fb = document.querySelector(this.data.fallbackSelector);
+        if (fb) fb.setAttribute("visible", true);
+      });
+    }
+  });
+}
+
+if (typeof AFRAME !== "undefined" && !AFRAME.components["keyboard-walk"]) {
+  AFRAME.registerComponent("keyboard-walk", {
+    schema: { speed: { type: "number", default: 4.4 } },
+    init() {
+      this.keys = { forward: 0, back: 0, strafeL: 0, strafeR: 0 };
+      this.vec = new AFRAME.THREE.Vector3();
+      this.dir = new AFRAME.THREE.Vector3();
+      this.right = new AFRAME.THREE.Vector3();
+      this.yAxis = new AFRAME.THREE.Vector3(0, 1, 0);
+      this.onKeyDown = (e) => this.setKey(e, true);
+      this.onKeyUp = (e) => this.setKey(e, false);
+      window.addEventListener("keydown", this.onKeyDown, false);
+      window.addEventListener("keyup", this.onKeyUp, false);
+    },
+    remove() {
+      window.removeEventListener("keydown", this.onKeyDown, false);
+      window.removeEventListener("keyup", this.onKeyUp, false);
+    },
+    setKey(e, down) {
+      const v = down ? 1 : 0;
+      if (down && isKeyboardWalkBlocked()) return;
+      switch (e.key) {
+        case "ArrowUp":
+        case "w":
+        case "W":
+          this.keys.forward = v;
+          if (down) e.preventDefault();
+          break;
+        case "ArrowDown":
+        case "s":
+        case "S":
+          this.keys.back = v;
+          if (down) e.preventDefault();
+          break;
+        case "ArrowLeft":
+        case "a":
+        case "A":
+          this.keys.strafeL = v;
+          if (down) e.preventDefault();
+          break;
+        case "ArrowRight":
+        case "d":
+        case "D":
+          this.keys.strafeR = v;
+          if (down) e.preventDefault();
+          break;
+        default:
+          break;
+      }
+    },
+    tick(_time, timeDeltaMs) {
+      const k = this.keys;
+      if (!k.forward && !k.back && !k.strafeL && !k.strafeR) return;
+      if (isKeyboardWalkBlocked()) return;
+
+      const cameraEl = this.el.sceneEl && this.el.sceneEl.camera && this.el.sceneEl.camera.el;
+      if (!cameraEl || !cameraEl.object3D) return;
+
+      const rig = this.el.object3D;
+      const cam = cameraEl.object3D;
+      const speed = this.data.speed;
+      let dt = typeof timeDeltaMs === "number" && timeDeltaMs > 0 && timeDeltaMs < 250
+        ? timeDeltaMs / 1000
+        : 1 / 60;
+
+      cam.getWorldDirection(this.dir);
+      this.dir.y = 0;
+      if (this.dir.lengthSq() < 1e-8) return;
+      this.dir.normalize();
+
+      this.right.crossVectors(this.dir, this.yAxis);
+      if (this.right.lengthSq() < 1e-8) return;
+      this.right.normalize();
+
+      this.vec.set(0, 0, 0);
+      /* Đảo chiều so với hướng nhìn: lên/lùi và trái/phải theo cảm giác người dùng */
+      if (k.forward) this.vec.sub(this.dir);
+      if (k.back) this.vec.add(this.dir);
+      if (k.strafeL) this.vec.add(this.right);
+      if (k.strafeR) this.vec.sub(this.right);
+      if (this.vec.lengthSq() < 1e-8) return;
+      this.vec.normalize().multiplyScalar(speed * dt);
+
+      const p = rig.position;
+      let nx = p.x + this.vec.x;
+      let nz = p.z + this.vec.z;
+      nx = Math.max(-ROOM_LIMITS.x, Math.min(ROOM_LIMITS.x, nx));
+      nz = Math.max(-ROOM_LIMITS.z, Math.min(ROOM_LIMITS.z, nz));
+      if (!Number.isFinite(nx) || !Number.isFinite(nz) || !Number.isFinite(p.y)) return;
+      rig.position.set(nx, p.y, nz);
+    }
+  });
+}
 
 /* ── State ── */
 const audioState = { context: null, enabled: true, started: false };
@@ -136,7 +285,8 @@ function drawTimelineCanvas() {
   ctx.fillRect(0, 0, W, H);
 
   // Subtle aged paper grain
-  for (let i = 0; i < 2000; i++) {
+  const grainSteps = isMobileDevice ? 650 : 2000;
+  for (let i = 0; i < grainSteps; i++) {
     ctx.fillStyle = `rgba(100,70,30,${Math.random() * 0.04})`;
     ctx.fillRect(Math.random() * W, Math.random() * H, 1, 1);
   }
@@ -405,11 +555,103 @@ function drawPaintingNight() {
   ctx.fillText("Đêm khuya — Hà Nội", W / 2, H - 20);
 }
 
+function drawMeetScreenCanvas() {
+  const canvas = document.getElementById("meetScreenCanvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width, H = canvas.height;
+
+  ctx.fillStyle = "#202124";
+  ctx.fillRect(0, 0, W, H);
+
+  // Thanh trên (kiểu Meet)
+  ctx.fillStyle = "#303134";
+  ctx.fillRect(0, 0, W, 52);
+  ctx.strokeStyle = "#3c4043";
+  ctx.strokeRect(0, 0, W, 52);
+
+  ctx.fillStyle = "#e8eaed";
+  ctx.font = "600 15px IBM Plex Sans, sans-serif";
+  ctx.textAlign = "left";
+  ctx.fillText("Cuộc họp trực tuyến", 16, 22);
+  ctx.fillStyle = "#9aa0a6";
+  ctx.font = "12px IBM Plex Sans, sans-serif";
+  ctx.fillText("meet.example / phòng-họp-biên-tập", 16, 40);
+
+  // Ô lưới người tham gia
+  const pad = 12;
+  const top = 58;
+  const cellW = (W - pad * 4) / 3;
+  const cellH = H - top - 56 - pad;
+  const tiles = [
+    { x: pad, c: "#5f6368", mic: true },
+    { x: pad * 2 + cellW, c: "#1a73e8", mic: true },
+    { x: pad * 3 + cellW * 2, c: "#34a853", mic: false },
+  ];
+  tiles.forEach((t, i) => {
+    const x = t.x;
+    const y = top;
+    ctx.fillStyle = "#3c4043";
+    ctx.fillRect(x, y, cellW, cellH);
+    ctx.strokeStyle = "#5f6368";
+    ctx.strokeRect(x, y, cellW, cellH);
+    const cx = x + cellW / 2;
+    const cy = y + cellH * 0.42;
+    ctx.fillStyle = t.c;
+    ctx.beginPath();
+    ctx.arc(cx, cy, Math.min(cellW, cellH) * 0.22, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#bdc1c6";
+    ctx.font = "13px IBM Plex Sans, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(`Người ${i + 1}`, cx, y + cellH - 18);
+    if (t.mic) {
+      ctx.fillStyle = "#80868b";
+      ctx.beginPath();
+      ctx.arc(x + cellW - 18, y + 18, 10, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#202124";
+      ctx.font = "10px sans-serif";
+      ctx.fillText("mic", x + cellW - 18, y + 21);
+    }
+  });
+
+  // Ô nhỏ góc (self view)
+  const sw = 120, sh = 68;
+  ctx.fillStyle = "#3c4043";
+  ctx.fillRect(W - sw - 14, H - sh - 62, sw, sh);
+  ctx.strokeStyle = "#8ab4f8";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(W - sw - 14, H - sh - 62, sw, sh);
+  ctx.fillStyle = "#fbbc04";
+  ctx.beginPath();
+  ctx.arc(W - sw / 2 - 14, H - sh / 2 - 62, 18, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Thanh điều khiển dưới
+  const barY = H - 48;
+  ctx.fillStyle = "#303134";
+  ctx.fillRect(0, barY, W, 48);
+  const btns = ["Tắt mic", "Máy ảnh", "Chia sẻ", "Rời khỏi"];
+  ctx.textAlign = "center";
+  ctx.font = "11px IBM Plex Sans, sans-serif";
+  btns.forEach((b, i) => {
+    const bx = W * 0.2 + i * (W * 0.18);
+    ctx.fillStyle = i === 3 ? "#ea4335" : "#5f6368";
+    ctx.beginPath();
+    ctx.arc(bx, barY + 22, 16, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#e8eaed";
+    ctx.fillText(b, bx, barY + 46);
+  });
+}
+
 function initCanvasTextures() {
   drawTimelineCanvas();
   drawArchiveCanvas();
   drawPaintingDawn();
   drawPaintingNight();
+  drawMeetScreenCanvas();
 }
 
 /* ════════════════════════════════════════
@@ -446,6 +688,7 @@ function tickCursor() {
 }
 
 function initCursorRing() {
+  if (isMobileDevice) return;
   // Start the RAF loop immediately so it's always in sync with display refresh
   cursorRafId = requestAnimationFrame(tickCursor);
 
@@ -468,17 +711,20 @@ function initCursorRing() {
    TOOLTIP + HOVER GLOW
 ════════════════════════════════════════ */
 function showTooltip(label) {
+  if (isMobileDevice) return;
   artifactTooltip.textContent = label;
   artifactTooltip.classList.add("is-visible");
   cursorRing.classList.add("is-hovering");
 }
 
 function hideTooltip() {
+  if (isMobileDevice) return;
   artifactTooltip.classList.remove("is-visible");
   cursorRing.classList.remove("is-hovering");
 }
 
 function applyHoverGlow(el, on) {
+  if (isMobileDevice) return;
   if (on) {
     el.setAttribute("animation__hover", "property: material.emissive; to: #8b5c20; dur: 200; easing: easeOutQuad");
   } else {
@@ -593,9 +839,9 @@ function getTeleportIntersection(el, evt) {
     };
   }
 
-  if (!mouseCursor || !mouseCursor.components || !mouseCursor.components.raycaster) return null;
+  if (!mainCursor || !mainCursor.components || !mainCursor.components.raycaster) return null;
 
-  const fallbackIntersection = mouseCursor.components.raycaster.getIntersection(el);
+  const fallbackIntersection = mainCursor.components.raycaster.getIntersection(el);
   if (!fallbackIntersection || !fallbackIntersection.point) return null;
 
   return {
@@ -603,6 +849,105 @@ function getTeleportIntersection(el, evt) {
     z: fallbackIntersection.point.z,
     surface: el.dataset.surface || "floor"
   };
+}
+
+function applyPerformanceProfile() {
+  if (!sceneEl || !isMobileDevice) return;
+  sceneEl.setAttribute("renderer", "antialias: false; colorManagement: true; precision: mediump; powerPreference: high-performance");
+  sceneEl.addEventListener("render-target-loaded", () => {
+    if (!sceneEl.renderer) return;
+    sceneEl.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, MOBILE_MAX_PIXEL_RATIO));
+  }, { once: true });
+}
+
+function configureInputMode() {
+  document.body.classList.toggle("is-mobile", isMobileDevice);
+  if (!mainCursor) return;
+
+  if (isMobileDevice) {
+    // Center ray works reliably with touch on mobile A-Frame.
+    mainCursor.setAttribute("cursor", "rayOrigin: entity; fuse: false");
+    if (cursorRing) cursorRing.style.display = "none";
+    if (artifactTooltip) artifactTooltip.style.display = "none";
+  } else {
+    mainCursor.setAttribute("cursor", "rayOrigin: mouse");
+  }
+}
+
+function updateOrientationUI() {
+  if (!isMobileDevice) {
+    document.body.classList.remove("is-portrait", "is-landscape");
+    document.body.classList.remove("is-rotate-lock");
+    if (rotatePrompt) rotatePrompt.hidden = true;
+    return;
+  }
+  const isPortrait = window.matchMedia("(orientation: portrait)").matches;
+  document.body.classList.toggle("is-portrait", isPortrait);
+  document.body.classList.toggle("is-landscape", !isPortrait);
+  if (hasEnteredRoom) {
+    document.body.classList.remove("is-rotate-lock");
+    if (rotatePrompt) rotatePrompt.hidden = true;
+    if (introSplash && introSplash.style.display !== "none") {
+      introSplash.style.visibility = "visible";
+      introSplash.style.pointerEvents = "";
+    }
+    return;
+  }
+
+  document.body.classList.toggle("is-rotate-lock", isPortrait);
+  if (rotatePrompt) rotatePrompt.hidden = !isPortrait;
+  if (!introSplash || introSplash.style.display === "none") return;
+
+  if (isPortrait) {
+    // Before entering room on mobile: show only rotate prompt.
+    introSplash.style.visibility = "hidden";
+    introSplash.style.pointerEvents = "none";
+  } else {
+    introSplash.style.visibility = "visible";
+    introSplash.style.pointerEvents = "";
+  }
+}
+
+function setGyroEnabled(enabled) {
+  const mainCamera = document.getElementById("mainCamera");
+  if (!mainCamera) return;
+  mainCamera.setAttribute("look-controls", `touchEnabled: true; mouseEnabled: true; magicWindowTrackingEnabled: ${enabled ? "true" : "false"}`);
+}
+
+function needsIOSGyroPermission() {
+  return hasDeviceOrientationAPI && typeof window.DeviceOrientationEvent.requestPermission === "function";
+}
+
+function showGyroPrompt() {
+  if (!gyroPrompt || !isMobileDevice || !hasDeviceOrientationAPI || !needsIOSGyroPermission()) return;
+  gyroPrompt.style.display = "";
+  gyroPrompt.hidden = false;
+}
+
+async function requestGyroPermission() {
+  if (gyroPrompt) {
+    gyroPrompt.hidden = true;
+    gyroPrompt.style.display = "none";
+  }
+  if (!needsIOSGyroPermission()) return;
+  try {
+    const result = await window.DeviceOrientationEvent.requestPermission();
+    if (result === "granted") {
+      setGyroEnabled(true);
+      if (gyroPrompt) gyroPrompt.hidden = true;
+      return;
+    }
+  } catch (error) {
+    // Keep controls available via touch drag even if gyro is denied.
+  }
+  setGyroEnabled(false);
+}
+
+function updateTopBarToggle() {
+  if (!topBar || !topBarToggle || !topBarToggleMark) return;
+  const collapsed = topBar.classList.contains("is-collapsed");
+  topBarToggleMark.textContent = collapsed ? "+" : "−";
+  topBarToggle.setAttribute("aria-label", collapsed ? "Mở hành trình" : "Thu gọn hành trình");
 }
 
 /* ════════════════════════════════════════
@@ -621,6 +966,19 @@ async function toggleFullscreen() {
   } else if (!fsEl) {
     (appShell.requestFullscreen || appShell.webkitRequestFullscreen).call(appShell);
   }
+}
+
+async function enterFullscreenOnMobile() {
+  if (!isMobileDevice || !appShell) return;
+  const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+  if (fsEl) return;
+  try {
+    await (appShell.requestFullscreen || appShell.webkitRequestFullscreen).call(appShell);
+  } catch (error) {
+    // Some mobile browsers block fullscreen; continue without interrupting UX.
+  }
+  // Helps Safari collapse browser chrome after entering.
+  window.scrollTo(0, 1);
 }
 
 /* ════════════════════════════════════════
@@ -700,6 +1058,10 @@ function handleAction(action) {
   if (action === "close-newspaper")  closeNewspaper();
   if (action === "reload-newspaper") reloadNewspaper();
   if (action === "toggle-audio")     toggleAudio();
+  if (action === "toggle-topbar" && topBar) {
+    topBar.classList.toggle("is-collapsed");
+    updateTopBarToggle();
+  }
   if (action === "toggle-intro" && introShell) {
     introShell.classList.toggle("is-collapsed");
     updateIntroToggle();
@@ -724,6 +1086,14 @@ function bindSceneFullscreenButton() {
    INIT
 ════════════════════════════════════════ */
 document.addEventListener("DOMContentLoaded", () => {
+  configureInputMode();
+  updateOrientationUI();
+  applyPerformanceProfile();
+  if (isMobileDevice && topBar) {
+    topBar.classList.add("is-collapsed");
+  }
+  updateTopBarToggle();
+
   // Canvas textures — run as soon as DOM is ready
   initCanvasTextures();
 
@@ -732,7 +1102,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Intro splash dismiss
   if (introEnterBtn) {
-    introEnterBtn.addEventListener("click", dismissSplash);
+    introEnterBtn.addEventListener("click", async () => {
+      hasEnteredRoom = true;
+      document.body.classList.remove("is-rotate-lock");
+      if (rotatePrompt) rotatePrompt.hidden = true;
+      if (isMobileDevice) showGyroPrompt();
+      if (isMobileDevice) await enterFullscreenOnMobile();
+      dismissSplash();
+      if (isMobileDevice && !needsIOSGyroPermission()) setGyroEnabled(true);
+    });
   }
 
   // Fullscreen listeners
@@ -755,15 +1133,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const key   = node.dataset.artifact;
     const label = node.dataset.label || key;
 
-    node.addEventListener("mouseenter", () => {
-      if (label) showTooltip(label);
-      applyHoverGlow(node, true);
-    });
+    if (!isMobileDevice) {
+      node.addEventListener("mouseenter", () => {
+        if (label) showTooltip(label);
+        applyHoverGlow(node, true);
+      });
 
-    node.addEventListener("mouseleave", () => {
-      hideTooltip();
-      applyHoverGlow(node, false);
-    });
+      node.addEventListener("mouseleave", () => {
+        hideTooltip();
+        applyHoverGlow(node, false);
+      });
+    }
 
     node.addEventListener("click", () => {
       if (!key) return;
@@ -809,4 +1189,10 @@ document.addEventListener("DOMContentLoaded", () => {
       dismissSplash();
     }
   });
+
+  if (gyroEnableBtn) {
+    gyroEnableBtn.addEventListener("click", requestGyroPermission);
+  }
+  window.addEventListener("resize", updateOrientationUI, { passive: true });
+  window.addEventListener("orientationchange", updateOrientationUI, { passive: true });
 });
