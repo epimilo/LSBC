@@ -111,6 +111,24 @@ const isTouchDevice = window.matchMedia("(hover: none) and (pointer: coarse)").m
 const isMobileDevice = /Android|iPhone|iPad|iPod|Mobile|Windows Phone|BlackBerry|Opera Mini/i.test(navigator.userAgent) || isTouchDevice;
 const hasDeviceOrientationAPI = typeof window.DeviceOrientationEvent !== "undefined";
 
+// #region agent log
+function __agentLog(location, message, hypothesisId, data, runId) {
+  fetch("http://127.0.0.1:7253/ingest/7185d5bf-5ff1-475f-a4cd-d9ed3392b0bf", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "bb3ca6" },
+    body: JSON.stringify({
+      sessionId: "bb3ca6",
+      location,
+      message,
+      data: data || {},
+      timestamp: Date.now(),
+      hypothesisId,
+      runId: runId || "pre"
+    })
+  }).catch(() => {});
+}
+// #endregion
+
 /* ── DOM refs ── */
 const artifactPanel   = document.getElementById("artifactPanel");
 const artifactTag     = document.getElementById("artifactTag");
@@ -197,6 +215,20 @@ if (typeof AFRAME !== "undefined" && !AFRAME.components["hazmat-display"]) {
   AFRAME.registerComponent("hazmat-display", {
     init() {
       const THREE = AFRAME.THREE;
+      // #region agent log
+      __agentLog(
+        "script.js:hazmat-display.init",
+        "hazmat-display init",
+        "H5",
+        {
+          elId: this.el.id,
+          objModelAttr: this.el.getAttribute("obj-model"),
+          gltfModelAttr: this.el.getAttribute("gltf-model"),
+          hasObjModelComponent: !!(AFRAME.components && AFRAME.components["obj-model"])
+        },
+        "pre"
+      );
+      // #endregion
       const apply = () => {
         this.el.object3D.traverse((node) => {
           if (!node.isMesh || !node.material) return;
@@ -207,14 +239,62 @@ if (typeof AFRAME !== "undefined" && !AFRAME.components["hazmat-display"]) {
             m.side = THREE.DoubleSide;
             m.depthTest = true;
             m.depthWrite = true;
+            if (!m.map && m.color && typeof m.color.setHex === "function") {
+              m.color.setHex(0x929aa5);
+            }
             m.needsUpdate = true;
           });
         });
       };
       this.el.addEventListener("model-loaded", () => {
-        requestAnimationFrame(apply);
+        // #region agent log
+        __agentLog("script.js:hazmat-display", "model-loaded fired", "H2", {}, "post-fix");
+        // #endregion
+        requestAnimationFrame(() => {
+          apply();
+          let meshCount = 0;
+          this.el.object3D.updateMatrixWorld(true);
+          this.el.object3D.traverse((n) => {
+            if (n.isMesh) meshCount++;
+          });
+          const box = new THREE.Box3().setFromObject(this.el.object3D);
+          const c = new THREE.Vector3();
+          const s = new THREE.Vector3();
+          box.getCenter(c);
+          box.getSize(s);
+          const wp = new THREE.Vector3();
+          this.el.object3D.getWorldPosition(wp);
+          // #region agent log
+          __agentLog(
+            "script.js:hazmat-display",
+            "post-apply traverse",
+            "H3",
+            {
+              meshCount,
+              bboxCenter: { x: c.x, y: c.y, z: c.z },
+              bboxSize: { x: s.x, y: s.y, z: s.z },
+              worldPos: { x: wp.x, y: wp.y, z: wp.z }
+            },
+            "post-fix"
+          );
+          // #endregion
+        });
       });
       this.el.addEventListener("model-error", (evt) => {
+        const d = evt && evt.detail;
+        // #region agent log
+        __agentLog(
+          "script.js:hazmat-display",
+          "model-error",
+          "H1",
+          {
+            detailType: typeof d,
+            detailMessage: d && (d.message || d.error || String(d)),
+            src: d && d.src
+          },
+          "pre"
+        );
+        // #endregion
         console.warn("hazmat glTF:", (evt && evt.detail) || evt);
       });
     }
@@ -1139,6 +1219,7 @@ function bindSceneFullscreenButton() {
    INIT
 ════════════════════════════════════════ */
 document.addEventListener("DOMContentLoaded", () => {
+  const __dbgPageT0 = Date.now();
   configureInputMode();
   updateOrientationUI();
   applyPerformanceProfile();
@@ -1146,6 +1227,45 @@ document.addEventListener("DOMContentLoaded", () => {
     topBar.classList.add("is-collapsed");
   }
   updateTopBarToggle();
+
+  const hazAsset = document.getElementById("hazmatObj");
+  if (hazAsset) {
+    hazAsset.addEventListener("error", (e) => {
+      // #region agent log
+      __agentLog(
+        "script.js:hazmatObj-asset",
+        "a-asset-item error",
+        "H1",
+        { type: e.type, message: e.message || "", src: hazAsset.getAttribute("src") },
+        "pre"
+      );
+      // #endregion
+    });
+    hazAsset.addEventListener("loaded", () => {
+      // #region agent log
+      __agentLog(
+        "script.js:hazmatObj-asset",
+        "a-asset-item loaded",
+        "H4",
+        { msSinceDom: Date.now() - __dbgPageT0, src: hazAsset.getAttribute("src") },
+        "pre"
+      );
+      // #endregion
+    });
+  }
+  if (sceneEl) {
+    sceneEl.addEventListener("loaded", () => {
+      // #region agent log
+      __agentLog(
+        "script.js:a-scene",
+        "a-scene loaded",
+        "H4",
+        { msSinceDom: Date.now() - __dbgPageT0 },
+        "pre"
+      );
+      // #endregion
+    });
+  }
 
   // Canvas textures — run as soon as DOM is ready
   initCanvasTextures();

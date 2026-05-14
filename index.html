@@ -162,14 +162,13 @@
       <!-- A-FRAME SCENE -->
       <section class="scene-wrap" id="sceneWrap">
         <a-scene renderer="antialias: true; colorManagement: true" background="color: #111111" vr-mode-ui="enabled: true" device-orientation-permission-ui="enabled: false" loading-screen="enabled: false" embedded>
-          <a-assets>
+          <a-assets timeout="30000">
             <img id="paperTexture" alt="" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%23f3ead9'/%3E%3Cg fill='none' stroke='%23d3c3a5' stroke-width='1' opacity='.45'%3E%3Cpath d='M0 64h512M0 128h512M0 192h512M0 256h512M0 320h512M0 384h512M0 448h512'/%3E%3Cpath d='M64 0v512M128 0v512M192 0v512M256 0v512M320 0v512M384 0v512M448 0v512'/%3E%3C/g%3E%3C/svg%3E" />
             <canvas id="timelineCanvas" width="512" height="682"></canvas>
             <canvas id="archiveCanvas" width="512" height="256"></canvas>
             <canvas id="paintingDawnCanvas" width="630" height="440"></canvas>
             <canvas id="paintingNightCanvas" width="610" height="420"></canvas>
             <canvas id="meetScreenCanvas" width="720" height="405"></canvas>
-            <a-asset-item id="hazmatModel" src="./hazmat-character-fixed.glb"></a-asset-item>
           </a-assets>
 
           <a-entity light="type: ambient; color: #dce8ff; intensity: 1.62"></a-entity>
@@ -261,7 +260,7 @@
               position="0 1.38 0"
               rotation="0 22 0"
               scale="1.4 1.4 1.4"
-              gltf-model="#hazmatModel"
+              obj-model="obj: url(./model_download_lite.obj)"
               hazmat-display
             ></a-entity>
             <a-entity light="type: point; color: #fff6e8; intensity: 1.55; distance: 7" position="0 2.05 0.65"></a-entity>
