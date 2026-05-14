@@ -90,6 +90,22 @@ const TELEPORT_OFFSETS = { floor: 1.2, wall: 2.55, pedestal: 1.95 };
 const MAX_TELEPORT_STEP = 2.75;
 const ROOM_LIMITS = { x: 7.5, z: 8.55 };
 const TOTAL_ARTIFACTS = 7;
+/** Bán kính “thân” người xem trên mặt phẳng XZ — dùng cho va chạm bàn phím */
+const PLAYER_RADIUS_XZ = 0.42;
+/** Hộp va chạm tĩnh (tọa độ thế giới, trục XZ) — bàn, bục, tường sau, v.v. */
+const WALK_COLLIDERS = [
+  { minX: -7.52, maxX: -5.92, minZ: -4.08, maxZ: -2.68 },
+  { minX: -1.95, maxX: 1.95, minZ: -5.1, maxZ: -3.1 },
+  { minX: -1.05, maxX: 1.05, minZ: 2.5, maxZ: 4.55 },
+  { minX: -5.9, maxX: -4.78, minZ: -2.52, maxZ: -1.32 },
+  { minX: 4.78, maxX: 5.9, minZ: -2.52, maxZ: -1.32 },
+  { minX: 6.22, maxX: 7.52, minZ: 2.28, maxZ: 3.58 },
+  { minX: -7.6, maxX: -6.05, minZ: 2.25, maxZ: 3.62 },
+  { minX: -2.95, maxX: -1.32, minZ: -5.38, maxZ: -3.82 },
+  { minX: 1.32, maxX: 2.95, minZ: -5.38, maxZ: -3.82 },
+  { minX: -2.95, maxX: -1.32, minZ: -4.42, maxZ: -3.82 },
+  { minX: -8.6, maxX: 8.6, minZ: -8.85, maxZ: -7.55 }
+];
 const MOBILE_MAX_PIXEL_RATIO = 1.25;
 const isTouchDevice = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
 const isMobileDevice = /Android|iPhone|iPad|iPod|Mobile|Windows Phone|BlackBerry|Opera Mini/i.test(navigator.userAgent) || isTouchDevice;
@@ -139,9 +155,46 @@ function isKeyboardWalkBlocked() {
   return false;
 }
 
+function collidesPlayerXZ(x, z, r) {
+  for (let i = 0; i < WALK_COLLIDERS.length; i++) {
+    const b = WALK_COLLIDERS[i];
+    if (x >= b.minX - r && x <= b.maxX + r && z >= b.minZ - r && z <= b.maxZ + r) return true;
+  }
+  return false;
+}
+
+function resolveKeyboardWalkXZ(ox, oz, nx, nz, r) {
+  if (!collidesPlayerXZ(nx, nz, r)) return { x: nx, z: nz };
+  if (!collidesPlayerXZ(ox, nz, r)) return { x: ox, z: nz };
+  if (!collidesPlayerXZ(nx, oz, r)) return { x: nx, z: oz };
+  return { x: ox, z: oz };
+}
+
+/** Dịch chuyển click / hành trình: bước dọc đoạn tới đích, dừng trước hộp va chạm */
+function clampWalkToward(ox, oz, tx, tz, r) {
+  const dx = tx - ox;
+  const dz = tz - oz;
+  const dist = Math.hypot(dx, dz);
+  if (dist < 1e-5) return resolveKeyboardWalkXZ(ox, oz, ox, oz, r);
+  const ux = dx / dist;
+  const uz = dz / dist;
+  const stepLen = 0.1;
+  const steps = Math.max(1, Math.ceil(dist / stepLen));
+  let bx = ox;
+  let bz = oz;
+  for (let i = 1; i <= steps; i++) {
+    const t = (i / steps) * dist;
+    const px = ox + ux * t;
+    const pz = oz + uz * t;
+    if (collidesPlayerXZ(px, pz, r)) break;
+    bx = px;
+    bz = pz;
+  }
+  return resolveKeyboardWalkXZ(ox, oz, bx, bz, r);
+}
+
 if (typeof AFRAME !== "undefined" && !AFRAME.components["hazmat-display"]) {
   AFRAME.registerComponent("hazmat-display", {
-    schema: { fallbackSelector: { type: "string", default: "#hazmatFallback" } },
     init() {
       const THREE = AFRAME.THREE;
       const apply = () => {
@@ -159,14 +212,10 @@ if (typeof AFRAME !== "undefined" && !AFRAME.components["hazmat-display"]) {
         });
       };
       this.el.addEventListener("model-loaded", () => {
-        apply();
-        const fb = document.querySelector(this.data.fallbackSelector);
-        if (fb) fb.setAttribute("visible", false);
+        requestAnimationFrame(apply);
       });
       this.el.addEventListener("model-error", (evt) => {
-        console.error("hazmat glTF:", (evt && evt.detail) || evt);
-        const fb = document.querySelector(this.data.fallbackSelector);
-        if (fb) fb.setAttribute("visible", true);
+        console.warn("hazmat glTF:", (evt && evt.detail) || evt);
       });
     }
   });
@@ -261,7 +310,8 @@ if (typeof AFRAME !== "undefined" && !AFRAME.components["keyboard-walk"]) {
       nx = Math.max(-ROOM_LIMITS.x, Math.min(ROOM_LIMITS.x, nx));
       nz = Math.max(-ROOM_LIMITS.z, Math.min(ROOM_LIMITS.z, nz));
       if (!Number.isFinite(nx) || !Number.isFinite(nz) || !Number.isFinite(p.y)) return;
-      rig.position.set(nx, p.y, nz);
+      const resolved = resolveKeyboardWalkXZ(p.x, p.z, nx, nz, PLAYER_RADIUS_XZ);
+      rig.position.set(resolved.x, p.y, resolved.z);
     }
   });
 }
@@ -809,8 +859,10 @@ function animateCameraTo(x, z) {
 
 function focusArtifact(key) {
   const point = focusPoints[key];
-  if (!point) return;
-  animateCameraTo(point.x, point.z);
+  if (!point || !cameraRig) return;
+  const cur = cameraRig.object3D.position;
+  const pos = clampWalkToward(cur.x, cur.z, point.x, point.z, PLAYER_RADIUS_XZ);
+  animateCameraTo(pos.x, pos.z);
 }
 
 function teleportToPoint(point) {
@@ -824,7 +876,8 @@ function teleportToPoint(point) {
   moveVector.normalize().multiplyScalar(distance);
   const nextX = Math.max(-ROOM_LIMITS.x, Math.min(ROOM_LIMITS.x, current.x + moveVector.x));
   const nextZ = Math.max(-ROOM_LIMITS.z, Math.min(ROOM_LIMITS.z, current.z + moveVector.z));
-  animateCameraTo(nextX, nextZ);
+  const pos = clampWalkToward(current.x, current.z, nextX, nextZ, PLAYER_RADIUS_XZ);
+  animateCameraTo(pos.x, pos.z);
 }
 
 function getTeleportIntersection(el, evt) {

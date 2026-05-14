@@ -169,6 +169,7 @@
             <canvas id="paintingDawnCanvas" width="630" height="440"></canvas>
             <canvas id="paintingNightCanvas" width="610" height="420"></canvas>
             <canvas id="meetScreenCanvas" width="720" height="405"></canvas>
+            <a-asset-item id="hazmatModel" src="./hazmat-character-fixed.glb"></a-asset-item>
           </a-assets>
 
           <a-entity light="type: ambient; color: #dce8ff; intensity: 1.62"></a-entity>
@@ -250,23 +251,19 @@
 
           <!-- Mô hình nhân vật đồ bảo hộ trong lồng kính (góc trái khu họp, giữa bục và bàn) -->
           <a-entity id="hazmatExhibit" position="-6.72 0 -3.38">
-            <a-box class="teleportable" data-surface="pedestal" position="0 0.1 0" width="1.55" height="0.2" depth="1.28" color="#4f433c"></a-box>
-            <a-box position="0 0.1 0" width="1.58" height="0.22" depth="1.32" material="color: #111111; wireframe: true; shader: flat; depthWrite: false"></a-box>
-            <!-- depthWrite: false để mesh bên trong không bị z-fight / che bởi lớp kính trong suốt -->
-            <a-box position="0 1.52 0" width="1.44" height="2.64" depth="1.14" material="color: #d8e8ff; transparent: true; opacity: 0.16; roughness: 0.06; metalness: 0.18; side: double; depthWrite: false"></a-box>
-            <a-box position="0 1.52 0" width="1.46" height="2.66" depth="1.16" material="color: #1a1a1a; wireframe: true; shader: flat; depthWrite: false"></a-box>
-            <!-- Pivot mesh ~giữa thân (bbox Y ~ -1..+1m); nâng cao để chân đứng trên bục, không chìm xuống sàn -->
-            <!-- GLB đã vá (doubleSided); tải trực tiếp URL — tham chiếu # trong a-assets đôi khi không gắn được mesh -->
+            <!-- Bục: mặt trên y≈0.2; tách khỏi đáy lồng kính (y≈0.24) để tránh z-fighting -->
+            <a-box class="teleportable" data-surface="pedestal" position="0 0.09 0" width="1.55" height="0.18" depth="1.28" color="#4f433c"></a-box>
+            <!-- Bỏ wireframe đế — trùng mặt bục gây nhấp nháy -->
+            <a-box position="0 1.56 0" width="1.44" height="2.64" depth="1.14" material="color: #d8e8ff; transparent: true; opacity: 0.16; roughness: 0.06; metalness: 0.18; side: double; depthWrite: false"></a-box>
+            <a-box position="0 1.56 0" width="1.46" height="2.66" depth="1.16" material="color: #1a1a1a; wireframe: true; shader: flat; depthWrite: false"></a-box>
             <a-entity
               id="hazmatCharacter"
               position="0 1.38 0"
               rotation="0 22 0"
               scale="1.4 1.4 1.4"
-              gltf-model="./hazmat-character-fixed.glb"
+              gltf-model="#hazmatModel"
               hazmat-display
-            >
-              <a-cylinder id="hazmatFallback" position="0 0.85 0" radius="0.32" height="1.55" color="#b83232" visible="false" material="shader: flat; metalness: 0; roughness: 1"></a-cylinder>
-            </a-entity>
+            ></a-entity>
             <a-entity light="type: point; color: #fff6e8; intensity: 1.55; distance: 7" position="0 2.05 0.65"></a-entity>
             <a-entity light="type: point; color: #cfe6ff; intensity: 0.65; distance: 4.5" position="0 1.1 -0.55"></a-entity>
           </a-entity>
