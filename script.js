@@ -639,11 +639,11 @@ function drawMeetScreenCanvas() {
   ctx.strokeRect(0, 0, W, 52);
 
   ctx.fillStyle = "#e8eaed";
-  ctx.font = "600 15px IBM Plex Sans, sans-serif";
+  ctx.font = '600 15px "Kefa III", serif';
   ctx.textAlign = "left";
   ctx.fillText("Cuộc họp trực tuyến", 16, 22);
   ctx.fillStyle = "#9aa0a6";
-  ctx.font = "12px IBM Plex Sans, sans-serif";
+  ctx.font = '12px "Kefa III", serif';
   ctx.fillText("meet.example / phòng-họp-biên-tập", 16, 40);
 
   // Ô lưới người tham gia
@@ -670,7 +670,7 @@ function drawMeetScreenCanvas() {
     ctx.arc(cx, cy, Math.min(cellW, cellH) * 0.22, 0, Math.PI * 2);
     ctx.fill();
     ctx.fillStyle = "#bdc1c6";
-    ctx.font = "13px IBM Plex Sans, sans-serif";
+    ctx.font = '13px "Kefa III", serif';
     ctx.textAlign = "center";
     ctx.fillText(`Người ${i + 1}`, cx, y + cellH - 18);
     if (t.mic) {
@@ -702,7 +702,7 @@ function drawMeetScreenCanvas() {
   ctx.fillRect(0, barY, W, 48);
   const btns = ["Tắt mic", "Máy ảnh", "Chia sẻ", "Rời khỏi"];
   ctx.textAlign = "center";
-  ctx.font = "11px IBM Plex Sans, sans-serif";
+  ctx.font = '11px "Kefa III", serif';
   btns.forEach((b, i) => {
     const bx = W * 0.2 + i * (W * 0.18);
     ctx.fillStyle = i === 3 ? "#ea4335" : "#5f6368";
@@ -1165,8 +1165,20 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   updateTopBarToggle();
 
-  // Canvas textures — run as soon as DOM is ready
-  initCanvasTextures();
+  // Canvas textures — đợi Kefa III tải xong rồi mới vẽ chữ
+  void (async () => {
+    if (document.fonts) {
+      try {
+        await Promise.all([
+          document.fonts.load('400 1em "Kefa III"'),
+          document.fonts.load('700 1em "Kefa III"')
+        ]);
+      } catch (_) {
+        await document.fonts.ready;
+      }
+    }
+    initCanvasTextures();
+  })();
 
   // Cursor ring
   initCursorRing();
