@@ -5,7 +5,7 @@
    - Hover glow + tooltip on all clickables
    - Visible cursor ring tracking mouse
    - Full-height artifact panel (slides from right)
-   - Progress counter "X / 7 đã khám phá"
+   - Progress counter "X / 9 đã khám phá"
    - Full Vietnamese text (có dấu)
 ════════════════════════════════════════════════════ */
 
@@ -73,6 +73,24 @@ const artifactContent = {
       "Khác với bản mock trước, hotspot này mở trực tiếp file to-bao-cuoi-cung.html được nhúng vào overlay toàn màn hình.",
       "Nghĩa là khi bạn sửa file báo gốc, phần triển lãm này tự động lấy đúng phiên bản mới nhất mà không cần viết lại giao diện."
     ]
+  },
+  "hazmat-exhibit": {
+    tag: "Trưng bày",
+    title: "Mô hình trong lồng kính — đồ bảo hộ",
+    subtitle: "Tiểu cảnh tượng trưng cho nhân viên tuyến đầu hoặc ký ức thời dịch.",
+    body: [
+      "Khung kính và mô hình có thể thay bằng ảnh scan, video ngắn, hoặc trích dẫn lời kể gắn với câu chuyện gia đình bạn.",
+      "Mô hình dùng file GLB gốc (có texture), đặt trong khung kính phía trái màn họp trực tuyến."
+    ]
+  },
+  "meeting-setup": {
+    tag: "Trưng bày",
+    title: "Tiểu cảnh họp trực tuyến",
+    subtitle: "Bàn làm việc đối diện màn hình — gợi nhớ không khí họp báo, họp biên tập từ xa.",
+    body: [
+      "Giao diện trên màn hình là canvas vẽ tay; bạn có thể đổi nội dung trong script.js (hàm vẽ màn hình họp) hoặc thay bằng ảnh chụp màn hình thật.",
+      "Ba laptop trên bàn là placeholder có thể thay bằng model 3D riêng nếu cần mức chi tiết cao hơn."
+    ]
   }
 };
 
@@ -83,51 +101,32 @@ const focusPoints = {
   typewriter:      { x:  3.65, z: -1.05 },
   "painting-dawn": { x: -5.9,  z: -1.75 },
   "painting-night":{ x:  5.95, z: -1.55 },
-  newspaper:       { x:  0,    z:  2.35 }
+  newspaper:       { x:  0,    z:  2.35 },
+  "hazmat-exhibit":{ x: -6.05, z: -6.55 },
+  "meeting-setup": { x:  0,    z: -3.85 }
 };
 
 const TELEPORT_OFFSETS = { floor: 1.2, wall: 2.55, pedestal: 1.95 };
 const MAX_TELEPORT_STEP = 2.75;
 const ROOM_LIMITS = { x: 7.5, z: 8.55 };
-const TOTAL_ARTIFACTS = 7;
+const TOTAL_ARTIFACTS = 9;
 /** Bán kính “thân” người xem trên mặt phẳng XZ — dùng cho va chạm bàn phím */
 const PLAYER_RADIUS_XZ = 0.42;
 /** Hộp va chạm tĩnh (tọa độ thế giới, trục XZ) — bàn, bục, tường sau, v.v. */
 const WALK_COLLIDERS = [
-  { minX: -7.52, maxX: -5.92, minZ: -4.08, maxZ: -2.68 },
-  { minX: -1.95, maxX: 1.95, minZ: -5.1, maxZ: -3.1 },
+  { minX: -7.25, maxX: -4.85, minZ: -7.95, maxZ: -6.15 },
+  { minX: -2.05, maxX: 2.05, minZ: -6.35, maxZ: -4.45 },
   { minX: -1.05, maxX: 1.05, minZ: 2.5, maxZ: 4.55 },
   { minX: -5.9, maxX: -4.78, minZ: -2.52, maxZ: -1.32 },
   { minX: 4.78, maxX: 5.9, minZ: -2.52, maxZ: -1.32 },
   { minX: 6.22, maxX: 7.52, minZ: 2.28, maxZ: 3.58 },
   { minX: -7.6, maxX: -6.05, minZ: 2.25, maxZ: 3.62 },
-  { minX: -2.95, maxX: -1.32, minZ: -5.38, maxZ: -3.82 },
-  { minX: 1.32, maxX: 2.95, minZ: -5.38, maxZ: -3.82 },
-  { minX: -2.95, maxX: -1.32, minZ: -4.42, maxZ: -3.82 },
   { minX: -8.6, maxX: 8.6, minZ: -8.85, maxZ: -7.55 }
 ];
 const MOBILE_MAX_PIXEL_RATIO = 1.25;
 const isTouchDevice = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
 const isMobileDevice = /Android|iPhone|iPad|iPod|Mobile|Windows Phone|BlackBerry|Opera Mini/i.test(navigator.userAgent) || isTouchDevice;
 const hasDeviceOrientationAPI = typeof window.DeviceOrientationEvent !== "undefined";
-
-// #region agent log
-function __agentLog(location, message, hypothesisId, data, runId) {
-  fetch("http://127.0.0.1:7253/ingest/7185d5bf-5ff1-475f-a4cd-d9ed3392b0bf", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "bb3ca6" },
-    body: JSON.stringify({
-      sessionId: "bb3ca6",
-      location,
-      message,
-      data: data || {},
-      timestamp: Date.now(),
-      hypothesisId,
-      runId: runId || "pre"
-    })
-  }).catch(() => {});
-}
-// #endregion
 
 /* ── DOM refs ── */
 const artifactPanel   = document.getElementById("artifactPanel");
@@ -215,87 +214,26 @@ if (typeof AFRAME !== "undefined" && !AFRAME.components["hazmat-display"]) {
   AFRAME.registerComponent("hazmat-display", {
     init() {
       const THREE = AFRAME.THREE;
-      // #region agent log
-      __agentLog(
-        "script.js:hazmat-display.init",
-        "hazmat-display init",
-        "H5",
-        {
-          elId: this.el.id,
-          objModelAttr: this.el.getAttribute("obj-model"),
-          gltfModelAttr: this.el.getAttribute("gltf-model"),
-          hasObjModelComponent: !!(AFRAME.components && AFRAME.components["obj-model"])
-        },
-        "pre"
-      );
-      // #endregion
       const apply = () => {
         this.el.object3D.traverse((node) => {
-          if (!node.isMesh || !node.material) return;
-          node.renderOrder = 2;
+          if (!node.isMesh) return;
+          node.renderOrder = 10;
+          node.frustumCulled = false;
           const mats = Array.isArray(node.material) ? node.material : [node.material];
           mats.forEach((m) => {
             if (!m) return;
             m.side = THREE.DoubleSide;
-            m.depthTest = true;
-            m.depthWrite = true;
-            if (!m.map && m.color && typeof m.color.setHex === "function") {
-              m.color.setHex(0x929aa5);
+            if (m.map) {
+              m.map.anisotropy = 4;
+              m.map.needsUpdate = true;
             }
             m.needsUpdate = true;
           });
         });
       };
-      this.el.addEventListener("model-loaded", () => {
-        // #region agent log
-        __agentLog("script.js:hazmat-display", "model-loaded fired", "H2", {}, "post-fix");
-        // #endregion
-        requestAnimationFrame(() => {
-          apply();
-          let meshCount = 0;
-          this.el.object3D.updateMatrixWorld(true);
-          this.el.object3D.traverse((n) => {
-            if (n.isMesh) meshCount++;
-          });
-          const box = new THREE.Box3().setFromObject(this.el.object3D);
-          const c = new THREE.Vector3();
-          const s = new THREE.Vector3();
-          box.getCenter(c);
-          box.getSize(s);
-          const wp = new THREE.Vector3();
-          this.el.object3D.getWorldPosition(wp);
-          // #region agent log
-          __agentLog(
-            "script.js:hazmat-display",
-            "post-apply traverse",
-            "H3",
-            {
-              meshCount,
-              bboxCenter: { x: c.x, y: c.y, z: c.z },
-              bboxSize: { x: s.x, y: s.y, z: s.z },
-              worldPos: { x: wp.x, y: wp.y, z: wp.z }
-            },
-            "post-fix"
-          );
-          // #endregion
-        });
-      });
+      this.el.addEventListener("model-loaded", () => requestAnimationFrame(apply));
       this.el.addEventListener("model-error", (evt) => {
-        const d = evt && evt.detail;
-        // #region agent log
-        __agentLog(
-          "script.js:hazmat-display",
-          "model-error",
-          "H1",
-          {
-            detailType: typeof d,
-            detailMessage: d && (d.message || d.error || String(d)),
-            src: d && d.src
-          },
-          "pre"
-        );
-        // #endregion
-        console.warn("hazmat glTF:", (evt && evt.detail) || evt);
+        console.warn("hazmat model:", (evt && evt.detail) || evt);
       });
     }
   });
@@ -1219,7 +1157,6 @@ function bindSceneFullscreenButton() {
    INIT
 ════════════════════════════════════════ */
 document.addEventListener("DOMContentLoaded", () => {
-  const __dbgPageT0 = Date.now();
   configureInputMode();
   updateOrientationUI();
   applyPerformanceProfile();
@@ -1227,45 +1164,6 @@ document.addEventListener("DOMContentLoaded", () => {
     topBar.classList.add("is-collapsed");
   }
   updateTopBarToggle();
-
-  const hazAsset = document.getElementById("hazmatObj");
-  if (hazAsset) {
-    hazAsset.addEventListener("error", (e) => {
-      // #region agent log
-      __agentLog(
-        "script.js:hazmatObj-asset",
-        "a-asset-item error",
-        "H1",
-        { type: e.type, message: e.message || "", src: hazAsset.getAttribute("src") },
-        "pre"
-      );
-      // #endregion
-    });
-    hazAsset.addEventListener("loaded", () => {
-      // #region agent log
-      __agentLog(
-        "script.js:hazmatObj-asset",
-        "a-asset-item loaded",
-        "H4",
-        { msSinceDom: Date.now() - __dbgPageT0, src: hazAsset.getAttribute("src") },
-        "pre"
-      );
-      // #endregion
-    });
-  }
-  if (sceneEl) {
-    sceneEl.addEventListener("loaded", () => {
-      // #region agent log
-      __agentLog(
-        "script.js:a-scene",
-        "a-scene loaded",
-        "H4",
-        { msSinceDom: Date.now() - __dbgPageT0 },
-        "pre"
-      );
-      // #endregion
-    });
-  }
 
   // Canvas textures — run as soon as DOM is ready
   initCanvasTextures();
