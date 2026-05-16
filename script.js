@@ -50,19 +50,46 @@ const artifactContent = {
   "painting-dawn": {
     tag: "Tranh treo tường",
     title: "Bức tranh số 1 — Bình minh",
-    subtitle: "Một khung tranh có thể dùng để treo ảnh, poster thiết kế, hoặc một minh họa mở đầu hành trình.",
+    subtitle: "Khung mở đầu cho cụm 5 tranh trên tường phải, phù hợp với ảnh chụp hoặc minh họa mang sắc độ ấm.",
     body: [
-      "Vật phẩm này hợp với ảnh chụp, minh họa, hoặc một trang scan đã được xử lý để treo như một tác phẩm mô phỏng trong phòng trưng bày.",
-      "Khi bạn có hình thật, chỉ cần thay texture hoặc đổi plane này thành một khung tranh theo đúng tỉ lệ của file thiết kế."
+      "Mỗi bức trong cụm này vẫn có hotspot riêng, nên bạn có thể thay từng tranh bằng một ảnh thật khác nhau mà không làm mất tương tác.",
+      "Khi có file thật, chỉ cần thay texture của đúng tranh này là đủ; không ảnh hưởng đến 4 bức còn lại."
+    ]
+  },
+  "painting-ember": {
+    tag: "Tranh treo tường",
+    title: "Bức tranh số 2 — Ánh đèn",
+    subtitle: "Điểm dừng thứ hai trong cụm tranh, hợp với poster, bìa ấn phẩm, hoặc ảnh tư liệu cần nhịp sáng mạnh.",
+    body: [
+      "Bức này phù hợp cho hình có nhiều vùng tối và điểm sáng cục bộ, vì vị trí của nó nằm sát bức trung tâm để tạo nhịp nhìn liên tục.",
+      "Nếu sau này bạn muốn treo ảnh thật, đây là nơi hợp để đặt một tấm có nhiều chi tiết hoặc typography nổi bật."
     ]
   },
   "painting-night": {
     tag: "Tranh treo tường",
-    title: "Bức tranh số 2 — Đêm khuya",
-    subtitle: "Điểm dừng bổ sung cho một lớp không khí, ký ức, hoặc một poster truyền thông cần quan sát riêng.",
+    title: "Bức tranh số 3 — Đêm khuya",
+    subtitle: "Bức trung tâm của cụm 5 tranh và cũng là tâm điểm cho điểm đến trong hành trình.",
     body: [
-      "Đây là vị trí hợp để đặt một bức tranh đối ứng với bức thứ nhất, giúp phòng có nhiều lớp nhìn hơn và tăng tính triển lãm.",
-      "Về sau, bạn có thể đổi sang ảnh tòa soạn, ảnh nhân vật, hoặc một poster có text và họa tiết phục vụ mạch kể chuyện."
+      "Dropdown Hành trình sẽ đưa người xem đến trước bức này, nhưng từng bức trong cụm vẫn mở nội dung độc lập khi bấm trực tiếp.",
+      "Vị trí trung tâm này hợp với hình chủ đạo của chương kể chuyện, ví dụ ảnh chân dung, poster chính, hoặc tấm scan quan trọng nhất."
+    ]
+  },
+  "painting-echo": {
+    tag: "Tranh treo tường",
+    title: "Bức tranh số 4 — Phản chiếu",
+    subtitle: "Một điểm dừng phụ bên phải tâm cụm, hợp với ảnh cảnh, ảnh không gian, hoặc trang minh họa có nhịp thoáng hơn.",
+    body: [
+      "Bức này nên đóng vai trò cân nhịp cho cụm tranh, giúp mắt người xem có khoảng nghỉ sau khi nhìn bức trung tâm.",
+      "Bạn có thể thay bằng ảnh thật theo tỉ lệ ngang hoặc dọc miễn vẫn giữ đúng khổ khung hiện tại."
+    ]
+  },
+  "painting-gold": {
+    tag: "Tranh treo tường",
+    title: "Bức tranh số 5 — Ánh giấy",
+    subtitle: "Bức kết cụm treo tường, phù hợp với hình scan báo, poster cũ, hoặc ảnh có sắc vàng giấy lưu trữ.",
+    body: [
+      "Vì nằm ở rìa cuối của cụm, bức này hợp để làm điểm kết cho chuỗi hình ảnh hoặc mốc cuối của một mini-series trên tường.",
+      "Nếu muốn đưa ảnh thật vào trước mắt, bạn chỉ cần nạp file vào `a-assets` rồi đổi `material src` của đúng plane này."
     ]
   },
   newspaper: {
@@ -99,8 +126,12 @@ const focusPoints = {
   archive:         { x:  4.95, z: 2.05 },
   voice:           { x: -3.65, z: -1.05 },
   typewriter:      { x:  3.65, z: -1.05 },
-  "painting-dawn": { x: -5.9,  z: -1.75 },
+  "painting-dawn": { x:  5.95, z: -1.55 },
+  "painting-ember":{ x:  5.95, z: -1.55 },
   "painting-night":{ x:  5.95, z: -1.55 },
+  "painting-echo": { x:  5.95, z: -1.55 },
+  "painting-gold": { x:  5.95, z: -1.55 },
+  "painting-cluster": { x: 5.95, z: -1.55 },
   newspaper:       { x:  0,    z:  2.35 },
   "hazmat-exhibit":{ x: -6.05, z: -6.55 },
   "meeting-setup": { x:  0,    z: -3.85 }
@@ -109,7 +140,7 @@ const focusPoints = {
 const TELEPORT_OFFSETS = { floor: 1.2, wall: 2.55, pedestal: 1.95 };
 const MAX_TELEPORT_STEP = 2.75;
 const ROOM_LIMITS = { x: 7.5, z: 8.55 };
-const TOTAL_ARTIFACTS = 9;
+const TOTAL_ARTIFACTS = 11;
 /** Bán kính “thân” người xem trên mặt phẳng XZ — dùng cho va chạm bàn phím */
 const PLAYER_RADIUS_XZ = 0.42;
 /** Hộp va chạm tĩnh (tọa độ thế giới, trục XZ) — bàn, bục, tường sau, v.v. */
@@ -623,6 +654,127 @@ function drawPaintingNight() {
   ctx.fillText("Đêm khuya — Hà Nội", W / 2, H - 20);
 }
 
+function drawPaintingEmber() {
+  const canvas = document.getElementById("paintingEmberCanvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width, H = canvas.height;
+
+  const bg = ctx.createLinearGradient(0, 0, W, H);
+  bg.addColorStop(0, "#1c1210");
+  bg.addColorStop(0.45, "#4b241d");
+  bg.addColorStop(1, "#b56b38");
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+
+  for (let i = 0; i < 14; i++) {
+    ctx.strokeStyle = `rgba(255,210,150,${0.05 + i * 0.012})`;
+    ctx.lineWidth = 14 - i * 0.8;
+    ctx.beginPath();
+    ctx.moveTo(30 + i * 26, H * 0.88);
+    ctx.quadraticCurveTo(W * 0.34, H * (0.2 + i * 0.01), W - 40 - i * 12, H * (0.14 + i * 0.035));
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = "rgba(255,238,205,0.84)";
+  ctx.beginPath();
+  ctx.arc(W * 0.72, H * 0.28, 48, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "rgba(255,255,255,0.08)";
+  for (let i = 0; i < 5; i++) {
+    ctx.fillRect(40 + i * 112, 42 + i * 16, 72, H - 110 - i * 22);
+  }
+
+  ctx.fillStyle = "rgba(18,10,8,0.48)";
+  ctx.fillRect(W / 2 - 90, H - 42, 180, 30);
+  ctx.fillStyle = "#ffd9b0";
+  ctx.font = "italic 14px serif";
+  ctx.textAlign = "center";
+  ctx.fillText("Ánh đèn — Phòng lưu", W / 2, H - 22);
+}
+
+function drawPaintingEcho() {
+  const canvas = document.getElementById("paintingEchoCanvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width, H = canvas.height;
+
+  const bg = ctx.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0, "#d3d5d8");
+  bg.addColorStop(0.5, "#7d909a");
+  bg.addColorStop(1, "#304756");
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.fillStyle = "rgba(246,249,252,0.72)";
+  ctx.beginPath();
+  ctx.moveTo(0, H * 0.68);
+  ctx.bezierCurveTo(W * 0.22, H * 0.48, W * 0.44, H * 0.86, W * 0.62, H * 0.64);
+  ctx.bezierCurveTo(W * 0.78, H * 0.44, W * 0.9, H * 0.74, W, H * 0.58);
+  ctx.lineTo(W, H);
+  ctx.lineTo(0, H);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.strokeStyle = "rgba(22,38,48,0.26)";
+  ctx.lineWidth = 3;
+  for (let i = 0; i < 7; i++) {
+    ctx.beginPath();
+    ctx.moveTo(0, H * (0.18 + i * 0.09));
+    ctx.bezierCurveTo(W * 0.28, H * (0.16 + i * 0.06), W * 0.66, H * (0.28 + i * 0.05), W, H * (0.12 + i * 0.1));
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = "rgba(255,255,255,0.26)";
+  ctx.beginPath();
+  ctx.ellipse(W * 0.35, H * 0.26, 74, 34, -0.2, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "rgba(15,23,30,0.42)";
+  ctx.fillRect(W / 2 - 96, H - 42, 192, 30);
+  ctx.fillStyle = "#eff5f8";
+  ctx.font = "italic 14px serif";
+  ctx.textAlign = "center";
+  ctx.fillText("Phản chiếu — Hành lang", W / 2, H - 22);
+}
+
+function drawPaintingGold() {
+  const canvas = document.getElementById("paintingGoldCanvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width, H = canvas.height;
+
+  const paper = ctx.createLinearGradient(0, 0, 0, H);
+  paper.addColorStop(0, "#6e5735");
+  paper.addColorStop(0.35, "#b98f4d");
+  paper.addColorStop(1, "#f1d48e");
+  ctx.fillStyle = paper;
+  ctx.fillRect(0, 0, W, H);
+
+  for (let i = 0; i < 1600; i++) {
+    ctx.fillStyle = `rgba(90,55,20,${Math.random() * 0.06})`;
+    ctx.fillRect(Math.random() * W, Math.random() * H, 1.4, 1.4);
+  }
+
+  ctx.fillStyle = "rgba(92,56,22,0.22)";
+  for (let i = 0; i < 6; i++) {
+    ctx.fillRect(48, 56 + i * 46, W - 96, 18);
+    ctx.fillRect(48, 80 + i * 46, W - 170 + (i % 2) * 36, 10);
+  }
+
+  ctx.strokeStyle = "#fff0c9";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(32, 34, W - 64, H - 94);
+
+  ctx.fillStyle = "rgba(58,35,12,0.44)";
+  ctx.fillRect(W / 2 - 94, H - 42, 188, 30);
+  ctx.fillStyle = "#fff3cc";
+  ctx.font = "italic 14px serif";
+  ctx.textAlign = "center";
+  ctx.fillText("Ánh giấy — Lưu dấu", W / 2, H - 22);
+}
+
 function drawMeetScreenCanvas() {
   const canvas = document.getElementById("meetScreenCanvas");
   if (!canvas) return;
@@ -719,6 +871,9 @@ function initCanvasTextures() {
   drawArchiveCanvas();
   drawPaintingDawn();
   drawPaintingNight();
+  drawPaintingEmber();
+  drawPaintingEcho();
+  drawPaintingGold();
   drawMeetScreenCanvas();
 }
 

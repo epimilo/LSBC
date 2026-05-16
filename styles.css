@@ -111,6 +111,23 @@ body.is-mobile.is-rotate-lock .intro-splash {
   animation: splash-content-in 1s .2s both;
 }
 
+.intro-splash__logo {
+  width: min(78vw, 760px);
+  aspect-ratio: 792 / 258;
+  margin: 0 auto 34px;
+  background: linear-gradient(180deg, rgba(255,244,226,0.98) 0%, rgba(244,215,163,0.96) 52%, rgba(215,156,77,0.92) 100%);
+  -webkit-mask-image: url("./logo-in-dau.svg");
+  mask-image: url("./logo-in-dau.svg");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  filter: drop-shadow(0 4px 60px rgba(215,156,77,.35));
+  animation: splash-content-in 1s .2s both;
+}
+
 .intro-splash__lede {
   margin: 0 0 48px;
   font-size: clamp(0.95rem, 1.8vw, 1.1rem);
@@ -892,6 +909,11 @@ body.is-mobile .app-shell {
   .intro-splash__title {
     margin-bottom: 18px;
     font-size: clamp(3rem, 10vw, 5.2rem);
+  }
+
+  .intro-splash__logo {
+    width: min(86vw, 620px);
+    margin-bottom: 22px;
   }
 
   .intro-splash__lede {

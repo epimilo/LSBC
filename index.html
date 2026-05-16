@@ -19,11 +19,11 @@
     <div class="intro-splash" id="introSplash" role="dialog" aria-modal="true" aria-label="Màn hình giới thiệu">
       <div class="intro-splash__bg"></div>
       <div class="intro-splash__content">
-        <p class="intro-splash__eyebrow">VR Story Room</p>
-        <h1 class="intro-splash__title">Phòng<br>Trưng Bày</h1>
+        <p class="intro-splash__eyebrow">Triển lãm tri ân</p>
+        <div class="intro-splash__logo" role="img" aria-label="IN DẤU"></div>
         <p class="intro-splash__lede">
-          Xoay nhìn khắp phòng, bấm vào từng vật phẩm để mở ra các mảnh ký ức gia đình.
-          Tờ báo đặt gần vị trí bắt đầu của bạn sẽ đưa bạn qua một trang đọc tương tác mô phỏng số báo giấy cuối cùng.
+          Chào mừng bạn đến với triển lãm In Dấu, nơi tái hiện hành trình khó khăn của báo in Việt Nam trong thời kỳ COVID-19.
+          Qua những hình ảnh, hiện vật tác nghiệp và tư liệu chân thực, chúng tôi mong muốn khắc họa những khó khăn mà các tòa soạn và phóng viên phải đối mặt trong thời gian dịch bệnh diễn ra.
         </p>
         <button type="button" class="intro-splash__enter" id="introEnterBtn">
           <span class="intro-splash__enter-text">Bước vào phòng</span>
@@ -59,11 +59,11 @@
       <section class="hud">
         <div class="intro-shell" id="introShell">
           <div class="hud__intro glass">
-            <p class="eyebrow">VR Story Room</p>
-            <h1>Phòng trưng bày 360 cho một câu chuyện chưa có nội dung cố định</h1>
+            <p class="eyebrow">Triển lãm tri ân</p>
+            <h1>IN DẤU</h1>
             <p class="lede">
-              Xoay nhìn khắp phòng, bấm vào từng vật phẩm để mở ra các mảnh ký ức gia đình.
-              Tờ báo gần phía trước phòng sẽ đưa qua một trang đọc tương tác mô phỏng số báo giấy cuối cùng.
+              Chào mừng bạn đến với triển lãm In Dấu, nơi tái hiện hành trình khó khăn của báo in Việt Nam trong thời kỳ COVID-19.
+              Qua những hình ảnh, hiện vật tác nghiệp và tư liệu chân thực, chúng tôi mong muốn khắc họa những khó khăn mà các tòa soạn và phóng viên phải đối mặt trong thời gian dịch bệnh diễn ra.
             </p>
             <div class="hud__actions">
               <button type="button" class="button" data-action="toggle-help">Cách tương tác</button>
@@ -78,7 +78,7 @@
 
       <!-- PROGRESS COUNTER -->
       <div class="progress-counter glass" id="progressCounter" aria-live="polite">
-        <span class="progress-counter__nums"><span id="progressCount">0</span><span class="progress-counter__sep"> / 9</span></span>
+        <span class="progress-counter__nums"><span id="progressCount">0</span><span class="progress-counter__sep"> / 11</span></span>
         <span class="progress-counter__label">đã khám phá</span>
         <div class="progress-counter__bar"><div class="progress-counter__fill" id="progressFill"></div></div>
       </div>
@@ -97,9 +97,7 @@
               <option value="timeline">Mở đầu</option>
               <option value="voice">Giọng nói</option>
               <option value="typewriter">Bản thảo</option>
-              <option value="archive">Lưu trữ</option>
-              <option value="painting-dawn">Tranh số 1</option>
-              <option value="painting-night">Tranh số 2</option>
+              <option value="painting-cluster">Cụm 5 tranh tường phải</option>
               <option value="hazmat-exhibit">Lồng kính — đồ bảo hộ</option>
               <option value="meeting-setup">Bàn họp &amp; màn hình</option>
               <option value="newspaper">Tờ báo cuối cùng</option>
@@ -170,7 +168,10 @@
             <canvas id="timelineCanvas" width="512" height="682"></canvas>
             <canvas id="archiveCanvas" width="512" height="256"></canvas>
             <canvas id="paintingDawnCanvas" width="630" height="440"></canvas>
+            <canvas id="paintingEmberCanvas" width="630" height="440"></canvas>
             <canvas id="paintingNightCanvas" width="610" height="420"></canvas>
+            <canvas id="paintingEchoCanvas" width="630" height="440"></canvas>
+            <canvas id="paintingGoldCanvas" width="630" height="440"></canvas>
             <canvas id="meetScreenCanvas" width="720" height="405"></canvas>
           </a-assets>
 
@@ -216,6 +217,7 @@
           <!-- Mô hình đồ bảo hộ — lồng kính sát tường sau, trái màn họp -->
           <a-entity id="hazmatExhibit" position="-6.05 0 -7.05" scale="1.28 1.28 1.28">
             <a-box class="teleportable" data-surface="pedestal" position="0 0.11 0" width="1.85" height="0.22" depth="1.52" color="#4f433c"></a-box>
+            <a-box position="0 0.235 0" width="1.98" height="0.035" depth="1.66" material="color: #ffe1af; emissive: #ffd49d; emissiveIntensity: 0.95; transparent: true; opacity: 0.34; roughness: 0.18; metalness: 0.05"></a-box>
             <a-box position="0 1.72 0" width="1.72" height="3.12" depth="1.35" material="color: #d2e4ff; transparent: true; opacity: 0.15; roughness: 0.06; metalness: 0.15; side: double; depthWrite: false"></a-box>
             <a-box position="0 1.72 0" width="1.74" height="3.14" depth="1.37" material="color: #1a1a1a; wireframe: true; shader: flat; depthWrite: false"></a-box>
             <a-entity
@@ -226,6 +228,7 @@
               gltf-model="./hazmat-character-fixed.glb"
               hazmat-display
             ></a-entity>
+            <a-entity light="type: point; color: #ffe5b8; intensity: 1.25; distance: 6.8; decay: 2" position="0 1.18 0.15"></a-entity>
             <a-entity light="type: point; color: #fff6e8; intensity: 1.65; distance: 8" position="0 2.25 0.75"></a-entity>
             <a-entity light="type: point; color: #cfe6ff; intensity: 0.72; distance: 5" position="0 1.15 -0.62"></a-entity>
             <a-box class="clickable" data-artifact="hazmat-exhibit" data-label="Mô hình đồ bảo hộ trong lồng kính" position="0 1.65 0.72" width="1.15" height="2.55" depth="0.05" material="color: #ffffff; transparent: true; opacity: 0.04"></a-box>
@@ -233,6 +236,8 @@
 
           <!-- NEWSPAPER (gần vị trí bắt đầu — phía trước phòng) -->
           <a-cylinder class="teleportable" data-surface="pedestal" position="0 0.55 3.48" radius="0.75" height="1.1" color="#5f4735"></a-cylinder>
+          <a-cylinder position="0 1.12 3.48" radius="0.83" height="0.04" material="color: #ffe1ae; emissive: #ffd59f; emissiveIntensity: 0.82; transparent: true; opacity: 0.3; roughness: 0.22; metalness: 0.04"></a-cylinder>
+          <a-entity light="type: point; color: #ffe7bd; intensity: 1.08; distance: 5.2; decay: 2" position="0 1.48 3.48"></a-entity>
           <a-box position="0 1.4 3.48" width="1.5" height="0.9" depth="1.12" material="color: #dfeaf2; transparent: true; opacity: 0.18; roughness: 0.05; metalness: 0.15"></a-box>
           <a-box position="0 1.84 3.48" width="1.58" height="0.06" depth="1.2" color="#6f5943"></a-box>
           <a-box position="0 0.96 3.48" width="1.58" height="0.06" depth="1.2" color="#6f5943"></a-box>
@@ -240,32 +245,53 @@
 
           <!-- VOICE (dời trái) -->
           <a-box class="teleportable" data-surface="pedestal" position="-5.35 0.58 -1.95" width="0.95" height="1.16" depth="0.95" color="#51453f"></a-box>
+          <a-box position="-5.35 1.175 -1.95" width="1.06" height="0.035" depth="1.06" material="color: #ffe0ad; emissive: #ffd39b; emissiveIntensity: 0.8; transparent: true; opacity: 0.28; roughness: 0.2; metalness: 0.04"></a-box>
+          <a-entity light="type: point; color: #ffe5bb; intensity: 0.94; distance: 4.5; decay: 2" position="-5.35 1.5 -1.95"></a-entity>
           <a-cylinder class="clickable" data-artifact="voice" data-label="Máy ghi âm" position="-5.35 1.18 -1.95" radius="0.31" height="0.52" color="#cfc6b8"></a-cylinder>
           <a-box class="clickable" data-artifact="voice" data-label="Máy ghi âm" position="-5.35 1.52 -1.73" width="0.56" height="0.06" depth="0.18" color="#111111"></a-box>
 
           <!-- TYPEWRITER (dời phải) -->
           <a-box class="teleportable" data-surface="pedestal" position="5.35 0.58 -1.95" width="0.96" height="1.16" depth="0.96" color="#4a4038"></a-box>
-          <a-box class="clickable" data-artifact="typewriter" data-label="Máy đánh chữ" position="5.35 1.5 -1.95" width="0.74" height="0.58" depth="0.42" color="#262321"></a-box>
-          <a-box class="clickable" data-artifact="typewriter" data-label="Máy đánh chữ" position="5.35 1.86 -1.75" width="0.34" height="0.12" depth="0.08" color="#8b6f4f"></a-box>
+          <a-box position="5.35 1.175 -1.95" width="1.08" height="0.035" depth="1.08" material="color: #ffe0ae; emissive: #ffd39a; emissiveIntensity: 0.82; transparent: true; opacity: 0.29; roughness: 0.2; metalness: 0.04"></a-box>
+          <a-entity light="type: point; color: #ffe4b7; intensity: 0.98; distance: 4.6; decay: 2" position="5.35 1.5 -1.95"></a-entity>
+          <a-entity
+            position="5.35 1.18 -1.95"
+            rotation="0 -24 0"
+            scale="0.62 0.62 0.62"
+            gltf-model="./Meshy_AI_Caution_Across_The_Ne_0516102251_texture_optimized.glb"
+            hazmat-display
+          ></a-entity>
+          <a-box class="clickable" data-artifact="typewriter" data-label="Máy đánh chữ" position="5.35 1.46 -1.95" width="0.9" height="0.86" depth="0.76" material="color: #ffffff; transparent: true; opacity: 0.04"></a-box>
 
           <!-- TIMELINE (dời sát tường trái) -->
           <a-box class="clickable" data-artifact="timeline" data-label="Khung lịch sử" position="-6.85 1.8 2.92" width="1.36" height="1.82" depth="0.16" color="#63584e"></a-box>
           <a-plane class="clickable" data-artifact="timeline" data-label="Khung lịch sử" position="-6.83 1.8 3.02" width="1.12" height="1.52" material="src: #timelineCanvas"></a-plane>
 
-          <!-- ARCHIVE (dời sát tường phải) -->
+          <!-- ARCHIVE PEDESTAL (đã bỏ object trên bục) -->
           <a-box class="teleportable" data-surface="pedestal" position="6.85 0.55 2.9" width="1.06" height="1.1" depth="1.06" color="#443931"></a-box>
-          <a-box class="clickable" data-artifact="archive" data-label="Hộp lưu trữ" position="6.85 1.36 2.9" width="0.9" height="0.26" depth="0.56" material="src: #archiveCanvas; roughness: 1"></a-box>
-          <a-cylinder class="clickable" data-artifact="archive" data-label="Hộp lưu trữ" position="6.47 1.72 2.92" radius="0.11" height="0.48" color="#d6b486"></a-cylinder>
-          <a-cylinder class="clickable" data-artifact="archive" data-label="Hộp lưu trữ" position="6.85 1.72 2.92" radius="0.11" height="0.48" color="#d6b486"></a-cylinder>
-          <a-cylinder class="clickable" data-artifact="archive" data-label="Hộp lưu trữ" position="7.23 1.72 2.92" radius="0.11" height="0.48" color="#d6b486"></a-cylinder>
+          <a-box position="6.85 1.12 2.9" width="1.18" height="0.035" depth="1.18" material="color: #ffe1b2; emissive: #ffd5a0; emissiveIntensity: 0.86; transparent: true; opacity: 0.31; roughness: 0.2; metalness: 0.05"></a-box>
+          <a-entity light="type: point; color: #ffe8c4; intensity: 1.02; distance: 4.9; decay: 2" position="6.85 1.42 2.9"></a-entity>
 
-          <!-- PAINTING DAWN -->
-          <a-box position="-8.84 2.14 -1.95" rotation="0 90 0" width="1.52" height="1.12" depth="0.08" color="#574132"></a-box>
-          <a-plane class="clickable" data-artifact="painting-dawn" data-label="Bức tranh — Bình minh" position="-8.78 2.14 -1.95" rotation="0 90 0" width="1.26" height="0.88" material="src: #paintingDawnCanvas"></a-plane>
+          <!-- CỤM 5 TRANH (tường phải, lấy bức giữa làm tâm điểm hành trình) -->
+          <a-entity light="type: point; color: #ffe4ba; intensity: 0.94; distance: 6.5; decay: 2" position="7.55 4.06 -5.15"></a-entity>
+          <a-box position="8.84 2.66 -5.15" rotation="0 -90 0" width="1.42" height="1.04" depth="0.08" color="#5a4537"></a-box>
+          <a-plane class="clickable" data-artifact="painting-dawn" data-label="Bức tranh số 1 — Bình minh" position="8.78 2.66 -5.15" rotation="0 -90 0" width="1.16" height="0.8" material="src: #paintingDawnCanvas"></a-plane>
 
-          <!-- PAINTING NIGHT -->
-          <a-box position="8.84 2.05 -1.7" rotation="0 -90 0" width="1.48" height="1.08" depth="0.08" color="#493339"></a-box>
-          <a-plane class="clickable" data-artifact="painting-night" data-label="Bức tranh — Đêm khuya" position="8.78 2.05 -1.7" rotation="0 -90 0" width="1.22" height="0.84" material="src: #paintingNightCanvas"></a-plane>
+          <a-entity light="type: point; color: #ffe3b8; intensity: 0.96; distance: 6.5; decay: 2" position="7.55 4.06 0.95"></a-entity>
+          <a-box position="8.84 2.66 0.95" rotation="0 -90 0" width="1.42" height="1.04" depth="0.08" color="#4f3c34"></a-box>
+          <a-plane class="clickable" data-artifact="painting-ember" data-label="Bức tranh số 2 — Ánh đèn" position="8.78 2.66 0.95" rotation="0 -90 0" width="1.16" height="0.8" material="src: #paintingEmberCanvas"></a-plane>
+
+          <a-entity light="type: point; color: #ffe8c8; intensity: 1.16; distance: 7.2; decay: 2" position="7.5 3.6 -1.45"></a-entity>
+          <a-box position="8.84 2.1 -1.45" rotation="0 -90 0" width="1.56" height="1.12" depth="0.08" color="#493339"></a-box>
+          <a-plane class="clickable" data-artifact="painting-night" data-label="Bức tranh số 3 — Đêm khuya" position="8.78 2.1 -1.45" rotation="0 -90 0" width="1.28" height="0.88" material="src: #paintingNightCanvas"></a-plane>
+
+          <a-entity light="type: point; color: #ffe2b5; intensity: 0.94; distance: 6.5; decay: 2" position="7.55 2.72 -3.6"></a-entity>
+          <a-box position="8.84 1.42 -3.6" rotation="0 -90 0" width="1.42" height="1.04" depth="0.08" color="#48505a"></a-box>
+          <a-plane class="clickable" data-artifact="painting-echo" data-label="Bức tranh số 4 — Phản chiếu" position="8.78 1.42 -3.6" rotation="0 -90 0" width="1.16" height="0.8" material="src: #paintingEchoCanvas"></a-plane>
+
+          <a-entity light="type: point; color: #ffe4b8; intensity: 0.94; distance: 6.5; decay: 2" position="7.55 2.72 2.65"></a-entity>
+          <a-box position="8.84 1.42 2.65" rotation="0 -90 0" width="1.42" height="1.04" depth="0.08" color="#6b543f"></a-box>
+          <a-plane class="clickable" data-artifact="painting-gold" data-label="Bức tranh số 5 — Ánh giấy" position="8.78 1.42 2.65" rotation="0 -90 0" width="1.16" height="0.8" material="src: #paintingGoldCanvas"></a-plane>
 
           <!-- Camera rig -->
           <a-entity id="cameraRig" position="0 1.6 8.48" keyboard-walk="speed: 4.65">
