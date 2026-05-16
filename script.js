@@ -93,7 +93,7 @@ const artifactContent = {
   },
   newspaper: {
     tag: "Trang báo",
-    title: "Số báo giấy cuối cùng",
+    title: "Việt Nam News số 30/03/2020",
     subtitle: "Vật phẩm gần lối vào phòng, bấm vào để mở file báo HTML thật của bạn.",
     body: [
       "Khác với bản mock trước, hotspot này mở trực tiếp file to-bao-cuoi-cung.html được nhúng vào overlay toàn màn hình.",
@@ -122,7 +122,7 @@ const focusPoints = {
   timeline:        { x: -4.95, z: 2.05 },
   archive:         { x:  4.95, z: 2.05 },
   voice:           { x: -3.65, z: -1.05 },
-  typewriter:      { x:  3.65, z: -1.05 },
+  typewriter:      { x:  3.65, z: -1.85 },
   "painting-dawn": { x:  5.95, z: -1.55 },
   "painting-ember":{ x:  5.95, z: -1.55 },
   "painting-night":{ x:  5.95, z: -1.55 },
@@ -146,6 +146,7 @@ const WALK_COLLIDERS = [
   { minX: -2.05, maxX: 2.05, minZ: -6.35, maxZ: -4.45 },
   { minX: -1.05, maxX: 1.05, minZ: 2.5, maxZ: 4.55 },
   { minX: -5.9, maxX: -4.78, minZ: -2.52, maxZ: -1.32 },
+  { minX: 4.45, maxX: 6.25, minZ: -4.35, maxZ: -2.55 },
   { minX: -7.6, maxX: -6.05, minZ: 2.25, maxZ: 3.62 },
   { minX: -8.6, maxX: 8.6, minZ: -8.85, maxZ: -7.55 }
 ];
@@ -403,7 +404,7 @@ function drawTimelineCanvas() {
     { year: "1986", text: "Thời kỳ Đổi Mới" },
     { year: "1995", text: "Bình thường hóa quan hệ" },
     { year: "2010", text: "Chuyển đổi kỹ thuật số" },
-    { year: "2024", text: "Số báo giấy cuối cùng" },
+    { year: "2024", text: "Việt Nam News số 30/03/2020" },
   ];
 
   const lineX = W / 2;

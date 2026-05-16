@@ -100,7 +100,7 @@
               <option value="painting-cluster">Cụm 5 tranh tường phải</option>
               <option value="hazmat-exhibit">Trang phục bảo hộ</option>
               <option value="meeting-setup">Cuộc họp giao ban trực tuyến</option>
-              <option value="newspaper">Số báo giấy cuối cùng</option>
+              <option value="newspaper">Việt Nam News số 30/03/2020</option>
             </select>
           </label>
           <div class="top-bar__actions">
@@ -113,20 +113,22 @@
         <div class="panel-header">
           <div>
             <p class="eyebrow">Hướng dẫn</p>
-            <h2>Điều hướng phòng 360</h2>
+            <h2>Cẩm nang trải nghiệm triển lãm "In Dấu"</h2>
           </div>
           <button type="button" class="icon-button" data-action="close-help" aria-label="Đóng hướng dẫn">×</button>
         </div>
         <ul class="help-list">
-          <li>Kéo chuột hoặc vuốt màn hình để xoay nhìn 360 độ.</li>
-          <li>Bấm vào bất kỳ bề mặt nào trong phòng, kể cả sàn và tường, để di đến gần điểm đó.</li>
-          <li>Trên máy tính, dùng phím mũi tên hoặc W A S D để đi lại tự do (theo hướng đang nhìn); vẫn có thể bấm để dịch chuyển từng bước như trước.</li>
-          <li>Bấm vào bức trưng bày để đi lại gần. Bấm trực tiếp vào vật phẩm mới mở bảng thông tin.</li>
-          <li>Sử dụng dropdown Hành trình ở phía trên để nhảy nhanh tới từng điểm dừng.</li>
-          <li>Dùng nút fullscreen mặc định ở góc dưới phải để mở fullscreen mà vẫn giữ được các bảng thông tin.</li>
-          <li>Nhạc nền sẽ bật ở lần chạm đầu tiên, và có thể tắt bật lại bằng nút ở thanh trên.</li>
-          <li>Bấm vào tờ báo gần phía trước phòng để chuyển sang giao diện báo tương tác.</li>
-          <li>Bấm "Trở lại phòng" để quay lại không gian VR bất cứ lúc nào.</li>
+          <li><strong>Hướng nhìn:</strong> Kéo chuột hoặc vuốt màn hình để xoay nhìn 360 độ.</li>
+          <li><strong>Di chuyển bằng chuột:</strong> Bấm vào bất kỳ bề mặt nào trong phòng, kể cả sàn và tường, để di đến gần điểm đó.</li>
+          <li><strong>Di chuyển bằng bàn phím:</strong> Trên máy tính, dùng phím mũi tên hoặc các phím W A S D để đi lại tự do (theo hướng nhìn).</li>
+          <li><strong>Mở bảng thông tin hiện vật:</strong> Bấm vào hiện vật để bảng thông tin hiển thị.</li>
+          <li><strong>Sử dụng bảng hành trình:</strong> Sử dụng dropdown Hành trình ở phía trên để nhảy nhanh tới từng điểm dừng.</li>
+        </ul>
+        <p style="margin:0.8rem 0 0.3rem;font-weight:600;font-size:0.85rem;">✦ Lưu ý khác:</p>
+        <ul class="help-list" style="margin-top:0.2rem;">
+          <li>Để có trải nghiệm tốt nhất, hãy truy cập bằng máy tính/máy tính bảng.</li>
+          <li>Có thể dùng nút toàn màn hình ở góc dưới phải để mở toàn màn hình.</li>
+          <li>Nhạc nền sẽ tự động bật, có thể tắt hoặc bật lại bằng nút ở khung hành trình.</li>
         </ul>
       </section>
 
@@ -147,7 +149,7 @@
         <div class="newspaper__toolbar">
           <div>
             <p class="eyebrow">Từ phòng trưng bày sang mặt báo</p>
-            <h2>Số báo cuối cùng</h2>
+            <h2>Việt Nam News số 30/03/2020</h2>
           </div>
           <div class="newspaper__actions">
             <a class="button button--light" href="./to-bao-cuoi-cung.html" target="_blank" rel="noreferrer">Mở riêng 1 tab</a>
@@ -156,7 +158,7 @@
           </div>
         </div>
         <div class="newspaper__pages">
-          <iframe id="newspaperFrame" class="newspaper__frame" src="./to-bao-cuoi-cung.html" title="Tờ báo cuối cùng" loading="lazy"></iframe>
+          <iframe id="newspaperFrame" class="newspaper__frame" src="./to-bao-cuoi-cung.html" title="Việt Nam News số 30/03/2020" loading="lazy"></iframe>
         </div>
       </section>
 
@@ -165,7 +167,7 @@
         <a-scene renderer="antialias: true; colorManagement: true" background="color: #111111" vr-mode-ui="enabled: true" device-orientation-permission-ui="enabled: false" loading-screen="enabled: false" embedded>
           <a-assets timeout="30000">
             <img id="paperTexture" alt="" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%23f3ead9'/%3E%3Cg fill='none' stroke='%23d3c3a5' stroke-width='1' opacity='.45'%3E%3Cpath d='M0 64h512M0 128h512M0 192h512M0 256h512M0 320h512M0 384h512M0 448h512'/%3E%3Cpath d='M64 0v512M128 0v512M192 0v512M256 0v512M320 0v512M384 0v512M448 0v512'/%3E%3C/g%3E%3C/svg%3E" />
-            <a-asset-item id="typewriterModelAsset" src="./Meshy_AI_Caution_Across_The_Ne_0516102251_texture_optimized.glb"></a-asset-item>
+            <a-asset-item id="typewriterModelAsset" src="./Meshy_AI_Thong_Nhat_Newsstand__0516160705_texture_2.glb"></a-asset-item>
             <canvas id="timelineCanvas" width="512" height="682"></canvas>
             <canvas id="archiveCanvas" width="512" height="256"></canvas>
             <canvas id="paintingDawnCanvas" width="630" height="440"></canvas>
@@ -242,7 +244,7 @@
           <a-box position="0 1.4 3.48" width="1.5" height="0.9" depth="1.12" material="color: #dfeaf2; transparent: true; opacity: 0.18; roughness: 0.05; metalness: 0.15"></a-box>
           <a-box position="0 1.84 3.48" width="1.58" height="0.06" depth="1.2" color="#6f5943"></a-box>
           <a-box position="0 0.96 3.48" width="1.58" height="0.06" depth="1.2" color="#6f5943"></a-box>
-          <a-box id="newspaperArtifact" class="clickable" data-artifact="newspaper" data-label="Số báo giấy cuối cùng" position="0 1.32 3.48" rotation="-12 0 0" width="1.1" height="0.04" depth="0.82" material="src: #paperTexture; roughness: 1" shadow="cast: true"></a-box>
+          <a-box id="newspaperArtifact" class="clickable" data-artifact="newspaper" data-label="Việt Nam News số 30/03/2020" position="0 1.32 3.48" rotation="-12 0 0" width="1.1" height="0.04" depth="0.82" material="src: #paperTexture; roughness: 1" shadow="cast: true"></a-box>
 
           <!-- VOICE (dời trái) -->
           <a-box class="teleportable" data-surface="pedestal" position="-5.35 0.58 -1.95" width="0.95" height="1.16" depth="0.95" color="#51453f"></a-box>
@@ -251,17 +253,19 @@
           <a-cylinder class="clickable" data-artifact="voice" data-label="Máy nghe ghi âm" position="-5.35 1.18 -1.95" radius="0.31" height="0.52" color="#cfc6b8"></a-cylinder>
           <a-box class="clickable" data-artifact="voice" data-label="Máy nghe ghi âm" position="-5.35 1.52 -1.73" width="0.56" height="0.06" depth="0.18" color="#111111"></a-box>
 
-          <!-- TYPEWRITER (dời phải) -->
+          <!-- SẠP BÁO (dời phải, ngang hàng máy ghi âm bên trái) -->
 
-          <a-entity light="type: point; color: #ffe4b7; intensity: 0.98; distance: 4.6; decay: 2" position="5.35 0.8 -1.95"></a-entity>
+          <a-box class="teleportable" data-surface="pedestal" position="5.35 0.3 -3.45" width="2.0" height="0.6" depth="2.0" color="#51453f"></a-box>
+          <a-box position="5.35 0.61 -3.45" width="2.12" height="0.04" depth="2.12" material="color: #ffe0ad; emissive: #ffd39b; emissiveIntensity: 0.8; transparent: true; opacity: 0.28; roughness: 0.2; metalness: 0.04"></a-box>
+          <a-entity light="type: point; color: #ffe5bb; intensity: 1.2; distance: 6; decay: 2" position="5.35 1.8 -3.45"></a-entity>
           <a-entity
-            position="5.35 0.45 -1.95"
+            position="5.35 0.85 -3.45"
             rotation="0 -14 0"
-            scale="1.35 1.35 1.35"
+            scale="1.3 1.3 1.3"
             gltf-model="#typewriterModelAsset"
             shadow="cast: true; receive: false"
           ></a-entity>
-          <a-box class="clickable" data-artifact="typewriter" data-label="Sạp báo bị phong toả" position="5.35 0.55 -1.95" width="1.2" height="1.1" depth="1.0" material="color: #ffffff; transparent: true; opacity: 0.04"></a-box>
+          <a-box class="clickable" data-artifact="typewriter" data-label="Sạp báo bị phong toả" position="5.35 1.3 -3.45" width="1.8" height="2.2" depth="1.6" material="color: #ffffff; transparent: true; opacity: 0.04"></a-box>
 
           <!-- TIMELINE (dời sát tường trái) -->
           <a-box class="clickable" data-artifact="timeline" data-label="Khung lịch trên tường" position="-6.85 1.8 2.92" width="1.36" height="1.82" depth="0.16" color="#63584e"></a-box>
