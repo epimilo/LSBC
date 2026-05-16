@@ -147,7 +147,6 @@ const WALK_COLLIDERS = [
   { minX: -2.05, maxX: 2.05, minZ: -6.35, maxZ: -4.45 },
   { minX: -1.05, maxX: 1.05, minZ: 2.5, maxZ: 4.55 },
   { minX: -5.9, maxX: -4.78, minZ: -2.52, maxZ: -1.32 },
-  { minX: 4.78, maxX: 5.9, minZ: -2.52, maxZ: -1.32 },
   { minX: -7.6, maxX: -6.05, minZ: 2.25, maxZ: 3.62 },
   { minX: -8.6, maxX: 8.6, minZ: -8.85, maxZ: -7.55 }
 ];
@@ -1017,7 +1016,13 @@ function renderArtifact(key) {
 
   artifactTag.textContent      = item.tag;
   artifactTitle.textContent    = item.title;
-  artifactSubtitle.textContent = item.subtitle;
+  if (item.subtitle && key.startsWith("painting-")) {
+    artifactSubtitle.textContent = item.subtitle;
+    artifactSubtitle.style.display = "";
+  } else {
+    artifactSubtitle.textContent = "";
+    artifactSubtitle.style.display = "none";
+  }
   const bodyHtml = item.body.map(p => `<p>${p}</p>`).join("");
   const imageHtml = item.image
     ? `<figure class="artifact-figure"><img src="${item.image}" alt="${item.title}" loading="lazy"></figure>`
