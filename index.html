@@ -20,7 +20,7 @@
       <div class="intro-splash__bg"></div>
       <div class="intro-splash__content">
         <p class="intro-splash__eyebrow">Triển lãm tri ân</p>
-        <img class="intro-splash__logo" src="./logo-in-dau.svg" alt="IN DẤU" />
+        <img class="intro-splash__logo" src="./Asset 2.svg" alt="IN DẤU" />
         <p class="intro-splash__lede">
           Chào mừng bạn đến với triển lãm In Dấu, nơi tái hiện hành trình khó khăn của báo in Việt Nam trong thời kỳ COVID-19.
           Qua những hình ảnh, hiện vật tác nghiệp và tư liệu chân thực, chúng tôi mong muốn khắc họa những khó khăn mà các tòa soạn và phóng viên phải đối mặt trong thời gian dịch bệnh diễn ra.
@@ -96,7 +96,7 @@
               <option value="">Chọn một điểm dừng</option>
               <option value="timeline">Khung lịch trên tường</option>
               <option value="voice">Máy nghe ghi âm</option>
-              <option value="typewriter">Máy đánh chữ</option>
+              <option value="typewriter">Sạp báo bị phong toả</option>
               <option value="painting-cluster">Cụm 5 tranh tường phải</option>
               <option value="hazmat-exhibit">Trang phục bảo hộ</option>
               <option value="meeting-setup">Cuộc họp giao ban trực tuyến</option>
@@ -199,7 +199,7 @@
 
           <!-- Màn hình họp trực tuyến (tường sau — cùng nhóm với bàn) -->
           <a-box position="0 2.65 -8.86" width="5.5" height="2.95" depth="0.12" color="#121418"></a-box>
-          <a-plane position="0 2.65 -8.76" width="5.15" height="2.68" material="src: #meetScreenCanvas; shader: flat"></a-plane>
+          <a-plane class="clickable" data-artifact="meeting-setup" data-label="Cuộc họp giao ban trực tuyến" position="0 2.65 -8.76" width="5.15" height="2.68" material="src: #meetScreenCanvas; shader: flat"></a-plane>
 
           <!-- Bàn họp gần màn hình — không ghế, không người; laptop lớn hơn -->
           <a-box position="0 0.56 -5.42" width="3.45" height="1.08" depth="1.62" color="#32261f"></a-box>
@@ -255,13 +255,13 @@
 
           <a-entity light="type: point; color: #ffe4b7; intensity: 0.98; distance: 4.6; decay: 2" position="5.35 0.8 -1.95"></a-entity>
           <a-entity
-            position="5.35 0.15 -1.95"
+            position="5.35 0.45 -1.95"
             rotation="0 -14 0"
-            scale="0.82 0.82 0.82"
+            scale="1.35 1.35 1.35"
             gltf-model="#typewriterModelAsset"
             shadow="cast: true; receive: false"
           ></a-entity>
-          <a-box class="clickable" data-artifact="typewriter" data-label="Máy đánh chữ của biên tập viên" position="5.35 0.28 -1.95" width="0.9" height="0.86" depth="0.76" material="color: #ffffff; transparent: true; opacity: 0.04"></a-box>
+          <a-box class="clickable" data-artifact="typewriter" data-label="Sạp báo bị phong toả" position="5.35 0.55 -1.95" width="1.2" height="1.1" depth="1.0" material="color: #ffffff; transparent: true; opacity: 0.04"></a-box>
 
           <!-- TIMELINE (dời sát tường trái) -->
           <a-box class="clickable" data-artifact="timeline" data-label="Khung lịch trên tường" position="-6.85 1.8 2.92" width="1.36" height="1.82" depth="0.16" color="#63584e"></a-box>

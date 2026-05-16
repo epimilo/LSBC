@@ -113,18 +113,10 @@ body.is-mobile.is-rotate-lock .intro-splash {
 
 .intro-splash__logo {
   width: min(78vw, 760px);
-  aspect-ratio: 792 / 258;
+  aspect-ratio: 197.73 / 64.37;
   margin: 0 auto 34px;
-  background: linear-gradient(180deg, rgba(255,244,226,0.98) 0%, rgba(244,215,163,0.96) 52%, rgba(215,156,77,0.92) 100%);
-  -webkit-mask-image: url("./logo-in-dau.svg");
-  mask-image: url("./logo-in-dau.svg");
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  mask-position: center;
-  -webkit-mask-size: contain;
-  mask-size: contain;
-  filter: drop-shadow(0 4px 60px rgba(215,156,77,.35));
+  display: block;
+  object-fit: contain;
   animation: splash-content-in 1s .2s both;
 }
 
@@ -724,6 +716,24 @@ body.is-mobile.is-rotate-lock .intro-splash {
 
 .artifact-body p { margin: 0 0 16px; }
 .artifact-body p:last-child { margin-bottom: 0; }
+.artifact-figure {
+  margin: 22px 0 0;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(215, 156, 77, 0.24);
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+}
+
+.artifact-figure img {
+  display: block;
+  width: 100%;
+  max-height: 45vh;
+  aspect-ratio: 1.45 / 1;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 14px;
+}
 
 /* ─────────────────────────────────────────
    NEWSPAPER VIEW (special overlay)

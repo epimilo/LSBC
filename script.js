@@ -22,11 +22,10 @@ const artifactContent = {
   },
   typewriter: {
     tag: "Văn bản",
-    title: "Máy đánh chữ của biên tập viên",
+    title: "Sạp báo bị phong toả",
     subtitle: "Nơi kể về bản thảo, tiêu đề, và quá trình đưa một ý thành một bản tin.",
     body: [
-      "Đây là điểm hợp lý cho những đoạn mô tả bối cảnh: ai viết, ai sửa, bản nháp đầu tiên trông ra sao, và những chi tiết lao động thường bị bỏ qua.",
-      "Nếu cần mở rộng sau này, vật phẩm này có thể dẫn đến một trang riêng gồm bản thảo scan và phiên bản đã lên khuôn."
+      "Trong giai đoạn dịch COVID-19 bùng phát mạnh tại Việt Nam, việc áp dụng Chỉ thị 16 với các biện pháp giãn cách nghiêm ngặt đã khiến hoạt động vận chuyển và phát hành báo in bị đình trệ nghiêm trọng. Nhiều số báo không thể đến tay bạn đọc, dẫn đến tồn đọng trong suốt thời gian giãn cách. Sự gián đoạn này không chỉ ảnh hưởng đến các tòa soạn mà còn khiến nhiều tiểu thương kinh doanh báo giấy rơi vào khó khăn, buộc không ít sạp báo phải đóng cửa và không thể hoạt động trở lại sau đại dịch."
     ]
   },
   timeline: {
