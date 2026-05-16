@@ -361,7 +361,7 @@ if (typeof AFRAME !== "undefined" && !AFRAME.components["keyboard-walk"]) {
 }
 
 /* ── State ── */
-const audioState = { context: null, enabled: true, started: false };
+const audioState = { audioElement: null, enabled: true, started: false };
 const exploredSet = new Set();
 
 /* ════════════════════════════════════════
@@ -1261,65 +1261,28 @@ async function enterFullscreenOnMobile() {
    AMBIENT AUDIO
 ════════════════════════════════════════ */
 function createAmbientAudio() {
-  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContextClass) return;
-  const context = new AudioContextClass();
-  const master  = context.createGain();
-  const filter  = context.createBiquadFilter();
-  const lfo     = context.createOscillator();
-  const lfoGain = context.createGain();
-  const shimmer = context.createOscillator();
-  const shimmerGain = context.createGain();
-
-  master.gain.value    = 0.11;
-  filter.type          = "lowpass";
-  filter.frequency.value = 1180;
-  filter.Q.value       = 0.7;
-  lfo.type             = "sine";
-  lfo.frequency.value  = 0.06;
-  lfoGain.gain.value   = 220;
-  shimmer.type         = "sine";
-  shimmer.frequency.value = 0.12;
-  shimmerGain.gain.value  = 0.018;
-
-  master.connect(filter);
-  filter.connect(context.destination);
-  lfo.connect(lfoGain);
-  lfoGain.connect(filter.frequency);
-  shimmer.connect(shimmerGain);
-  shimmerGain.connect(master.gain);
-
-  [
-    { frequency: 196.0,  gain: 0.05,  type: "sine",     detune: -4 },
-    { frequency: 246.94, gain: 0.043, type: "triangle", detune:  3 },
-    { frequency: 293.66, gain: 0.034, type: "sine",     detune:  1 },
-    { frequency: 392.0,  gain: 0.018, type: "sine",     detune: -2 }
-  ].forEach(v => {
-    const osc  = context.createOscillator();
-    const gain = context.createGain();
-    osc.type = v.type; osc.frequency.value = v.frequency; osc.detune.value = v.detune;
-    gain.gain.value = v.gain;
-    osc.connect(gain); gain.connect(master); osc.start();
-  });
-
-  lfo.start(); shimmer.start();
-  audioState.context = context;
+  const audioEl = document.getElementById("ambientAudio");
+  if (!audioEl) return;
+  audioEl.volume = 0.11;
+  audioEl.play().catch(() => {});
+  audioState.audioElement = audioEl;
   audioState.started = true;
 }
 
 async function ensureAmbientAudioStarted() {
   if (!audioState.enabled) return;
   if (!audioState.started) createAmbientAudio();
-  if (!audioState.context) return;
-  if (audioState.context.state === "suspended") await audioState.context.resume();
+  const el = audioState.audioElement;
+  if (el && el.paused) el.play().catch(() => {});
 }
 
 async function toggleAudio() {
   audioState.enabled = !audioState.enabled;
+  const el = audioState.audioElement;
   if (!audioState.started && audioState.enabled) {
     await ensureAmbientAudioStarted();
-  } else if (audioState.context) {
-    audioState.enabled ? await audioState.context.resume() : await audioState.context.suspend();
+  } else if (el) {
+    audioState.enabled ? el.play().catch(() => {}) : el.pause();
   }
   if (audioButton) audioButton.textContent = audioState.enabled ? "Tắt nhạc" : "Bật nhạc";
 }
