@@ -122,7 +122,7 @@ const focusPoints = {
   timeline:        { x: -4.95, z: 2.05 },
   archive:         { x:  4.95, z: 2.05 },
   voice:           { x: -3.65, z: -1.05 },
-  typewriter:      { x:  3.65, z: -1.85 },
+  typewriter:      { x:  4.0,  z: -2.8 },
   "painting-dawn": { x:  5.95, z: -1.55 },
   "painting-ember":{ x:  5.95, z: -1.55 },
   "painting-night":{ x:  5.95, z: -1.55 },
@@ -146,7 +146,7 @@ const WALK_COLLIDERS = [
   { minX: -2.05, maxX: 2.05, minZ: -6.35, maxZ: -4.45 },
   { minX: -1.05, maxX: 1.05, minZ: 2.5, maxZ: 4.55 },
   { minX: -5.9, maxX: -4.78, minZ: -2.52, maxZ: -1.32 },
-  { minX: 4.45, maxX: 6.25, minZ: -4.35, maxZ: -2.55 },
+  { minX: 4.55, maxX: 7.05, minZ: -6.15, maxZ: -4.25 },
   { minX: -7.6, maxX: -6.05, minZ: 2.25, maxZ: 3.62 },
   { minX: -8.6, maxX: 8.6, minZ: -8.85, maxZ: -7.55 }
 ];
@@ -902,6 +902,8 @@ async function initCanvasTextures() {
   drawTimelineCanvas();
   drawArchiveCanvas();
   drawMeetScreenCanvas();
+
+  drawPaintingPhoto("newspaperCanvas", "./viet-nam-news-dung-xuat-ban-mot-to-bao-in-vi-nguoi-nhiem-covid-19.jpg");
 
   const results = await Promise.all([
     drawPaintingPhoto("paintingDawnCanvas", "./painting-1-san-sang-framed.jpg"),

@@ -254,15 +254,7 @@
     line-height: 1.4;
   }
 
-  /* ── LOWER SECTION ── */
-  .lower-area {
-    display: grid;
-    grid-template-columns: 1fr 2px 1fr 2px 1fr 2px 1fr;
-    padding: 0.6rem 1rem 0.8rem;
-    border-bottom: 2px solid var(--rule);
-  }
-
-  .lower-col { padding: 0 0.5rem; }
+  /* ── LOWER HEADLINE (used inside columns) ── */
 
   .lower-headline {
     font-family: 'Kefa III', Georgia, serif;
@@ -631,10 +623,8 @@
 
   @media (max-width: 650px) {
     .content-area { grid-template-columns: 1fr; }
-    .lower-area { grid-template-columns: 1fr 2px 1fr; }
     .col-rule { display: none; }
     .paper-name { font-size: 2.5rem; }
-    .lower-col:nth-child(6), .lower-col:nth-child(7) { display: none; }
   }
 </style>
 </head>
@@ -702,6 +692,16 @@
           <div style="font-size:0.6rem;color:#8a7555;margin-top:4px;">*Đã tạm ngừng khai thác</div>
           <div class="hotspot-ring"></div>
         </div>
+
+        <div style="border-top:1px solid var(--rule);margin:0.7rem 0;opacity:0.3;"></div>
+
+        <div class="section-label">Kinh tế</div>
+        <div class="lower-headline" style="cursor:default;margin-bottom:0.3rem;">
+          GDP quý II/2021 tăng 6,61% nhưng rủi ro còn cao
+        </div>
+        <div class="col-body" style="font-size:0.77rem;">
+          <p>Tổng cục Thống kê: tốc độ tăng trưởng có thể bị ảnh hưởng nghiêm trọng trong quý III nếu dịch không được kiểm soát...</p>
+        </div>
       </div>
 
       <!-- RULE -->
@@ -763,43 +763,30 @@
         <div class="col-body" style="font-size:0.77rem;">
           <p>Hàng nghìn người lao động tự do tại TP.HCM rơi vào cảnh khó khăn. Nhiều khu nhà trọ công nhân vắng lặng hơn bao giờ hết...</p>
         </div>
-      </div>
 
-    </div><!-- /content-area -->
+        <div style="border-top:1px solid var(--rule);margin:0.7rem 0;opacity:0.3;"></div>
 
-    <!-- Lower section -->
-    <div class="lower-area">
-      <div class="lower-col">
         <div class="section-label">Văn hóa</div>
-        <div class="lower-headline clickable" onclick="openPanel('doc-gia')" style="position:relative;">
+        <div class="clickable lower-headline" onclick="openPanel('doc-gia')" style="margin-bottom:0.3rem;position:relative;">
           Độc giả báo in: thế hệ cuối cùng?
           <span class="hotspot-dot"></span>
         </div>
-        <div class="col-body" style="font-size:0.75rem;margin-top:0.3rem;">
+        <div class="col-body" style="font-size:0.77rem;">
           <p>Dịch bệnh đẩy nhanh quá trình chuyển sang đọc báo online. Khảo sát mới cho thấy 78% người dưới 35 tuổi chưa mua báo in trong 3 tháng qua...</p>
         </div>
-      </div>
-      <div class="col-rule"></div>
-      <div class="lower-col">
-        <div class="section-label">Kinh tế</div>
-        <div class="lower-headline" style="cursor:default;">
-          GDP quý II/2021 tăng 6,61% nhưng rủi ro còn cao
-        </div>
-        <div class="col-body" style="font-size:0.75rem;margin-top:0.3rem;">
-          <p>Tổng cục Thống kê: tốc độ tăng trưởng có thể bị ảnh hưởng nghiêm trọng trong quý III nếu dịch không được kiểm soát...</p>
-        </div>
-      </div>
-      <div class="col-rule"></div>
-      <div class="lower-col">
+
+        <div style="border-top:1px solid var(--rule);margin:0.7rem 0;opacity:0.3;"></div>
+
         <div class="section-label">Giáo dục</div>
-        <div class="lower-headline" style="cursor:default;">
+        <div class="lower-headline" style="cursor:default;margin-bottom:0.3rem;">
           Kỳ thi tốt nghiệp THPT đợt 2: nhiều tỉnh xin hoãn
         </div>
-        <div class="col-body" style="font-size:0.75rem;margin-top:0.3rem;">
+        <div class="col-body" style="font-size:0.77rem;">
           <p>Bộ GD&ĐT đang xem xét phương án tổ chức riêng cho các địa phương đang có dịch phức tạp...</p>
         </div>
       </div>
-    </div>
+
+    </div><!-- /content-area -->
   </div>
 </div><!-- /newspaper -->
 
