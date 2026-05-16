@@ -49,48 +49,48 @@ const artifactContent = {
   },
   "painting-dawn": {
     tag: "Tranh treo tường",
-    title: "Bức tranh số 1 — Bình minh",
-    subtitle: "Khung mở đầu cho cụm 5 tranh trên tường phải, phù hợp với ảnh chụp hoặc minh họa mang sắc độ ấm.",
+    title: "Sẵn sàng",
+    subtitle: "Nguồn: Báo Tuổi Trẻ",
     body: [
-      "Mỗi bức trong cụm này vẫn có hotspot riêng, nên bạn có thể thay từng tranh bằng một ảnh thật khác nhau mà không làm mất tương tác.",
-      "Khi có file thật, chỉ cần thay texture của đúng tranh này là đủ; không ảnh hưởng đến 4 bức còn lại."
-    ]
+      "Nhà báo có mặt tại tâm dịch, sẵn sàng tiến vào khu vực cách ly đặc biệt, nơi những bệnh nhân COVID-19 đang điều trị, nhằm cung cấp thông tin, hình ảnh thực tế về tình hình dịch bệnh cho độc giả."
+    ],
+    image: "./painting-1-san-sang-framed.jpg"
   },
   "painting-ember": {
     tag: "Tranh treo tường",
-    title: "Bức tranh số 2 — Ánh đèn",
-    subtitle: "Điểm dừng thứ hai trong cụm tranh, hợp với poster, bìa ấn phẩm, hoặc ảnh tư liệu cần nhịp sáng mạnh.",
+    title: "Dấn thân",
+    subtitle: "Nguồn: Duy Hiệu (Phóng viên ảnh, tạp chí tri thức Znews)",
     body: [
-      "Bức này phù hợp cho hình có nhiều vùng tối và điểm sáng cục bộ, vì vị trí của nó nằm sát bức trung tâm để tạo nhịp nhìn liên tục.",
-      "Nếu sau này bạn muốn treo ảnh thật, đây là nơi hợp để đặt một tấm có nhiều chi tiết hoặc typography nổi bật."
-    ]
+      "Khoác lên mình những bộ đồ bảo hộ kín mít, các phóng viên, nhà báo không ngại nguy cơ lây nhiễm để có mặt tại các điểm nóng của đại dịch, họ dấn thân, dùng con chữ để giữ vững 'mặt trận' thông tin giữa thời điểm khủng hoảng."
+    ],
+    image: "./painting-2-dan-than-framed.jpg"
   },
   "painting-night": {
     tag: "Tranh treo tường",
-    title: "Bức tranh số 3 — Đêm khuya",
-    subtitle: "Bức trung tâm của cụm 5 tranh và cũng là tâm điểm cho điểm đến trong hành trình.",
+    title: "Kết nối",
+    subtitle: "Nguồn: Báo Kinh tế - Đô thị",
     body: [
-      "Dropdown Hành trình sẽ đưa người xem đến trước bức này, nhưng từng bức trong cụm vẫn mở nội dung độc lập khi bấm trực tiếp.",
-      "Vị trí trung tâm này hợp với hình chủ đạo của chương kể chuyện, ví dụ ảnh chân dung, poster chính, hoặc tấm scan quan trọng nhất."
-    ]
+      "Cách thức phỏng vấn trong đại dịch cũng thay đổi đáng kể. Phóng viên phải giữ khoảng cách, mặc đồ bảo hộ và đối mặt với nguy cơ lây nhiễm cao. Dù vậy, họ vẫn đóng vai trò kết nối công chúng với những người ở tuyến đầu chống dịch, mang đến nguồn thông tin trực tiếp, đáng tin cậy và kịp thời."
+    ],
+    image: "./painting-3-ket-noi-framed.jpg"
   },
   "painting-echo": {
     tag: "Tranh treo tường",
-    title: "Bức tranh số 4 — Phản chiếu",
-    subtitle: "Một điểm dừng phụ bên phải tâm cụm, hợp với ảnh cảnh, ảnh không gian, hoặc trang minh họa có nhịp thoáng hơn.",
+    title: "Lăn xả",
+    subtitle: "Nguồn: Báo Tin tức Thông tấn Xã Việt Nam",
     body: [
-      "Bức này nên đóng vai trò cân nhịp cho cụm tranh, giúp mắt người xem có khoảng nghỉ sau khi nhìn bức trung tâm.",
-      "Bạn có thể thay bằng ảnh thật theo tỉ lệ ngang hoặc dọc miễn vẫn giữ đúng khổ khung hiện tại."
-    ]
+      "Để đảm bảo thông tin đến với bạn đọc nhanh nhất, các phóng viên phải tranh thủ viết tin và gửi bài về tòa soạn ngay tại hiện trường. Trong điều kiện thiếu thốn, họ tận dụng không gian, dùng ghế làm bàn để soạn bản thảo, từ đó duy trì tốc độ và nhịp đưa tin giữa đại dịch."
+    ],
+    image: "./painting-4-lan-xa-framed.jpg"
   },
   "painting-gold": {
     tag: "Tranh treo tường",
-    title: "Bức tranh số 5 — Ánh giấy",
-    subtitle: "Bức kết cụm treo tường, phù hợp với hình scan báo, poster cũ, hoặc ảnh có sắc vàng giấy lưu trữ.",
+    title: "Thích nghi",
+    subtitle: "Nguồn: Báo Tin tức Thông tấn Xã Việt Nam",
     body: [
-      "Vì nằm ở rìa cuối của cụm, bức này hợp để làm điểm kết cho chuỗi hình ảnh hoặc mốc cuối của một mini-series trên tường.",
-      "Nếu muốn đưa ảnh thật vào trước mắt, bạn chỉ cần nạp file vào `a-assets` rồi đổi `material src` của đúng plane này."
-    ]
+      "Không chỉ trong hoạt động tác nghiệp ở hiện trường, các tòa soạn cũng cần chuẩn bị phương pháp ứng phó như 'tòa soạn dã chiến' trong trường hợp không thể đến tòa soạn làm việc. Đây là hình ảnh nhà riêng của một nhân viên báo Pháp luật TP Hồ Chí Minh được tận dụng làm 'tòa soạn dã chiến' trong thời gian tòa soạn chính phải phong tỏa do có nhân viên bị nhiễm COVID-19."
+    ],
+    image: "./painting-5-thich-nghi-framed.jpg"
   },
   newspaper: {
     tag: "Trang báo",
@@ -103,20 +103,18 @@ const artifactContent = {
   },
   "hazmat-exhibit": {
     tag: "Trưng bày",
-    title: "Mô hình trong lồng kính — đồ bảo hộ",
+    title: "Trang phục bảo hộ",
     subtitle: "Tiểu cảnh tượng trưng cho nhân viên tuyến đầu hoặc ký ức thời dịch.",
     body: [
-      "Khung kính và mô hình có thể thay bằng ảnh scan, video ngắn, hoặc trích dẫn lời kể gắn với câu chuyện gia đình bạn.",
-      "Mô hình dùng file GLB gốc (có texture), đặt trong khung kính phía trái màn họp trực tuyến."
+      "Khi tác nghiệp trong giai đoạn cao điểm dịch, phóng viên phải tuân thủ nghiêm ngặt các quy định về phòng chống dịch. Đặc biệt, với phóng viên tác nghiệp tại các khu vực như bệnh viện, sân bay, khu cách ly,... đồ bảo hộ là trang bị không thể thiếu."
     ]
   },
   "meeting-setup": {
     tag: "Trưng bày",
-    title: "Tiểu cảnh họp trực tuyến",
+    title: "Cuộc họp giao ban trực tuyến",
     subtitle: "Bàn làm việc đối diện màn hình — gợi nhớ không khí họp báo, họp biên tập từ xa.",
     body: [
-      "Giao diện trên màn hình là canvas vẽ tay; bạn có thể đổi nội dung trong script.js (hàm vẽ màn hình họp) hoặc thay bằng ảnh chụp màn hình thật.",
-      "Ba laptop trên bàn là placeholder có thể thay bằng model 3D riêng nếu cần mức chi tiết cao hơn."
+      "Mô hình tái hiện cuộc họp giao ban trực tuyến của các tòa soạn trong thời kỳ COVID-19. Trong thời điểm giãn cách xã hội, các tòa soạn buộc phải chuyển đổi các cuộc họp giao ban sang hình thức trực tuyến. Sự thay đổi này đã giúp các tòa soạn thích nghi với tình hình dịch bệnh chuyển biến phức tạp, nhờ đó không gián đoạn hoạt động đưa tin tức đến công chúng."
     ]
   }
 };
@@ -150,7 +148,6 @@ const WALK_COLLIDERS = [
   { minX: -1.05, maxX: 1.05, minZ: 2.5, maxZ: 4.55 },
   { minX: -5.9, maxX: -4.78, minZ: -2.52, maxZ: -1.32 },
   { minX: 4.78, maxX: 5.9, minZ: -2.52, maxZ: -1.32 },
-  { minX: 6.22, maxX: 7.52, minZ: 2.28, maxZ: 3.58 },
   { minX: -7.6, maxX: -6.05, minZ: 2.25, maxZ: 3.62 },
   { minX: -8.6, maxX: 8.6, minZ: -8.85, maxZ: -7.55 }
 ];
@@ -775,6 +772,42 @@ function drawPaintingGold() {
   ctx.fillText("Ánh giấy — Lưu dấu", W / 2, H - 22);
 }
 
+async function drawPaintingPhoto(canvasId, imageSrc) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas || !imageSrc) return false;
+  const ctx = canvas.getContext("2d");
+  const img = new Image();
+  img.decoding = "async";
+  img.src = imageSrc;
+
+  try {
+    if (img.decode) {
+      await img.decode();
+    } else {
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+    }
+  } catch (_) {
+    return false;
+  }
+
+  const W = canvas.width;
+  const H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = "#111111";
+  ctx.fillRect(0, 0, W, H);
+
+  const scale = Math.max(W / img.naturalWidth, H / img.naturalHeight);
+  const drawW = img.naturalWidth * scale;
+  const drawH = img.naturalHeight * scale;
+  const dx = (W - drawW) / 2;
+  const dy = (H - drawH) / 2;
+  ctx.drawImage(img, dx, dy, drawW, drawH);
+  return true;
+}
+
 function drawMeetScreenCanvas() {
   const canvas = document.getElementById("meetScreenCanvas");
   if (!canvas) return;
@@ -866,15 +899,24 @@ function drawMeetScreenCanvas() {
   });
 }
 
-function initCanvasTextures() {
+async function initCanvasTextures() {
   drawTimelineCanvas();
   drawArchiveCanvas();
-  drawPaintingDawn();
-  drawPaintingNight();
-  drawPaintingEmber();
-  drawPaintingEcho();
-  drawPaintingGold();
   drawMeetScreenCanvas();
+
+  const results = await Promise.all([
+    drawPaintingPhoto("paintingDawnCanvas", "./painting-1-san-sang-framed.jpg"),
+    drawPaintingPhoto("paintingEmberCanvas", "./painting-2-dan-than-framed.jpg"),
+    drawPaintingPhoto("paintingNightCanvas", "./painting-3-ket-noi-framed.jpg"),
+    drawPaintingPhoto("paintingEchoCanvas", "./painting-4-lan-xa-framed.jpg"),
+    drawPaintingPhoto("paintingGoldCanvas", "./painting-5-thich-nghi-framed.jpg")
+  ]);
+
+  if (!results[0]) drawPaintingDawn();
+  if (!results[1]) drawPaintingEmber();
+  if (!results[2]) drawPaintingNight();
+  if (!results[3]) drawPaintingEcho();
+  if (!results[4]) drawPaintingGold();
 }
 
 /* ════════════════════════════════════════
@@ -976,7 +1018,11 @@ function renderArtifact(key) {
   artifactTag.textContent      = item.tag;
   artifactTitle.textContent    = item.title;
   artifactSubtitle.textContent = item.subtitle;
-  artifactBody.innerHTML       = item.body.map(p => `<p>${p}</p>`).join("");
+  const bodyHtml = item.body.map(p => `<p>${p}</p>`).join("");
+  const imageHtml = item.image
+    ? `<figure class="artifact-figure"><img src="${item.image}" alt="${item.title}" loading="lazy"></figure>`
+    : "";
+  artifactBody.innerHTML       = bodyHtml + imageHtml;
   artifactPanel.classList.remove("overlay--hidden");
   markExplored(key);
 }
@@ -1332,7 +1378,7 @@ document.addEventListener("DOMContentLoaded", () => {
         await document.fonts.ready;
       }
     }
-    initCanvasTextures();
+    await initCanvasTextures();
   })();
 
   // Cursor ring
