@@ -944,3 +944,121 @@ body.is-mobile .app-shell {
     box-shadow: none;
   }
 }
+
+
+/* ─────────────────────────────────────────
+   GUIDE TOUR MODE
+───────────────────────────────────────── */
+.intro-splash__choices {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  animation: splash-content-in 1s .5s both;
+}
+
+.intro-splash__choices .intro-splash__enter {
+  animation: none;
+  max-width: min(100%, 430px);
+  justify-content: center;
+}
+
+.intro-splash__enter--guide {
+  background: rgba(215,156,77,.16);
+  border-color: rgba(244,215,163,.72);
+}
+
+.intro-splash__enter--free {
+  background: rgba(255,255,255,.045);
+  border-color: rgba(255,255,255,.24);
+}
+
+body.is-guide-mode .top-bar,
+body.is-guide-mode .intro-shell,
+body.is-guide-mode .intro-shell__toggle,
+body.is-guide-mode .help-panel,
+body.is-guide-mode .artifact-tooltip,
+body.is-guide-mode .cursor-ring {
+  display: none !important;
+}
+
+.guide-status {
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  z-index: 18;
+  width: min(420px, calc(100vw - 48px));
+  padding: 16px 18px;
+  border-radius: 10px;
+  pointer-events: none;
+}
+
+.guide-status strong,
+.guide-status span {
+  display: block;
+}
+
+.guide-status strong {
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.guide-status span {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.guide-complete {
+  position: fixed;
+  inset: 0;
+  z-index: 130;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(0,0,0,.48);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.guide-complete__card {
+  width: min(520px, calc(100vw - 32px));
+  border-radius: 14px;
+  padding: 28px;
+  text-align: center;
+}
+
+.guide-complete__card h2 {
+  margin: 0;
+  font-family: var(--font-splash-title);
+  font-size: clamp(2rem, 6vw, 3.4rem);
+  line-height: 1;
+}
+
+.guide-complete__card p:not(.eyebrow) {
+  color: var(--muted);
+  line-height: 1.65;
+  margin: 16px 0 22px;
+}
+
+@media (max-width: 720px) {
+  .intro-splash__choices {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .intro-splash__choices .intro-splash__enter {
+    width: 100%;
+    min-height: 52px;
+    padding-inline: 22px;
+  }
+
+  .guide-status {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    width: auto;
+  }
+}

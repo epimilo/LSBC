@@ -92,6 +92,15 @@ const artifactContent = {
       "Nghĩa là khi bạn sửa file báo gốc, phần triển lãm này tự động lấy đúng phiên bản mới nhất mà không cần viết lại giao diện."
     ]
   },
+  cityscape: {
+    tag: "Mô hình",
+    title: "Quy hoạch hệ thống báo chí",
+    subtitle: "Mô hình low-poly thể hiện cơ cấu tổ chức và quy hoạch hệ thống báo chí Việt Nam.",
+    body: [
+      "Tại Hội nghị báo chí toàn quốc tổng kết công tác năm 2020, triển khai nhiệm vụ năm 2021 ngày 31/12/2020, Phó trưởng Ban Tuyên giáo trung ương Lê Mạnh Hùng tổng kết: Sự cạnh tranh mạnh mẽ của truyền thông xã hội, cùng những khó khăn của kinh tế do ảnh hưởng của đại dịch COVID-19 đã khiến doanh thu của nhiều cơ quan báo chí giảm mạnh, nhất là đối với khối báo in. Do đó, cần triển khai quy hoạch hệ thống báo chí để giải quyết vấn đề kinh tế đồng thời nâng cao chất lượng nội dung phục vụ độc giả.",
+      "Thực hiện quy hoạch báo chí, trong năm 2020, cả nước giảm 71 cơ quan báo chí so với năm 2019. Tính đến thời điểm này, cả nước còn 779 cơ quan báo chí, trong đó có 72 cơ quan có giấy phép hoạt động phát thanh, truyền hình, 142 báo, 612 tạp chí, 25 cơ quan báo chí điện tử độc lập."
+    ]
+  },
   "hazmat-exhibit": {
     tag: "Trưng bày",
     title: "Trang phục bảo hộ",
@@ -121,6 +130,7 @@ const focusPoints = {
   "painting-gold": { x:  5.95, z: -1.55 },
   "painting-cluster": { x: 5.95, z: -1.55 },
   newspaper:       { x:  0,    z:  2.35 },
+  cityscape:       { x:  3.5,  z:  2.35 },
   "hazmat-exhibit":{ x: -6.05, z: -6.55 },
   "meeting-setup": { x:  0,    z: -3.85 }
 };
@@ -128,7 +138,7 @@ const focusPoints = {
 const TELEPORT_OFFSETS = { floor: 1.2, wall: 2.55, pedestal: 1.95 };
 const MAX_TELEPORT_STEP = 2.75;
 const ROOM_LIMITS = { x: 7.5, z: 8.55 };
-const TOTAL_ARTIFACTS = 10;
+const TOTAL_ARTIFACTS = 11;
 /** Bán kính “thân” người xem trên mặt phẳng XZ — dùng cho va chạm bàn phím */
 const PLAYER_RADIUS_XZ = 0.42;
 /** Hộp va chạm tĩnh (tọa độ thế giới, trục XZ) — bàn, bục, tường sau, v.v. */
@@ -136,6 +146,7 @@ const WALK_COLLIDERS = [
   { minX: -7.25, maxX: -4.85, minZ: -7.95, maxZ: -6.15 },
   { minX: -2.05, maxX: 2.05, minZ: -6.35, maxZ: -4.45 },
   { minX: -1.05, maxX: 1.05, minZ: 2.5, maxZ: 4.55 },
+  { minX: 2.58, maxX: 4.42, minZ: 2.72, maxZ: 4.24 },
   { minX: 4.55, maxX: 7.05, minZ: -6.15, maxZ: -4.25 },
   { minX: -7.6, maxX: -6.05, minZ: 2.25, maxZ: 3.62 },
   { minX: -8.6, maxX: 8.6, minZ: -8.85, maxZ: -7.55 }
@@ -166,6 +177,9 @@ const audioButton     = document.getElementById("audioButton");
 const sceneEl         = document.querySelector("a-scene");
 const introSplash     = document.getElementById("introSplash");
 const introEnterBtn   = document.getElementById("introEnterBtn");
+const guideTourBtn    = document.getElementById("guideTourBtn");
+const guideNarrationAudio = document.getElementById("guideNarrationAudio");
+const mainCamera      = document.getElementById("mainCamera");
 const cursorRing      = document.getElementById("cursorRing");
 const artifactTooltip = document.getElementById("artifactTooltip");
 const progressCount   = document.getElementById("progressCount");
@@ -177,12 +191,16 @@ const topBar          = document.querySelector(".top-bar");
 const topBarToggle    = document.getElementById("topBarToggle");
 const topBarToggleMark= document.getElementById("topBarToggleMark");
 let hasEnteredRoom = false;
+let guideModeActive = false;
+let guideTourRunning = false;
+let guideTourStarted = false;
 
 function isKeyboardWalkBlocked() {
   if (introSplash) {
     const dismissed = introSplash.style.display === "none" || introSplash.classList.contains("is-exiting");
     if (!dismissed) return true;
   }
+  if (guideModeActive) return true;
   if (isNewspaperOpen()) return true;
   const ae = document.activeElement;
   if (ae && (ae.tagName === "INPUT" || ae.tagName === "TEXTAREA" || ae.tagName === "SELECT" || ae.isContentEditable)) return true;
@@ -353,6 +371,22 @@ if (typeof AFRAME !== "undefined" && !AFRAME.components["keyboard-walk"]) {
 
 /* ── State ── */
 const audioState = { audioElement: null, enabled: true, started: false };
+const GUIDE_START = { x: 0, z: 8.48 };
+const GUIDE_DEFAULT_DWELL_MS = 8500;
+const GUIDE_MOVE_SPEED_UNITS_PER_SEC = 2.45;
+const GUIDE_MIN_MOVE_MS = 1800;
+const GUIDE_MAX_MOVE_MS = 4600;
+const GUIDE_TOUR_STOPS = [
+  { key: "intro", label: "Vị trí bắt đầu", x: 0, z: 8.48, lookAt: { x: 0, y: 1.85, z: 0 }, audio: "./audio/guide-01.mp3", fallbackMs: 14000, open: null },
+  { key: "newspaper", label: "Báo Việt Nam News", x: 0, z: 2.35, lookAt: { x: 0, y: 2.25, z: 3.35 }, audio: "./audio/guide-02.mp3", fallbackMs: 10000, open: "artifact" },
+  { key: "timeline", label: "Dòng thời gian đại dịch COVID tại Việt Nam", x: -4.95, z: 2.05, lookAt: { x: -6.83, y: 1.8, z: 3.02 }, audio: "./audio/guide-03.mp3", fallbackMs: 10000, open: "artifact" },
+  { key: "typewriter", label: "Sạp báo bị phong toả", x: 4.0, z: -2.8, lookAt: { x: 5.8, y: 1.8, z: -5.2 }, audio: "./audio/guide-04.mp3", fallbackMs: 10000, open: "artifact" },
+  { key: "hazmat-exhibit", label: "Mô hình đồ bảo hộ cá nhân phòng chống COVID-19", x: -6.05, z: -6.55, lookAt: { x: -6.05, y: 1.65, z: -7.05 }, audio: "./audio/guide-05.mp3", fallbackMs: 10000, open: "artifact" },
+  { key: "painting-cluster", label: "Tranh treo tường", x: 5.95, z: -1.55, lookAt: { x: 8.78, y: 2.1, z: -1.45 }, audio: "./audio/guide-06.mp3", fallbackMs: 10000, open: "artifact" },
+  { key: "meeting-setup", label: "Cuộc họp giao ban online", x: 0, z: -3.85, lookAt: { x: 0, y: 2.45, z: -8.76 }, audio: "./audio/guide-07.mp3", fallbackMs: 10000, open: "artifact" },
+  { key: "cityscape", label: "Quy hoạch hệ thống báo chí", x: 3.5, z: 2.35, lookAt: { x: 3.5, y: 2.1, z: 3.48 }, audio: "./audio/guide-08.mp3", fallbackMs: 10000, open: "artifact" },
+  { key: "outro", label: "Trở về điểm bắt đầu", x: 0, z: 8.48, lookAt: { x: 0, y: 1.85, z: 0 }, audio: "./audio/guide-09.mp3", fallbackMs: 14000, open: null }
+];
 const exploredSet = new Set();
 
 /* ════════════════════════════════════════
@@ -761,87 +795,6 @@ function drawPaintingGold() {
   ctx.fillText("Ánh giấy — Lưu dấu", W / 2, H - 22);
 }
 
-function drawNewspaperFallback() {
-  const canvas = document.getElementById("newspaperCanvas");
-  if (!canvas) return;
-  const ctx = canvas.getContext("2d");
-  const W = canvas.width, H = canvas.height;
-
-  /* Cream newspaper background */
-  ctx.fillStyle = "#f5eed8";
-  ctx.fillRect(0, 0, W, H);
-
-  /* Header band */
-  ctx.fillStyle = "#8b1a1a";
-  ctx.fillRect(0, 0, W, 68);
-  ctx.fillStyle = "#ffffff";
-  ctx.font = "bold 26px serif";
-  ctx.textAlign = "center";
-  ctx.fillText("VIỆT NAM NEWS", W / 2, 46);
-
-  /* Date sub-header */
-  ctx.fillStyle = "#333333";
-  ctx.font = "11px sans-serif";
-  ctx.fillText("Thứ Hai, 30 tháng 3 năm 2020  •  Số đặc biệt", W / 2, 88);
-
-  /* Divider */
-  ctx.strokeStyle = "#222222";
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.moveTo(20, 98);
-  ctx.lineTo(W - 20, 98);
-  ctx.stroke();
-
-  /* Headline */
-  ctx.fillStyle = "#111111";
-  ctx.font = "bold 17px serif";
-  ctx.textAlign = "left";
-  const lines = ["Dừng xuất bản một tờ báo", "in vì người nhiễm COVID-19"];
-  let y = 126;
-  for (const line of lines) {
-    ctx.fillText(line, 22, y);
-    y += 22;
-  }
-
-  /* Body text simulation */
-  ctx.font = "9px sans-serif";
-  ctx.fillStyle = "#444444";
-  y = 180;
-  for (let row = 0; row < 38; row++) {
-    const w = 22 + Math.random() * (W - 64);
-    ctx.fillRect(22, y, w, 2);
-    y += 11;
-  }
-
-  /* Side column line */
-  ctx.strokeStyle = "#aaaaaa";
-  ctx.lineWidth = 0.5;
-  ctx.beginPath();
-  ctx.moveTo(W * 0.62, 100);
-  ctx.lineTo(W * 0.62, H - 30);
-  ctx.stroke();
-
-  /* Side column text */
-  ctx.fillStyle = "#333333";
-  ctx.font = "bold 11px serif";
-  ctx.fillText("Kinh tế -", W * 0.65, 118);
-  ctx.fillText("Thị trường", W * 0.65, 133);
-
-  ctx.font = "8px sans-serif";
-  ctx.fillStyle = "#555555";
-  y = 152;
-  for (let row = 0; row < 14; row++) {
-    const w = 22 + Math.random() * (W * 0.32);
-    ctx.fillRect(W * 0.65, y, w, 1.5);
-    y += 10;
-  }
-
-  /* Border */
-  ctx.strokeStyle = "#888888";
-  ctx.lineWidth = 2;
-  ctx.strokeRect(1, 1, W - 2, H - 2);
-}
-
 async function drawPaintingPhoto(canvasId, imageSrc) {
   const canvas = document.getElementById(canvasId);
   if (!canvas || !imageSrc) return false;
@@ -976,8 +929,7 @@ async function initCanvasTextures() {
   drawArchiveCanvas();
   drawMeetScreenCanvas();
 
-  const [newspaperOk, ...paintingResults] = await Promise.all([
-    drawPaintingPhoto("newspaperCanvas", "./viet-nam-news-dung-xuat-ban-mot-to-bao-in-vi-nguoi-nhiem-covid-19.jpg"),
+  const paintingResults = await Promise.all([
     drawPaintingPhoto("paintingDawnCanvas", "./painting-1-san-sang-framed.jpg"),
     drawPaintingPhoto("paintingEmberCanvas", "./painting-2-dan-than-framed.jpg"),
     drawPaintingPhoto("paintingNightCanvas", "./painting-3-ket-noi-framed.jpg"),
@@ -985,9 +937,7 @@ async function initCanvasTextures() {
     drawPaintingPhoto("paintingGoldCanvas", "./painting-5-thich-nghi-framed.jpg")
   ]);
 
-  /* Force A-Frame to pick up the canvas texture after drawing.
-     A-Frame may have cached a blank canvas texture, so we need to
-     explicitly refresh it once the canvas has content. */
+  /* Ensure newspaper image texture is applied (uses <img> in a-assets, not canvas) */
   function refreshNewspaperTexture() {
     const el = document.getElementById("newspaperArtifact");
     if (!el) return false;
@@ -996,21 +946,14 @@ async function initCanvasTextures() {
       if (mesh.material.map) {
         mesh.material.map.needsUpdate = true;
       } else {
-        /* Material exists but has no texture map yet — force set src */
-        const canvas = document.getElementById("newspaperCanvas");
-        if (canvas) {
-          el.setAttribute("material", "src", "#newspaperCanvas");
-        }
+        el.setAttribute("material", "src", "#newspaperImage");
       }
       mesh.material.needsUpdate = true;
       return true;
     }
     return false;
   }
-
-  if (!newspaperOk) drawNewspaperFallback();
   if (!refreshNewspaperTexture()) {
-    /* Mesh not ready yet — retry when the entity loads */
     const el = document.getElementById("newspaperArtifact");
     if (el) {
       const tryRefresh = () => {
@@ -1022,7 +965,6 @@ async function initCanvasTextures() {
       el.addEventListener("loaded", tryRefresh);
       el.addEventListener("object3dset", tryRefresh);
     }
-    /* Safety net retries */
     setTimeout(refreshNewspaperTexture, 1500);
     setTimeout(refreshNewspaperTexture, 4000);
   }
@@ -1037,15 +979,17 @@ async function initCanvasTextures() {
 /* ════════════════════════════════════════
    INTRO SPLASH
 ════════════════════════════════════════ */
-function dismissSplash() {
+function dismissSplash(options = {}) {
   if (!introSplash) return;
+  const { showIntroToggle = true } = options;
   introSplash.classList.add("is-exiting");
   setTimeout(() => {
     introSplash.style.display = "none";
     introSplash.removeAttribute("aria-modal");
+    if (!showIntroToggle) return;
     // Start showing intro toggle after 5s
     setTimeout(() => {
-      if (introToggle) {
+      if (introToggle && !guideModeActive) {
         introToggle.hidden = false;
         updateIntroToggle();
       }
@@ -1197,6 +1141,62 @@ function animateCameraTo(x, z) {
   cameraRig.setAttribute("animation__move", `property: position; to: ${x} 1.6 ${z}; dur: 430; easing: easeInOutQuad`);
 }
 
+function getGuideMoveDuration(fromX, fromZ, toX, toZ) {
+  const distance = Math.hypot(toX - fromX, toZ - fromZ);
+  const raw = distance / GUIDE_MOVE_SPEED_UNITS_PER_SEC * 1000;
+  return Math.max(GUIDE_MIN_MOVE_MS, Math.min(GUIDE_MAX_MOVE_MS, Math.round(raw)));
+}
+
+function waitMs(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function waitForAFrameAnimation(el, name, fallbackMs) {
+  return new Promise(resolve => {
+    if (!el) { resolve(); return; }
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      el.removeEventListener("animationcomplete__" + name, finish);
+      resolve();
+    };
+    el.addEventListener("animationcomplete__" + name, finish);
+    setTimeout(finish, Math.max(120, fallbackMs + 180));
+  });
+}
+
+function computeCameraRotationFromLookAt(from, target) {
+  const dx = target.x - from.x;
+  const dy = (target.y || 1.65) - from.y;
+  const dz = target.z - from.z;
+  const horizontal = Math.max(0.0001, Math.hypot(dx, dz));
+  const yaw = AFRAME && AFRAME.THREE ? AFRAME.THREE.MathUtils.radToDeg(Math.atan2(-dx, -dz)) : 0;
+  const pitch = AFRAME && AFRAME.THREE ? AFRAME.THREE.MathUtils.radToDeg(Math.atan2(dy, horizontal)) : 0;
+  return { x: Math.max(-35, Math.min(18, pitch)), y: yaw, z: 0 };
+}
+
+function animateGuideCameraLookAt(stop, dur = 1200) {
+  if (!mainCamera || !cameraRig || !stop || !stop.lookAt) return Promise.resolve();
+  const from = {
+    x: cameraRig.object3D.position.x,
+    y: cameraRig.object3D.position.y,
+    z: cameraRig.object3D.position.z
+  };
+  const rot = computeCameraRotationFromLookAt(from, stop.lookAt);
+  mainCamera.setAttribute("animation__guide_look", `property: rotation; to: ${rot.x} ${rot.y} ${rot.z}; dur: ${dur}; easing: easeInOutQuad`);
+  return waitForAFrameAnimation(mainCamera, "guide_look", dur);
+}
+
+function animateGuideCameraTo(stop) {
+  if (!cameraRig || !stop) return Promise.resolve();
+  const current = cameraRig.object3D.position;
+  const dur = getGuideMoveDuration(current.x, current.z, stop.x, stop.z);
+  cameraRig.setAttribute("animation__guide_move", `property: position; to: ${stop.x} 1.6 ${stop.z}; dur: ${dur}; easing: easeInOutSine`);
+  void animateGuideCameraLookAt(stop, Math.min(dur, 1800));
+  return waitForAFrameAnimation(cameraRig, "guide_move", dur);
+}
+
 function focusArtifact(key) {
   const point = focusPoints[key];
   if (!point || !cameraRig) return;
@@ -1206,7 +1206,7 @@ function focusArtifact(key) {
 }
 
 function teleportToPoint(point) {
-  if (isNewspaperOpen() || !point || !cameraRig || !AFRAME.THREE) return;
+  if (guideModeActive || isNewspaperOpen() || !point || !cameraRig || !AFRAME.THREE) return;
   const current = cameraRig.object3D.position;
   const moveVector = new AFRAME.THREE.Vector3(point.x - current.x, 0, point.z - current.z);
   if (moveVector.lengthSq() < 0.01) return;
@@ -1405,6 +1405,160 @@ async function toggleAudio() {
 }
 
 /* ════════════════════════════════════════
+   GUIDE TOUR MODE
+════════════════════════════════════════ */
+function setGuideMode(active) {
+  guideModeActive = active;
+  document.body.classList.toggle("is-guide-mode", active);
+  hideTooltip();
+  if (helpPanel) helpPanel.hidden = true;
+  closeArtifact();
+  if (newspaperView && !newspaperView.classList.contains("overlay--hidden")) closeNewspaper();
+  if (introToggle) introToggle.hidden = active;
+  if (cameraRig) cameraRig.setAttribute("keyboard-walk", `speed: ${active ? 0 : 4.65}`);
+  if (mainCursor) mainCursor.setAttribute("raycaster", active ? "objects: .guide-disabled" : "objects: .clickable, .teleportable");
+  if (mainCamera) mainCamera.setAttribute("look-controls", `touchEnabled: ${active ? "false" : "true"}; mouseEnabled: ${active ? "false" : "true"}; magicWindowTrackingEnabled: ${(!active && hasEnteredRoom) ? "true" : "false"}`);
+}
+
+function prepareRoomEntry({ guide = false } = {}) {
+  hasEnteredRoom = true;
+  document.body.classList.remove("is-rotate-lock");
+  if (rotatePrompt) rotatePrompt.hidden = true;
+  if (isMobileDevice) showGyroPrompt();
+  dismissSplash({ showIntroToggle: !guide });
+  if (isMobileDevice && !needsIOSGyroPermission() && !guide) setGyroEnabled(true);
+}
+
+function updateGuideStatus(stopIndex, stop) {
+  let el = document.getElementById("guideStatus");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "guideStatus";
+    el.className = "guide-status glass";
+    el.setAttribute("aria-live", "polite");
+    document.body.appendChild(el);
+  }
+  const total = GUIDE_TOUR_STOPS.length;
+  el.innerHTML = `<p class="eyebrow">Tour tự động</p><strong>${stop.label}</strong><span>Điểm ${stopIndex + 1} / ${total}</span>`;
+  el.hidden = false;
+}
+
+function hideGuideStatus() {
+  const el = document.getElementById("guideStatus");
+  if (el) el.hidden = true;
+}
+
+function playGuideNarration(stop) {
+  return new Promise(resolve => {
+    const fallbackMs = stop.fallbackMs || GUIDE_DEFAULT_DWELL_MS;
+    if (!guideNarrationAudio || !stop.audio) {
+      setTimeout(resolve, fallbackMs);
+      return;
+    }
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      guideNarrationAudio.removeEventListener("ended", finish);
+      guideNarrationAudio.removeEventListener("error", onError);
+      clearTimeout(fallbackTimer);
+      resolve();
+    };
+    const onError = () => {
+      setTimeout(finish, fallbackMs);
+    };
+    const fallbackTimer = setTimeout(finish, fallbackMs + 1800);
+    guideNarrationAudio.pause();
+    guideNarrationAudio.currentTime = 0;
+    guideNarrationAudio.src = stop.audio;
+    guideNarrationAudio.volume = 0.95;
+    guideNarrationAudio.addEventListener("ended", finish, { once: true });
+    guideNarrationAudio.addEventListener("error", onError, { once: true });
+    guideNarrationAudio.play().catch(() => {
+      setTimeout(finish, fallbackMs);
+    });
+  });
+}
+
+function showGuideCompletionNotice() {
+  return new Promise(resolve => {
+    const notice = document.createElement("div");
+    notice.className = "guide-complete";
+    notice.setAttribute("role", "dialog");
+    notice.setAttribute("aria-modal", "true");
+    notice.innerHTML = `
+      <div class="guide-complete__card glass">
+        <p class="eyebrow">Hoàn tất tour dẫn đường</p>
+        <h2>Bạn có thể tự do tham quan</h2>
+        <p>Chế độ dẫn đường đã kết thúc. Bây giờ bạn có thể tự xoay nhìn, di chuyển và mở từng hiện vật như chế độ tham quan bình thường.</p>
+        <button type="button" class="button" id="guideCompleteBtn">Bắt đầu tham quan tự do</button>
+      </div>`;
+    document.body.appendChild(notice);
+    const close = () => {
+      notice.remove();
+      resolve();
+    };
+    const btn = notice.querySelector("#guideCompleteBtn");
+    if (btn) btn.addEventListener("click", close, { once: true });
+    setTimeout(close, 7000);
+  });
+}
+
+function openGuideStopPanel(stop) {
+  if (!stop || !stop.open) {
+    closeArtifact();
+    return;
+  }
+  if (stop.key === "newspaper") {
+    renderArtifact("newspaper");
+    return;
+  }
+  renderArtifact(stop.key);
+}
+
+async function runGuideTour() {
+  if (guideTourRunning) return;
+  guideTourRunning = true;
+  guideTourStarted = true;
+  setGuideMode(true);
+  if (audioState.audioElement) audioState.audioElement.pause();
+  if (cameraRig) cameraRig.object3D.position.set(GUIDE_START.x, 1.6, GUIDE_START.z);
+  await waitMs(250);
+  for (let i = 0; i < GUIDE_TOUR_STOPS.length; i++) {
+    if (!guideTourRunning) break;
+    const stop = GUIDE_TOUR_STOPS[i];
+    updateGuideStatus(i, stop);
+    await animateGuideCameraTo(stop);
+    await animateGuideCameraLookAt(stop, 900);
+    openGuideStopPanel(stop);
+    await playGuideNarration(stop);
+    closeArtifact();
+    await waitMs(450);
+  }
+  if (guideNarrationAudio) guideNarrationAudio.pause();
+  hideGuideStatus();
+  setGuideMode(false);
+  guideTourRunning = false;
+  if (introToggle) {
+    introToggle.hidden = false;
+    updateIntroToggle();
+  }
+  if (audioState.enabled) ensureAmbientAudioStarted();
+  await showGuideCompletionNotice();
+}
+
+async function startGuideExperience() {
+  prepareRoomEntry({ guide: true });
+  if (isMobileDevice) await enterFullscreenOnMobile();
+  setTimeout(runGuideTour, 780);
+}
+
+async function startFreeExperience() {
+  prepareRoomEntry({ guide: false });
+  if (isMobileDevice) await enterFullscreenOnMobile();
+}
+
+/* ════════════════════════════════════════
    ACTION HANDLER
 ════════════════════════════════════════ */
 function handleAction(action) {
@@ -1468,17 +1622,12 @@ document.addEventListener("DOMContentLoaded", () => {
   // Cursor ring
   initCursorRing();
 
-  // Intro splash dismiss
+  // Intro splash mode selection
   if (introEnterBtn) {
-    introEnterBtn.addEventListener("click", async () => {
-      hasEnteredRoom = true;
-      document.body.classList.remove("is-rotate-lock");
-      if (rotatePrompt) rotatePrompt.hidden = true;
-      if (isMobileDevice) showGyroPrompt();
-      if (isMobileDevice) await enterFullscreenOnMobile();
-      dismissSplash();
-      if (isMobileDevice && !needsIOSGyroPermission()) setGyroEnabled(true);
-    });
+    introEnterBtn.addEventListener("click", startFreeExperience);
+  }
+  if (guideTourBtn) {
+    guideTourBtn.addEventListener("click", startGuideExperience);
   }
 
   // Fullscreen listeners
@@ -1514,6 +1663,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     node.addEventListener("click", () => {
+      if (guideModeActive) return;
       if (!key) return;
       if (key === "newspaper") { openNewspaper(); return; }
       renderArtifact(key);
@@ -1523,6 +1673,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Teleportable surfaces use their own click events, with the shared mouse raycaster as fallback.
   document.querySelectorAll(".teleportable").forEach(node => {
     node.addEventListener("click", (event) => {
+      if (guideModeActive) return;
       const targetPoint = getTeleportIntersection(node, event);
       if (targetPoint) teleportToPoint(targetPoint);
     });
@@ -1536,6 +1687,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Journey dropdown
   if (journeySelect) {
     journeySelect.addEventListener("change", () => {
+      if (guideModeActive) return;
       const key = journeySelect.value;
       if (!key) return;
       focusArtifact(key);
@@ -1551,10 +1703,10 @@ document.addEventListener("DOMContentLoaded", () => {
     closeNewspaper();
   });
 
-  // Also close splash on Escape / Space
+  // Also enter free-tour mode from splash on Escape / Space / Enter
   document.addEventListener("keydown", (e) => {
     if ((e.key === "Escape" || e.key === " " || e.key === "Enter") && introSplash && !introSplash.classList.contains("is-exiting") && introSplash.style.display !== "none") {
-      dismissSplash();
+      startFreeExperience();
     }
   });
 
