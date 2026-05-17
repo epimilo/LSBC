@@ -1062,3 +1062,16 @@ body.is-guide-mode .cursor-ring {
     width: auto;
   }
 }
+
+/* Return to home button in intro shell */
+.hud__actions .button[data-action="return-home"] {
+  background: rgba(255,255,255,.12);
+  font-size: 0.82rem;
+  opacity: 0.85;
+  transition: opacity 180ms ease, background 180ms ease;
+}
+.hud__actions .button[data-action="return-home"]:hover,
+.hud__actions .button[data-action="return-home"]:focus-visible {
+  background: rgba(255,255,255,.22);
+  opacity: 1;
+}

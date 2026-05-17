@@ -178,6 +178,7 @@ const sceneEl         = document.querySelector("a-scene");
 const introSplash     = document.getElementById("introSplash");
 const introEnterBtn   = document.getElementById("introEnterBtn");
 const guideTourBtn    = document.getElementById("guideTourBtn");
+const returnHomeBtn   = document.getElementById("returnHomeBtn");
 const guideNarrationAudio = document.getElementById("guideNarrationAudio");
 const mainCamera      = document.getElementById("mainCamera");
 const cursorRing      = document.getElementById("cursorRing");
@@ -377,21 +378,21 @@ const GUIDE_MOVE_SPEED_UNITS_PER_SEC = 2.45;
 const GUIDE_MIN_MOVE_MS = 1800;
 const GUIDE_MAX_MOVE_MS = 4600;
 const GUIDE_TOUR_STOPS = [
-  { key: "intro", label: "Vị trí bắt đầu", x: 0, z: 7.0, lookAt: { x: 0, y: 1.85, z: 0 }, audio: "./audio/guide-01.mp3", fallbackMs: 14000, open: null },
-  { key: "newspaper", label: "Báo Việt Nam News", x: 0, z: 1.0, lookAt: { x: 0, y: 2.25, z: 3.35 }, audio: "./audio/guide-02.mp3", fallbackMs: 10000, open: "artifact" },
-  { key: "timeline", label: "Dòng thời gian đại dịch COVID tại Việt Nam", x: -4.0, z: 1.0, lookAt: { x: -6.83, y: 1.8, z: 3.02 }, audio: "./audio/guide-03.mp3", fallbackMs: 10000, open: "artifact" },
-  { key: "painting-cluster", label: "Tranh treo tường", x: 4.0, z: -1.55, lookAt: { x: 8.78, y: 2.1, z: -1.45 }, audio: "./audio/guide-04.mp3", fallbackMs: 10000, open: "painting-tour", subStops: [
+  { key: "intro", label: "Vị trí bắt đầu", x: 0, z: 7.0, lookAt: { x: 0, y: 1.85, z: 0 }, audio: "./audio/guide-01.mp3", fallbackMs: 30000, open: null },
+  { key: "newspaper", label: "Báo Việt Nam News", x: 0, z: 1.0, lookAt: { x: 0, y: 2.25, z: 3.35 }, audio: "./audio/guide-02.mp3", fallbackMs: 41000, open: "newspaper-overlay" },
+  { key: "timeline", label: "Dòng thời gian đại dịch COVID tại Việt Nam", x: -4.0, z: 1.0, lookAt: { x: -6.83, y: 1.8, z: 3.02 }, audio: "./audio/guide-03.mp3", fallbackMs: 24000, open: "artifact" },
+  { key: "painting-cluster", label: "Tranh treo tường", x: 4.0, z: -1.55, lookAt: { x: 8.78, y: 2.1, z: -1.45 }, audio: "./audio/guide-04.mp3", fallbackMs: 17000, open: "painting-tour", subStops: [
     { key: "painting-gold",    label: "Thích nghi", lookAt: { x: 8.78, y: 1.42, z: 2.65 } },
     { key: "painting-ember",   label: "Dấn thân",  lookAt: { x: 8.78, y: 2.66, z: 0.95 } },
     { key: "painting-night",   label: "Kết nối",   lookAt: { x: 8.78, y: 2.1,  z: -1.45 } },
     { key: "painting-echo",    label: "Lăn xả",    lookAt: { x: 8.78, y: 1.42, z: -3.6 } },
     { key: "painting-dawn",    label: "Sẵn sàng",  lookAt: { x: 8.78, y: 2.66, z: -5.15 } }
   ] },
-  { key: "hazmat-exhibit", label: "Mô hình đồ bảo hộ cá nhân phòng chống COVID-19", x: -3.8, z: -5.2, lookAt: { x: -6.05, y: 1.65, z: -7.05 }, audio: "./audio/guide-05.mp3", fallbackMs: 10000, open: "artifact" },
-  { key: "meeting-setup", label: "Cuộc họp giao ban online", x: 0, z: -2.5, lookAt: { x: 0, y: 2.45, z: -8.76 }, audio: "./audio/guide-06.mp3", fallbackMs: 10000, open: "artifact" },
-  { key: "typewriter", label: "Sạp báo bị phong toả", x: 2.8, z: -2.8, lookAt: { x: 5.8, y: 1.8, z: -5.2 }, audio: "./audio/guide-07.mp3", fallbackMs: 10000, open: "artifact" },
-  { key: "cityscape", label: "Quy hoạch hệ thống báo chí", x: 1.2, z: 1.0, lookAt: { x: 3.5, y: 2.1, z: 3.48 }, audio: "./audio/guide-08.mp3", fallbackMs: 10000, open: "artifact" },
-  { key: "outro", label: "Trở về điểm bắt đầu", x: 0, z: 7.0, lookAt: { x: 0, y: 1.85, z: 0 }, audio: "./audio/guide-09.mp3", fallbackMs: 14000, open: null }
+  { key: "hazmat-exhibit", label: "Mô hình đồ bảo hộ cá nhân phòng chống COVID-19", x: -3.8, z: -5.2, lookAt: { x: -6.05, y: 1.65, z: -7.05 }, audio: "./audio/guide-05.mp3", fallbackMs: 20000, open: "artifact" },
+  { key: "meeting-setup", label: "Cuộc họp giao ban online", x: 0, z: -2.5, lookAt: { x: 0, y: 2.45, z: -8.76 }, audio: "./audio/guide-06.mp3", fallbackMs: 25000, open: "artifact" },
+  { key: "typewriter", label: "Sạp báo bị phong toả", x: 2.8, z: -2.8, lookAt: { x: 5.8, y: 1.8, z: -5.2 }, audio: "./audio/guide-07.mp3", fallbackMs: 34000, open: "artifact" },
+  { key: "cityscape", label: "Quy hoạch hệ thống báo chí", x: 1.2, z: 1.0, lookAt: { x: 3.5, y: 2.1, z: 3.48 }, audio: "./audio/guide-08.mp3", fallbackMs: 50000, open: "artifact" },
+  { key: "outro", label: "Trở về điểm bắt đầu", x: 0, z: 7.0, lookAt: { x: 0, y: 1.85, z: 0 }, audio: "./audio/guide-09.mp3", fallbackMs: 12000, open: null }
 ];
 const exploredSet = new Set();
 
@@ -1504,9 +1505,8 @@ function hideGuideStatus() {
 
 function playGuideNarration(stop) {
   return new Promise(resolve => {
-    const fallbackMs = stop.fallbackMs || GUIDE_DEFAULT_DWELL_MS;
     if (!guideNarrationAudio || !stop.audio) {
-      setTimeout(resolve, fallbackMs);
+      setTimeout(resolve, GUIDE_DEFAULT_DWELL_MS);
       return;
     }
     let done = false;
@@ -1516,11 +1516,12 @@ function playGuideNarration(stop) {
       guideNarrationAudio.removeEventListener("ended", finish);
       guideNarrationAudio.removeEventListener("error", onError);
       guideNarrationAudio.removeEventListener("loadedmetadata", onMeta);
-      clearTimeout(fallbackTimer);
+      clearTimeout(errorTimer);
       resolve();
     };
     const onError = () => {
-      setTimeout(finish, fallbackMs);
+      /* On error, wait a reasonable time then move on */
+      setTimeout(finish, stop.fallbackMs || GUIDE_DEFAULT_DWELL_MS);
     };
     const onMeta = () => {
       /* Store the real audio duration for sub-tour timing */
@@ -1528,7 +1529,11 @@ function playGuideNarration(stop) {
         stop._actualAudioMs = guideNarrationAudio.duration * 1000;
       }
     };
-    const fallbackTimer = setTimeout(finish, fallbackMs + 1800);
+    /* Safety timeout: only fires if neither "ended" nor "error" fires
+       (e.g. browser stalled). Set generously — 3× fallback or 5 min max —
+       so it never cuts a playing narration short. */
+    const safetyMs = Math.min(300000, (stop.fallbackMs || GUIDE_DEFAULT_DWELL_MS) * 3);
+    const errorTimer = setTimeout(finish, safetyMs);
     guideNarrationAudio.pause();
     guideNarrationAudio.currentTime = 0;
     guideNarrationAudio.src = stop.audio;
@@ -1537,7 +1542,8 @@ function playGuideNarration(stop) {
     guideNarrationAudio.addEventListener("ended", finish, { once: true });
     guideNarrationAudio.addEventListener("error", onError, { once: true });
     guideNarrationAudio.play().catch(() => {
-      setTimeout(finish, fallbackMs);
+      /* If autoplay is blocked, fall back to a fixed wait */
+      setTimeout(finish, stop.fallbackMs || GUIDE_DEFAULT_DWELL_MS);
     });
   });
 }
@@ -1572,7 +1578,10 @@ function openGuideStopPanel(stop) {
     return;
   }
   if (stop.key === "newspaper") {
-    renderArtifact("newspaper");
+    /* Show the newspaper overlay instead of the small artifact panel,
+       because the camera is positioned above the newspaper stand and
+       the viewer cannot see it properly from the 3D scene. */
+    openNewspaper();
     return;
   }
   renderArtifact(stop.key);
@@ -1592,21 +1601,23 @@ function animateGuideCameraPanTo(lookAtTarget, dur = 1200) {
 }
 
 /** Run the painting sub-tour: pan left→right across 5 paintings while audio plays */
-async function runPaintingSubTour(stop, stopIndex) {
+async function runPaintingSubTourWithNarration(stop, stopIndex, narrationDone) {
   const subStops = stop.subStops;
-  if (!subStops || subStops.length === 0) return;
+  if (!subStops || subStops.length === 0) {
+    await narrationDone;
+    return;
+  }
 
-  /* Start narration immediately */
-  const narrationDone = playGuideNarration(stop);
-
-  /* Initial look at center painting */
+  /* Narration is already playing — look at center painting */
   await animateGuideCameraLookAt(stop, 900);
 
   /* Open the center painting panel briefly */
   renderArtifact("painting-night");
   await waitMs(1200);
 
-  /* Calculate per-painting dwell: total audio minus intro time, divided by 5 */
+  /* Calculate per-painting dwell: total audio minus intro time, divided by 5.
+     Use the actual audio duration if available (set by playGuideNarration's
+     loadedmetadata handler), otherwise fall back to a generous estimate. */
   const audioDuration = stop._actualAudioMs || (stop.fallbackMs || GUIDE_DEFAULT_DWELL_MS);
   const introTime = 2100;
   const panDuration = 900;
@@ -1631,7 +1642,7 @@ async function runPaintingSubTour(stop, stopIndex) {
   }
 
   closeArtifact();
-  /* Wait for narration to finish if it's still playing */
+  /* Wait for narration to finish if it's still playing — never cut it short */
   await narrationDone;
 }
 
@@ -1640,25 +1651,47 @@ async function runGuideTour() {
   guideTourRunning = true;
   guideTourStarted = true;
   setGuideMode(true);
-  if (audioState.audioElement) audioState.audioElement.pause();
+  /* Mute ambient background music during guided tour so narration is clear */
+  if (audioState.audioElement) {
+    audioState.audioElement.pause();
+    audioState.audioElement.volume = 0;
+  }
   if (cameraRig) cameraRig.object3D.position.set(GUIDE_START.x, 1.6, GUIDE_START.z);
   await waitMs(250);
   for (let i = 0; i < GUIDE_TOUR_STOPS.length; i++) {
     if (!guideTourRunning) break;
     const stop = GUIDE_TOUR_STOPS[i];
     updateGuideStatus(i, stop);
+
+    /* Start narration FIRST so audio begins loading/playing during
+       the camera transition.  This eliminates the "silent gap" caused
+       by leading silence in the audio files — by the time the camera
+       arrives at the object the narrator is already speaking. */
+    const narrationDone = playGuideNarration(stop);
+
+    /* Move camera to the stop while narration is already playing */
     await animateGuideCameraTo(stop);
     await animateGuideCameraLookAt(stop, 900);
 
     /* Check if this is a painting-tour stop with sub-stops */
     if (stop.open === "painting-tour" && stop.subStops && stop.subStops.length > 0) {
-      await runPaintingSubTour(stop, i);
+      /* Painting sub-tour manages its own timing relative to audio.
+         We already started narration above, so pass the promise. */
+      await runPaintingSubTourWithNarration(stop, i, narrationDone);
     } else {
+      /* Open the info panel / overlay now that the camera has arrived */
       openGuideStopPanel(stop);
-      await playGuideNarration(stop);
-      closeArtifact();
+      /* Wait for the full narration to finish — never cut it short */
+      await narrationDone;
+      /* Close whichever panel is open — artifact or newspaper overlay */
+      if (stop.key === "newspaper") {
+        closeNewspaper();
+      } else {
+        closeArtifact();
+      }
     }
-    await waitMs(450);
+    /* Brief pause before moving to the next stop */
+    await waitMs(600);
   }
   if (guideNarrationAudio) guideNarrationAudio.pause();
   hideGuideStatus();
@@ -1668,7 +1701,11 @@ async function runGuideTour() {
     introToggle.hidden = false;
     updateIntroToggle();
   }
-  if (audioState.enabled) ensureAmbientAudioStarted();
+  /* Restore ambient audio now that the guided tour is over */
+  if (audioState.enabled && audioState.audioElement) {
+    audioState.audioElement.volume = 0.11;
+    ensureAmbientAudioStarted();
+  }
   await showGuideCompletionNotice();
 }
 
@@ -1686,6 +1723,41 @@ async function startFreeExperience() {
 /* ════════════════════════════════════════
    ACTION HANDLER
 ════════════════════════════════════════ */
+/* Return to the intro splash screen (home) from free exploration mode */
+function returnToHome() {
+  /* If a guide tour is running, stop it first */
+  if (guideTourRunning) {
+    guideTourRunning = false;
+    if (guideNarrationAudio) guideNarrationAudio.pause();
+    setGuideMode(false);
+    hideGuideStatus();
+  }
+  /* Close any open panels */
+  closeArtifact();
+  if (newspaperView && !newspaperView.classList.contains("overlay--hidden")) closeNewspaper();
+  if (helpPanel) helpPanel.hidden = true;
+  /* Restore ambient audio volume if it was muted during guide mode */
+  if (audioState.audioElement) {
+    audioState.audioElement.volume = 0.11;
+    if (audioState.enabled && audioState.started) {
+      audioState.audioElement.play().catch(() => {});
+    }
+  }
+  /* Hide the intro shell toggle while splash is visible */
+  if (introToggle) introToggle.hidden = true;
+  /* Show the intro splash again */
+  if (introSplash) {
+    introSplash.classList.remove("is-exiting");
+    introSplash.style.display = "";
+    introSplash.style.visibility = "visible";
+    introSplash.style.pointerEvents = "";
+    introSplash.setAttribute("aria-modal", "true");
+  }
+  /* Reset room entry state so re-entering works correctly */
+  hasEnteredRoom = false;
+  guideTourStarted = false;
+}
+
 function handleAction(action) {
   if (action === "close-panel")      closeArtifact();
   if (action === "toggle-help")      helpPanel.hidden = !helpPanel.hidden;
@@ -1693,6 +1765,7 @@ function handleAction(action) {
   if (action === "close-newspaper")  closeNewspaper();
   if (action === "reload-newspaper") reloadNewspaper();
   if (action === "toggle-audio")     toggleAudio();
+  if (action === "return-home")      returnToHome();
   if (action === "toggle-topbar" && topBar) {
     topBar.classList.toggle("is-collapsed");
     updateTopBarToggle();
