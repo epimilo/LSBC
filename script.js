@@ -123,12 +123,12 @@ const focusPoints = {
   timeline:        { x: -4.95, z: 2.05 },
   archive:         { x:  4.95, z: 2.05 },
   typewriter:      { x:  4.0,  z: -2.8 },
-  "painting-dawn": { x:  5.95, z: -1.55 },
-  "painting-ember":{ x:  5.95, z: -1.55 },
-  "painting-night":{ x:  5.95, z: -1.55 },
-  "painting-echo": { x:  5.95, z: -1.55 },
-  "painting-gold": { x:  5.95, z: -1.55 },
-  "painting-cluster": { x: 5.95, z: -1.55 },
+  "painting-dawn": { x:  2.5,  z: -1.32 },
+  "painting-ember":{ x:  2.5,  z: -1.32 },
+  "painting-night":{ x:  2.5,  z: -1.32 },
+  "painting-echo": { x:  2.5,  z: -1.32 },
+  "painting-gold": { x:  2.5,  z: -1.32 },
+  "painting-cluster": { x: 2.5, z: -1.32 },
   newspaper:       { x:  0,    z:  2.35 },
   cityscape:       { x:  3.5,  z:  2.35 },
   "hazmat-exhibit":{ x: -6.05, z: -6.55 },
@@ -381,7 +381,7 @@ const GUIDE_TOUR_STOPS = [
   { key: "intro", label: "Vị trí bắt đầu", x: 0, z: 7.0, lookAt: { x: 0, y: 1.85, z: 0 }, audio: "./audio/guide-01.mp3", fallbackMs: 30000, open: null },
   { key: "newspaper", label: "Báo Việt Nam News", x: 0, z: 1.0, lookAt: { x: 0, y: 2.25, z: 3.35 }, audio: "./audio/guide-02.mp3", fallbackMs: 41000, open: "newspaper-overlay" },
   { key: "timeline", label: "Dòng thời gian đại dịch COVID tại Việt Nam", x: -4.0, z: 1.0, lookAt: { x: -6.83, y: 1.8, z: 3.02 }, audio: "./audio/guide-03.mp3", fallbackMs: 24000, open: "artifact" },
-  { key: "painting-cluster", label: "Tranh treo tường", x: 4.0, z: -1.55, lookAt: { x: 8.78, y: 2.1, z: -1.45 }, audio: "./audio/guide-04.mp3", fallbackMs: 17000, open: "painting-tour", subStops: [
+  { key: "painting-cluster", label: "Tranh treo tường", x: 2.5, z: -1.32, lookAt: { x: 8.78, y: 2.05, z: -1.32 }, audio: "./audio/guide-04.mp3", fallbackMs: 17000, open: "painting-tour", subStops: [
     { key: "painting-gold",    label: "Thích nghi", lookAt: { x: 8.78, y: 1.42, z: 2.65 } },
     { key: "painting-ember",   label: "Dấn thân",  lookAt: { x: 8.78, y: 2.66, z: 0.95 } },
     { key: "painting-night",   label: "Kết nối",   lookAt: { x: 8.78, y: 2.1,  z: -1.45 } },
@@ -1701,11 +1701,11 @@ async function runGuideTour() {
     introToggle.hidden = false;
     updateIntroToggle();
   }
-  /* Restore ambient audio now that the guided tour is over */
-  if (audioState.enabled && audioState.audioElement) {
+  /* Restore ambient background music now that the guided tour is over */
+  if (audioState.audioElement) {
     audioState.audioElement.volume = 0.11;
-    ensureAmbientAudioStarted();
   }
+  ensureAmbientAudioStarted();
   await showGuideCompletionNotice();
 }
 
@@ -1718,6 +1718,8 @@ async function startGuideExperience() {
 async function startFreeExperience() {
   prepareRoomEntry({ guide: false });
   if (isMobileDevice) await enterFullscreenOnMobile();
+  /* Start ambient background music in free exploration mode */
+  ensureAmbientAudioStarted();
 }
 
 /* ════════════════════════════════════════
@@ -1736,12 +1738,9 @@ function returnToHome() {
   closeArtifact();
   if (newspaperView && !newspaperView.classList.contains("overlay--hidden")) closeNewspaper();
   if (helpPanel) helpPanel.hidden = true;
-  /* Restore ambient audio volume if it was muted during guide mode */
-  if (audioState.audioElement) {
-    audioState.audioElement.volume = 0.11;
-    if (audioState.enabled && audioState.started) {
-      audioState.audioElement.play().catch(() => {});
-    }
+  /* Pause ambient audio while on the intro splash screen */
+  if (audioState.audioElement && !audioState.audioElement.paused) {
+    audioState.audioElement.pause();
   }
   /* Hide the intro shell toggle while splash is visible */
   if (introToggle) introToggle.hidden = true;
