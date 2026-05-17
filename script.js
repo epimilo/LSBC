@@ -377,15 +377,21 @@ const GUIDE_MOVE_SPEED_UNITS_PER_SEC = 2.45;
 const GUIDE_MIN_MOVE_MS = 1800;
 const GUIDE_MAX_MOVE_MS = 4600;
 const GUIDE_TOUR_STOPS = [
-  { key: "intro", label: "Vị trí bắt đầu", x: 0, z: 8.48, lookAt: { x: 0, y: 1.85, z: 0 }, audio: "./audio/guide-01.mp3", fallbackMs: 14000, open: null },
-  { key: "newspaper", label: "Báo Việt Nam News", x: 0, z: 2.35, lookAt: { x: 0, y: 2.25, z: 3.35 }, audio: "./audio/guide-02.mp3", fallbackMs: 10000, open: "artifact" },
-  { key: "timeline", label: "Dòng thời gian đại dịch COVID tại Việt Nam", x: -4.95, z: 2.05, lookAt: { x: -6.83, y: 1.8, z: 3.02 }, audio: "./audio/guide-03.mp3", fallbackMs: 10000, open: "artifact" },
-  { key: "typewriter", label: "Sạp báo bị phong toả", x: 4.0, z: -2.8, lookAt: { x: 5.8, y: 1.8, z: -5.2 }, audio: "./audio/guide-04.mp3", fallbackMs: 10000, open: "artifact" },
-  { key: "hazmat-exhibit", label: "Mô hình đồ bảo hộ cá nhân phòng chống COVID-19", x: -6.05, z: -6.55, lookAt: { x: -6.05, y: 1.65, z: -7.05 }, audio: "./audio/guide-05.mp3", fallbackMs: 10000, open: "artifact" },
-  { key: "painting-cluster", label: "Tranh treo tường", x: 5.95, z: -1.55, lookAt: { x: 8.78, y: 2.1, z: -1.45 }, audio: "./audio/guide-06.mp3", fallbackMs: 10000, open: "artifact" },
-  { key: "meeting-setup", label: "Cuộc họp giao ban online", x: 0, z: -3.85, lookAt: { x: 0, y: 2.45, z: -8.76 }, audio: "./audio/guide-07.mp3", fallbackMs: 10000, open: "artifact" },
-  { key: "cityscape", label: "Quy hoạch hệ thống báo chí", x: 3.5, z: 2.35, lookAt: { x: 3.5, y: 2.1, z: 3.48 }, audio: "./audio/guide-08.mp3", fallbackMs: 10000, open: "artifact" },
-  { key: "outro", label: "Trở về điểm bắt đầu", x: 0, z: 8.48, lookAt: { x: 0, y: 1.85, z: 0 }, audio: "./audio/guide-09.mp3", fallbackMs: 14000, open: null }
+  { key: "intro", label: "Vị trí bắt đầu", x: 0, z: 7.0, lookAt: { x: 0, y: 1.85, z: 0 }, audio: "./audio/guide-01.mp3", fallbackMs: 14000, open: null },
+  { key: "newspaper", label: "Báo Việt Nam News", x: 0, z: 1.0, lookAt: { x: 0, y: 2.25, z: 3.35 }, audio: "./audio/guide-02.mp3", fallbackMs: 10000, open: "artifact" },
+  { key: "timeline", label: "Dòng thời gian đại dịch COVID tại Việt Nam", x: -4.0, z: 1.0, lookAt: { x: -6.83, y: 1.8, z: 3.02 }, audio: "./audio/guide-03.mp3", fallbackMs: 10000, open: "artifact" },
+  { key: "painting-cluster", label: "Tranh treo tường", x: 4.0, z: -1.55, lookAt: { x: 8.78, y: 2.1, z: -1.45 }, audio: "./audio/guide-04.mp3", fallbackMs: 10000, open: "painting-tour", subStops: [
+    { key: "painting-gold",    label: "Thích nghi", lookAt: { x: 8.78, y: 1.42, z: 2.65 } },
+    { key: "painting-ember",   label: "Dấn thân",  lookAt: { x: 8.78, y: 2.66, z: 0.95 } },
+    { key: "painting-night",   label: "Kết nối",   lookAt: { x: 8.78, y: 2.1,  z: -1.45 } },
+    { key: "painting-echo",    label: "Lăn xả",    lookAt: { x: 8.78, y: 1.42, z: -3.6 } },
+    { key: "painting-dawn",    label: "Sẵn sàng",  lookAt: { x: 8.78, y: 2.66, z: -5.15 } }
+  ] },
+  { key: "hazmat-exhibit", label: "Mô hình đồ bảo hộ cá nhân phòng chống COVID-19", x: -3.8, z: -5.2, lookAt: { x: -6.05, y: 1.65, z: -7.05 }, audio: "./audio/guide-05.mp3", fallbackMs: 10000, open: "artifact" },
+  { key: "meeting-setup", label: "Cuộc họp giao ban online", x: 0, z: -2.5, lookAt: { x: 0, y: 2.45, z: -8.76 }, audio: "./audio/guide-06.mp3", fallbackMs: 10000, open: "artifact" },
+  { key: "typewriter", label: "Sạp báo bị phong toả", x: 2.8, z: -2.8, lookAt: { x: 5.8, y: 1.8, z: -5.2 }, audio: "./audio/guide-07.mp3", fallbackMs: 10000, open: "artifact" },
+  { key: "cityscape", label: "Quy hoạch hệ thống báo chí", x: 1.2, z: 1.0, lookAt: { x: 3.5, y: 2.1, z: 3.48 }, audio: "./audio/guide-08.mp3", fallbackMs: 10000, open: "artifact" },
+  { key: "outro", label: "Trở về điểm bắt đầu", x: 0, z: 7.0, lookAt: { x: 0, y: 1.85, z: 0 }, audio: "./audio/guide-09.mp3", fallbackMs: 14000, open: null }
 ];
 const exploredSet = new Set();
 
@@ -1461,17 +1467,25 @@ function playGuideNarration(stop) {
       done = true;
       guideNarrationAudio.removeEventListener("ended", finish);
       guideNarrationAudio.removeEventListener("error", onError);
+      guideNarrationAudio.removeEventListener("loadedmetadata", onMeta);
       clearTimeout(fallbackTimer);
       resolve();
     };
     const onError = () => {
       setTimeout(finish, fallbackMs);
     };
+    const onMeta = () => {
+      /* Store the real audio duration for sub-tour timing */
+      if (guideNarrationAudio.duration && isFinite(guideNarrationAudio.duration)) {
+        stop._actualAudioMs = guideNarrationAudio.duration * 1000;
+      }
+    };
     const fallbackTimer = setTimeout(finish, fallbackMs + 1800);
     guideNarrationAudio.pause();
     guideNarrationAudio.currentTime = 0;
     guideNarrationAudio.src = stop.audio;
     guideNarrationAudio.volume = 0.95;
+    guideNarrationAudio.addEventListener("loadedmetadata", onMeta, { once: true });
     guideNarrationAudio.addEventListener("ended", finish, { once: true });
     guideNarrationAudio.addEventListener("error", onError, { once: true });
     guideNarrationAudio.play().catch(() => {
@@ -1516,6 +1530,63 @@ function openGuideStopPanel(stop) {
   renderArtifact(stop.key);
 }
 
+/** Smoothly pan the camera to look at a new target from the current rig position */
+function animateGuideCameraPanTo(lookAtTarget, dur = 1200) {
+  if (!mainCamera || !cameraRig || !lookAtTarget) return Promise.resolve();
+  const from = {
+    x: cameraRig.object3D.position.x,
+    y: cameraRig.object3D.position.y,
+    z: cameraRig.object3D.position.z
+  };
+  const rot = computeCameraRotationFromLookAt(from, lookAtTarget);
+  mainCamera.setAttribute("animation__guide_look", `property: rotation; to: ${rot.x} ${rot.y} ${rot.z}; dur: ${dur}; easing: easeInOutQuad`);
+  return waitForAFrameAnimation(mainCamera, "guide_look", dur);
+}
+
+/** Run the painting sub-tour: pan left→right across 5 paintings while audio plays */
+async function runPaintingSubTour(stop, stopIndex) {
+  const subStops = stop.subStops;
+  if (!subStops || subStops.length === 0) return;
+
+  /* Start narration immediately */
+  const narrationDone = playGuideNarration(stop);
+
+  /* Initial look at center painting */
+  await animateGuideCameraLookAt(stop, 900);
+
+  /* Open the center painting panel briefly */
+  renderArtifact("painting-night");
+  await waitMs(1200);
+
+  /* Calculate per-painting dwell: total audio minus intro time, divided by 5 */
+  const audioDuration = stop._actualAudioMs || (stop.fallbackMs || GUIDE_DEFAULT_DWELL_MS);
+  const introTime = 2100;
+  const panDuration = 900;
+  const perPaintingDwell = Math.max(800, Math.round((audioDuration - introTime - panDuration * 6) / subStops.length));
+
+  /* Pan through each painting left→right */
+  for (let p = 0; p < subStops.length; p++) {
+    if (!guideTourRunning) break;
+    const sub = subStops[p];
+    closeArtifact();
+
+    /* Smooth pan to this painting */
+    await animateGuideCameraPanTo(sub.lookAt, panDuration);
+    await waitMs(200);
+
+    /* Open this painting's info panel */
+    renderArtifact(sub.key);
+    updateGuideStatus(stopIndex, { label: `${stop.label} — ${sub.label}`, key: stop.key });
+
+    /* Wait the dwell time for this painting */
+    await waitMs(perPaintingDwell);
+  }
+
+  closeArtifact();
+  /* Wait for narration to finish if it's still playing */
+  await narrationDone;
+}
+
 async function runGuideTour() {
   if (guideTourRunning) return;
   guideTourRunning = true;
@@ -1530,9 +1601,15 @@ async function runGuideTour() {
     updateGuideStatus(i, stop);
     await animateGuideCameraTo(stop);
     await animateGuideCameraLookAt(stop, 900);
-    openGuideStopPanel(stop);
-    await playGuideNarration(stop);
-    closeArtifact();
+
+    /* Check if this is a painting-tour stop with sub-stops */
+    if (stop.open === "painting-tour" && stop.subStops && stop.subStops.length > 0) {
+      await runPaintingSubTour(stop, i);
+    } else {
+      openGuideStopPanel(stop);
+      await playGuideNarration(stop);
+      closeArtifact();
+    }
     await waitMs(450);
   }
   if (guideNarrationAudio) guideNarrationAudio.pause();
