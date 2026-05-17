@@ -5,28 +5,19 @@
    - Hover glow + tooltip on all clickables
    - Visible cursor ring tracking mouse
    - Full-height artifact panel (slides from right)
-   - Progress counter "X / 7 đã khám phá"
+   - Progress counter "X / 9 đã khám phá"
    - Full Vietnamese text (có dấu)
 ════════════════════════════════════════════════════ */
 
 /* ── Artifact content (tiếng Việt đầy đủ) ── */
 const artifactContent = {
-  voice: {
-    tag: "Âm thanh",
-    title: "Máy nghe ghi âm",
-    subtitle: "Trạm nghe cho những đoạn phỏng vấn, lời dẫn, và lớp kể chuyện bằng giọng nói.",
-    body: [
-      "Vật phẩm này hợp để mở ra transcript, audio clip, hoặc một lớp hỏi âm ngắn giữa những đoạn trưng bày có nhiều văn bản.",
-      "Trong demo, nó đóng vai trò điểm dừng cho một mảnh ký ức được kể bằng giọng nói thay vì bằng hình ảnh hay bộ chữ dài."
-    ]
-  },
+
   typewriter: {
     tag: "Văn bản",
-    title: "Máy đánh chữ của biên tập viên",
+    title: "Sạp báo bị phong toả",
     subtitle: "Nơi kể về bản thảo, tiêu đề, và quá trình đưa một ý thành một bản tin.",
     body: [
-      "Đây là điểm hợp lý cho những đoạn mô tả bối cảnh: ai viết, ai sửa, bản nháp đầu tiên trông ra sao, và những chi tiết lao động thường bị bỏ qua.",
-      "Nếu cần mở rộng sau này, vật phẩm này có thể dẫn đến một trang riêng gồm bản thảo scan và phiên bản đã lên khuôn."
+      "Trong giai đoạn dịch COVID-19 bùng phát mạnh tại Việt Nam, việc áp dụng Chỉ thị 16 với các biện pháp giãn cách nghiêm ngặt đã khiến hoạt động vận chuyển và phát hành báo in bị đình trệ nghiêm trọng. Nhiều số báo không thể đến tay bạn đọc, dẫn đến tồn đọng trong suốt thời gian giãn cách. Sự gián đoạn này không chỉ ảnh hưởng đến các tòa soạn mà còn khiến nhiều tiểu thương kinh doanh báo giấy rơi vào khó khăn, buộc không ít sạp báo phải đóng cửa và không thể hoạt động trở lại sau đại dịch."
     ]
   },
   timeline: {
@@ -49,29 +40,81 @@ const artifactContent = {
   },
   "painting-dawn": {
     tag: "Tranh treo tường",
-    title: "Bức tranh số 1 — Bình minh",
-    subtitle: "Một khung tranh có thể dùng để treo ảnh, poster thiết kế, hoặc một minh họa mở đầu hành trình.",
+    title: "Sẵn sàng",
+    subtitle: "Nguồn: Báo Tuổi Trẻ",
     body: [
-      "Vật phẩm này hợp với ảnh chụp, minh họa, hoặc một trang scan đã được xử lý để treo như một tác phẩm mô phỏng trong phòng trưng bày.",
-      "Khi bạn có hình thật, chỉ cần thay texture hoặc đổi plane này thành một khung tranh theo đúng tỉ lệ của file thiết kế."
-    ]
+      "Nhà báo có mặt tại tâm dịch, sẵn sàng tiến vào khu vực cách ly đặc biệt, nơi những bệnh nhân COVID-19 đang điều trị, nhằm cung cấp thông tin, hình ảnh thực tế về tình hình dịch bệnh cho độc giả."
+    ],
+    image: "./painting-1-san-sang-framed.jpg"
+  },
+  "painting-ember": {
+    tag: "Tranh treo tường",
+    title: "Dấn thân",
+    subtitle: "Nguồn: Duy Hiệu (Phóng viên ảnh, tạp chí tri thức Znews)",
+    body: [
+      "Khoác lên mình những bộ đồ bảo hộ kín mít, các phóng viên, nhà báo không ngại nguy cơ lây nhiễm để có mặt tại các điểm nóng của đại dịch, họ dấn thân, dùng con chữ để giữ vững 'mặt trận' thông tin giữa thời điểm khủng hoảng."
+    ],
+    image: "./painting-2-dan-than-framed.jpg"
   },
   "painting-night": {
     tag: "Tranh treo tường",
-    title: "Bức tranh số 2 — Đêm khuya",
-    subtitle: "Điểm dừng bổ sung cho một lớp không khí, ký ức, hoặc một poster truyền thông cần quan sát riêng.",
+    title: "Kết nối",
+    subtitle: "Nguồn: Báo Kinh tế - Đô thị",
     body: [
-      "Đây là vị trí hợp để đặt một bức tranh đối ứng với bức thứ nhất, giúp phòng có nhiều lớp nhìn hơn và tăng tính triển lãm.",
-      "Về sau, bạn có thể đổi sang ảnh tòa soạn, ảnh nhân vật, hoặc một poster có text và họa tiết phục vụ mạch kể chuyện."
-    ]
+      "Cách thức phỏng vấn trong đại dịch cũng thay đổi đáng kể. Phóng viên phải giữ khoảng cách, mặc đồ bảo hộ và đối mặt với nguy cơ lây nhiễm cao. Dù vậy, họ vẫn đóng vai trò kết nối công chúng với những người ở tuyến đầu chống dịch, mang đến nguồn thông tin trực tiếp, đáng tin cậy và kịp thời."
+    ],
+    image: "./painting-3-ket-noi-framed.jpg"
+  },
+  "painting-echo": {
+    tag: "Tranh treo tường",
+    title: "Lăn xả",
+    subtitle: "Nguồn: Báo Tin tức Thông tấn Xã Việt Nam",
+    body: [
+      "Để đảm bảo thông tin đến với bạn đọc nhanh nhất, các phóng viên phải tranh thủ viết tin và gửi bài về tòa soạn ngay tại hiện trường. Trong điều kiện thiếu thốn, họ tận dụng không gian, dùng ghế làm bàn để soạn bản thảo, từ đó duy trì tốc độ và nhịp đưa tin giữa đại dịch."
+    ],
+    image: "./painting-4-lan-xa-framed.jpg"
+  },
+  "painting-gold": {
+    tag: "Tranh treo tường",
+    title: "Thích nghi",
+    subtitle: "Nguồn: Báo Tin tức Thông tấn Xã Việt Nam",
+    body: [
+      "Không chỉ trong hoạt động tác nghiệp ở hiện trường, các tòa soạn cũng cần chuẩn bị phương pháp ứng phó như 'tòa soạn dã chiến' trong trường hợp không thể đến tòa soạn làm việc. Đây là hình ảnh nhà riêng của một nhân viên báo Pháp luật TP Hồ Chí Minh được tận dụng làm 'tòa soạn dã chiến' trong thời gian tòa soạn chính phải phong tỏa do có nhân viên bị nhiễm COVID-19."
+    ],
+    image: "./painting-5-thich-nghi-framed.jpg"
   },
   newspaper: {
     tag: "Trang báo",
-    title: "Số báo giấy cuối cùng",
+    title: "Việt Nam News số 30/03/2020",
     subtitle: "Vật phẩm gần lối vào phòng, bấm vào để mở file báo HTML thật của bạn.",
     body: [
       "Khác với bản mock trước, hotspot này mở trực tiếp file to-bao-cuoi-cung.html được nhúng vào overlay toàn màn hình.",
       "Nghĩa là khi bạn sửa file báo gốc, phần triển lãm này tự động lấy đúng phiên bản mới nhất mà không cần viết lại giao diện."
+    ]
+  },
+  cityscape: {
+    tag: "Mô hình",
+    title: "Quy hoạch hệ thống báo chí",
+    subtitle: "Mô hình low-poly thể hiện cơ cấu tổ chức và quy hoạch hệ thống báo chí Việt Nam.",
+    body: [
+      "Tại Hội nghị báo chí toàn quốc tổng kết công tác năm 2020, triển khai nhiệm vụ năm 2021 ngày 31/12/2020, Phó trưởng Ban Tuyên giáo trung ương Lê Mạnh Hùng tổng kết: Sự cạnh tranh mạnh mẽ của truyền thông xã hội, cùng những khó khăn của kinh tế do ảnh hưởng của đại dịch COVID-19 đã khiến doanh thu của nhiều cơ quan báo chí giảm mạnh, nhất là đối với khối báo in. Do đó, cần triển khai quy hoạch hệ thống báo chí để giải quyết vấn đề kinh tế đồng thời nâng cao chất lượng nội dung phục vụ độc giả.",
+      "Thực hiện quy hoạch báo chí, trong năm 2020, cả nước giảm 71 cơ quan báo chí so với năm 2019. Tính đến thời điểm này, cả nước còn 779 cơ quan báo chí, trong đó có 72 cơ quan có giấy phép hoạt động phát thanh, truyền hình, 142 báo, 612 tạp chí, 25 cơ quan báo chí điện tử độc lập."
+    ]
+  },
+  "hazmat-exhibit": {
+    tag: "Trưng bày",
+    title: "Trang phục bảo hộ",
+    subtitle: "Tiểu cảnh tượng trưng cho nhân viên tuyến đầu hoặc ký ức thời dịch.",
+    body: [
+      "Khi tác nghiệp trong giai đoạn cao điểm dịch, phóng viên phải tuân thủ nghiêm ngặt các quy định về phòng chống dịch. Đặc biệt, với phóng viên tác nghiệp tại các khu vực như bệnh viện, sân bay, khu cách ly,... đồ bảo hộ là trang bị không thể thiếu."
+    ]
+  },
+  "meeting-setup": {
+    tag: "Trưng bày",
+    title: "Cuộc họp giao ban trực tuyến",
+    subtitle: "Bàn làm việc đối diện màn hình — gợi nhớ không khí họp báo, họp biên tập từ xa.",
+    body: [
+      "Mô hình tái hiện cuộc họp giao ban trực tuyến của các tòa soạn trong thời kỳ COVID-19. Trong thời điểm giãn cách xã hội, các tòa soạn buộc phải chuyển đổi các cuộc họp giao ban sang hình thức trực tuyến. Sự thay đổi này đã giúp các tòa soạn thích nghi với tình hình dịch bệnh chuyển biến phức tạp, nhờ đó không gián đoạn hoạt động đưa tin tức đến công chúng."
     ]
   }
 };
@@ -79,31 +122,33 @@ const artifactContent = {
 const focusPoints = {
   timeline:        { x: -4.95, z: 2.05 },
   archive:         { x:  4.95, z: 2.05 },
-  voice:           { x: -3.65, z: -1.05 },
-  typewriter:      { x:  3.65, z: -1.05 },
-  "painting-dawn": { x: -5.9,  z: -1.75 },
-  "painting-night":{ x:  5.95, z: -1.55 },
-  newspaper:       { x:  0,    z:  2.35 }
+  typewriter:      { x:  4.0,  z: -2.8 },
+  "painting-dawn": { x:  2.5,  z: -1.32 },
+  "painting-ember":{ x:  2.5,  z: -1.32 },
+  "painting-night":{ x:  2.5,  z: -1.32 },
+  "painting-echo": { x:  2.5,  z: -1.32 },
+  "painting-gold": { x:  2.5,  z: -1.32 },
+  "painting-cluster": { x: 2.5, z: -1.32 },
+  newspaper:       { x:  0,    z:  2.35 },
+  cityscape:       { x:  3.5,  z:  2.35 },
+  "hazmat-exhibit":{ x: -6.05, z: -6.55 },
+  "meeting-setup": { x:  0,    z: -3.85 }
 };
 
 const TELEPORT_OFFSETS = { floor: 1.2, wall: 2.55, pedestal: 1.95 };
 const MAX_TELEPORT_STEP = 2.75;
 const ROOM_LIMITS = { x: 7.5, z: 8.55 };
-const TOTAL_ARTIFACTS = 7;
+const TOTAL_ARTIFACTS = 11;
 /** Bán kính “thân” người xem trên mặt phẳng XZ — dùng cho va chạm bàn phím */
 const PLAYER_RADIUS_XZ = 0.42;
 /** Hộp va chạm tĩnh (tọa độ thế giới, trục XZ) — bàn, bục, tường sau, v.v. */
 const WALK_COLLIDERS = [
-  { minX: -7.52, maxX: -5.92, minZ: -4.08, maxZ: -2.68 },
-  { minX: -1.95, maxX: 1.95, minZ: -5.1, maxZ: -3.1 },
+  { minX: -7.25, maxX: -4.85, minZ: -7.95, maxZ: -6.15 },
+  { minX: -2.05, maxX: 2.05, minZ: -6.35, maxZ: -4.45 },
   { minX: -1.05, maxX: 1.05, minZ: 2.5, maxZ: 4.55 },
-  { minX: -5.9, maxX: -4.78, minZ: -2.52, maxZ: -1.32 },
-  { minX: 4.78, maxX: 5.9, minZ: -2.52, maxZ: -1.32 },
-  { minX: 6.22, maxX: 7.52, minZ: 2.28, maxZ: 3.58 },
+  { minX: 2.58, maxX: 4.42, minZ: 2.72, maxZ: 4.24 },
+  { minX: 4.55, maxX: 7.05, minZ: -6.15, maxZ: -4.25 },
   { minX: -7.6, maxX: -6.05, minZ: 2.25, maxZ: 3.62 },
-  { minX: -2.95, maxX: -1.32, minZ: -5.38, maxZ: -3.82 },
-  { minX: 1.32, maxX: 2.95, minZ: -5.38, maxZ: -3.82 },
-  { minX: -2.95, maxX: -1.32, minZ: -4.42, maxZ: -3.82 },
   { minX: -8.6, maxX: 8.6, minZ: -8.85, maxZ: -7.55 }
 ];
 const MOBILE_MAX_PIXEL_RATIO = 1.25;
@@ -132,6 +177,10 @@ const audioButton     = document.getElementById("audioButton");
 const sceneEl         = document.querySelector("a-scene");
 const introSplash     = document.getElementById("introSplash");
 const introEnterBtn   = document.getElementById("introEnterBtn");
+const guideTourBtn    = document.getElementById("guideTourBtn");
+const returnHomeBtn   = document.getElementById("returnHomeBtn");
+const guideNarrationAudio = document.getElementById("guideNarrationAudio");
+const mainCamera      = document.getElementById("mainCamera");
 const cursorRing      = document.getElementById("cursorRing");
 const artifactTooltip = document.getElementById("artifactTooltip");
 const progressCount   = document.getElementById("progressCount");
@@ -143,12 +192,16 @@ const topBar          = document.querySelector(".top-bar");
 const topBarToggle    = document.getElementById("topBarToggle");
 const topBarToggleMark= document.getElementById("topBarToggleMark");
 let hasEnteredRoom = false;
+let guideModeActive = false;
+let guideTourRunning = false;
+let guideTourStarted = false;
 
 function isKeyboardWalkBlocked() {
   if (introSplash) {
     const dismissed = introSplash.style.display === "none" || introSplash.classList.contains("is-exiting");
     if (!dismissed) return true;
   }
+  if (guideModeActive) return true;
   if (isNewspaperOpen()) return true;
   const ae = document.activeElement;
   if (ae && (ae.tagName === "INPUT" || ae.tagName === "TEXTAREA" || ae.tagName === "SELECT" || ae.isContentEditable)) return true;
@@ -199,23 +252,24 @@ if (typeof AFRAME !== "undefined" && !AFRAME.components["hazmat-display"]) {
       const THREE = AFRAME.THREE;
       const apply = () => {
         this.el.object3D.traverse((node) => {
-          if (!node.isMesh || !node.material) return;
-          node.renderOrder = 2;
+          if (!node.isMesh) return;
+          node.renderOrder = 10;
+          node.frustumCulled = false;
           const mats = Array.isArray(node.material) ? node.material : [node.material];
           mats.forEach((m) => {
             if (!m) return;
             m.side = THREE.DoubleSide;
-            m.depthTest = true;
-            m.depthWrite = true;
+            if (m.map) {
+              m.map.anisotropy = 4;
+              m.map.needsUpdate = true;
+            }
             m.needsUpdate = true;
           });
         });
       };
-      this.el.addEventListener("model-loaded", () => {
-        requestAnimationFrame(apply);
-      });
+      this.el.addEventListener("model-loaded", () => requestAnimationFrame(apply));
       this.el.addEventListener("model-error", (evt) => {
-        console.warn("hazmat glTF:", (evt && evt.detail) || evt);
+        console.warn("hazmat model:", (evt && evt.detail) || evt);
       });
     }
   });
@@ -317,7 +371,43 @@ if (typeof AFRAME !== "undefined" && !AFRAME.components["keyboard-walk"]) {
 }
 
 /* ── State ── */
-const audioState = { context: null, enabled: true, started: false };
+const audioState = { audioElement: null, enabled: true, started: false };
+const GUIDE_START = { x: 0, z: 8.48 };
+const GUIDE_DEFAULT_DWELL_MS = 8500;
+const GUIDE_MOVE_SPEED_UNITS_PER_SEC = 2.45;
+const GUIDE_MIN_MOVE_MS = 1800;
+const GUIDE_MAX_MOVE_MS = 4600;
+const GUIDE_TOUR_STOPS = [
+  { key: "intro", label: "Vị trí bắt đầu", x: 0, z: 7.0, lookAt: { x: 0, y: 1.85, z: 0 }, audio: "./audio/guide-01.mp3", fallbackMs: 30000, open: null },
+  { key: "newspaper", label: "Báo Việt Nam News", x: 0, z: 1.0, lookAt: { x: 0, y: 2.25, z: 3.35 }, audio: "./audio/guide-02.mp3", fallbackMs: 41000, open: "newspaper-overlay" },
+  { key: "timeline", label: "Dòng thời gian đại dịch COVID tại Việt Nam", x: -4.0, z: 1.0, lookAt: { x: -6.83, y: 1.8, z: 3.02 }, audio: "./audio/guide-03.mp3", fallbackMs: 24000, open: "artifact" },
+  { key: "painting-cluster", label: "Tranh treo tường", x: 2.5, z: -1.32, lookAt: { x: 8.78, y: 2.05, z: -1.32 }, audio: "./audio/guide-04.mp3", fallbackMs: 17000, open: "painting-tour", subStops: [
+    { key: "painting-gold",    label: "Thích nghi", lookAt: { x: 8.78, y: 1.42, z: 2.65 } },
+    { key: "painting-ember",   label: "Dấn thân",  lookAt: { x: 8.78, y: 2.66, z: 0.95 } },
+    { key: "painting-night",   label: "Kết nối",   lookAt: { x: 8.78, y: 2.1,  z: -1.45 } },
+    { key: "painting-echo",    label: "Lăn xả",    lookAt: { x: 8.78, y: 1.42, z: -3.6 } },
+    { key: "painting-dawn",    label: "Sẵn sàng",  lookAt: { x: 8.78, y: 2.66, z: -5.15 } }
+  ] },
+  { key: "hazmat-exhibit", label: "Mô hình đồ bảo hộ cá nhân phòng chống COVID-19", x: -3.8, z: -5.2, lookAt: { x: -6.05, y: 1.65, z: -7.05 }, audio: "./audio/guide-05.mp3", fallbackMs: 20000, open: "artifact" },
+  { key: "meeting-setup", label: "Cuộc họp giao ban online", x: 0, z: -2.5, lookAt: { x: 0, y: 2.45, z: -8.76 }, audio: "./audio/guide-06.mp3", fallbackMs: 25000, open: "artifact" },
+  { key: "typewriter", label: "Sạp báo bị phong toả", x: 2.8, z: -2.8, lookAt: { x: 5.8, y: 1.8, z: -5.2 }, audio: "./audio/guide-07.mp3", fallbackMs: 34000, open: "artifact" },
+  { key: "cityscape", label: "Quy hoạch hệ thống báo chí", x: 1.2, z: 1.0, lookAt: { x: 3.5, y: 2.1, z: 3.48 }, audio: "./audio/guide-08.mp3", fallbackMs: 50000, open: "artifact" },
+  { key: "outro", label: "Trở về điểm bắt đầu", x: 0, z: 7.0, lookAt: { x: 0, y: 1.85, z: 0 }, audio: "./audio/guide-09.mp3", fallbackMs: 12000, open: null }
+];
+
+/** Resolve static assets from script.js URL (fixes GitHub Pages project subpaths). */
+function resolveAssetPath(relativePath) {
+  if (!relativePath) return relativePath;
+  const rel = String(relativePath).replace(/^\.\//, "");
+  const scriptEl = document.querySelector('script[src*="script.js"]');
+  const base = scriptEl && scriptEl.src ? scriptEl.src : window.location.href;
+  try {
+    return new URL(rel, base).href;
+  } catch {
+    return relativePath;
+  }
+}
+
 const exploredSet = new Set();
 
 /* ════════════════════════════════════════
@@ -359,7 +449,7 @@ function drawTimelineCanvas() {
     { year: "1986", text: "Thời kỳ Đổi Mới" },
     { year: "1995", text: "Bình thường hóa quan hệ" },
     { year: "2010", text: "Chuyển đổi kỹ thuật số" },
-    { year: "2024", text: "Số báo giấy cuối cùng" },
+    { year: "2024", text: "Việt Nam News số 30/03/2020" },
   ];
 
   const lineX = W / 2;
@@ -605,6 +695,165 @@ function drawPaintingNight() {
   ctx.fillText("Đêm khuya — Hà Nội", W / 2, H - 20);
 }
 
+function drawPaintingEmber() {
+  const canvas = document.getElementById("paintingEmberCanvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width, H = canvas.height;
+
+  const bg = ctx.createLinearGradient(0, 0, W, H);
+  bg.addColorStop(0, "#1c1210");
+  bg.addColorStop(0.45, "#4b241d");
+  bg.addColorStop(1, "#b56b38");
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+
+  for (let i = 0; i < 14; i++) {
+    ctx.strokeStyle = `rgba(255,210,150,${0.05 + i * 0.012})`;
+    ctx.lineWidth = 14 - i * 0.8;
+    ctx.beginPath();
+    ctx.moveTo(30 + i * 26, H * 0.88);
+    ctx.quadraticCurveTo(W * 0.34, H * (0.2 + i * 0.01), W - 40 - i * 12, H * (0.14 + i * 0.035));
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = "rgba(255,238,205,0.84)";
+  ctx.beginPath();
+  ctx.arc(W * 0.72, H * 0.28, 48, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "rgba(255,255,255,0.08)";
+  for (let i = 0; i < 5; i++) {
+    ctx.fillRect(40 + i * 112, 42 + i * 16, 72, H - 110 - i * 22);
+  }
+
+  ctx.fillStyle = "rgba(18,10,8,0.48)";
+  ctx.fillRect(W / 2 - 90, H - 42, 180, 30);
+  ctx.fillStyle = "#ffd9b0";
+  ctx.font = "italic 14px serif";
+  ctx.textAlign = "center";
+  ctx.fillText("Ánh đèn — Phòng lưu", W / 2, H - 22);
+}
+
+function drawPaintingEcho() {
+  const canvas = document.getElementById("paintingEchoCanvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width, H = canvas.height;
+
+  const bg = ctx.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0, "#d3d5d8");
+  bg.addColorStop(0.5, "#7d909a");
+  bg.addColorStop(1, "#304756");
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.fillStyle = "rgba(246,249,252,0.72)";
+  ctx.beginPath();
+  ctx.moveTo(0, H * 0.68);
+  ctx.bezierCurveTo(W * 0.22, H * 0.48, W * 0.44, H * 0.86, W * 0.62, H * 0.64);
+  ctx.bezierCurveTo(W * 0.78, H * 0.44, W * 0.9, H * 0.74, W, H * 0.58);
+  ctx.lineTo(W, H);
+  ctx.lineTo(0, H);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.strokeStyle = "rgba(22,38,48,0.26)";
+  ctx.lineWidth = 3;
+  for (let i = 0; i < 7; i++) {
+    ctx.beginPath();
+    ctx.moveTo(0, H * (0.18 + i * 0.09));
+    ctx.bezierCurveTo(W * 0.28, H * (0.16 + i * 0.06), W * 0.66, H * (0.28 + i * 0.05), W, H * (0.12 + i * 0.1));
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = "rgba(255,255,255,0.26)";
+  ctx.beginPath();
+  ctx.ellipse(W * 0.35, H * 0.26, 74, 34, -0.2, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "rgba(15,23,30,0.42)";
+  ctx.fillRect(W / 2 - 96, H - 42, 192, 30);
+  ctx.fillStyle = "#eff5f8";
+  ctx.font = "italic 14px serif";
+  ctx.textAlign = "center";
+  ctx.fillText("Phản chiếu — Hành lang", W / 2, H - 22);
+}
+
+function drawPaintingGold() {
+  const canvas = document.getElementById("paintingGoldCanvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width, H = canvas.height;
+
+  const paper = ctx.createLinearGradient(0, 0, 0, H);
+  paper.addColorStop(0, "#6e5735");
+  paper.addColorStop(0.35, "#b98f4d");
+  paper.addColorStop(1, "#f1d48e");
+  ctx.fillStyle = paper;
+  ctx.fillRect(0, 0, W, H);
+
+  for (let i = 0; i < 1600; i++) {
+    ctx.fillStyle = `rgba(90,55,20,${Math.random() * 0.06})`;
+    ctx.fillRect(Math.random() * W, Math.random() * H, 1.4, 1.4);
+  }
+
+  ctx.fillStyle = "rgba(92,56,22,0.22)";
+  for (let i = 0; i < 6; i++) {
+    ctx.fillRect(48, 56 + i * 46, W - 96, 18);
+    ctx.fillRect(48, 80 + i * 46, W - 170 + (i % 2) * 36, 10);
+  }
+
+  ctx.strokeStyle = "#fff0c9";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(32, 34, W - 64, H - 94);
+
+  ctx.fillStyle = "rgba(58,35,12,0.44)";
+  ctx.fillRect(W / 2 - 94, H - 42, 188, 30);
+  ctx.fillStyle = "#fff3cc";
+  ctx.font = "italic 14px serif";
+  ctx.textAlign = "center";
+  ctx.fillText("Ánh giấy — Lưu dấu", W / 2, H - 22);
+}
+
+async function drawPaintingPhoto(canvasId, imageSrc) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas || !imageSrc) return false;
+  const ctx = canvas.getContext("2d");
+  const img = new Image();
+  img.crossOrigin = "anonymous";
+  img.decoding = "async";
+  img.src = imageSrc;
+
+  try {
+    if (img.decode) {
+      await img.decode();
+    } else {
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+    }
+  } catch (e) {
+    console.warn(`[drawPaintingPhoto] Failed to load "${imageSrc}" for canvas "${canvasId}":`, e);
+    return false;
+  }
+
+  const W = canvas.width;
+  const H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = "#111111";
+  ctx.fillRect(0, 0, W, H);
+
+  const scale = Math.max(W / img.naturalWidth, H / img.naturalHeight);
+  const drawW = img.naturalWidth * scale;
+  const drawH = img.naturalHeight * scale;
+  const dx = (W - drawW) / 2;
+  const dy = (H - drawH) / 2;
+  ctx.drawImage(img, dx, dy, drawW, drawH);
+  return true;
+}
+
 function drawMeetScreenCanvas() {
   const canvas = document.getElementById("meetScreenCanvas");
   if (!canvas) return;
@@ -621,11 +870,11 @@ function drawMeetScreenCanvas() {
   ctx.strokeRect(0, 0, W, 52);
 
   ctx.fillStyle = "#e8eaed";
-  ctx.font = "600 15px IBM Plex Sans, sans-serif";
+  ctx.font = '600 15px "Kefa III", serif';
   ctx.textAlign = "left";
   ctx.fillText("Cuộc họp trực tuyến", 16, 22);
   ctx.fillStyle = "#9aa0a6";
-  ctx.font = "12px IBM Plex Sans, sans-serif";
+  ctx.font = '12px "Kefa III", serif';
   ctx.fillText("meet.example / phòng-họp-biên-tập", 16, 40);
 
   // Ô lưới người tham gia
@@ -652,7 +901,7 @@ function drawMeetScreenCanvas() {
     ctx.arc(cx, cy, Math.min(cellW, cellH) * 0.22, 0, Math.PI * 2);
     ctx.fill();
     ctx.fillStyle = "#bdc1c6";
-    ctx.font = "13px IBM Plex Sans, sans-serif";
+    ctx.font = '13px "Kefa III", serif';
     ctx.textAlign = "center";
     ctx.fillText(`Người ${i + 1}`, cx, y + cellH - 18);
     if (t.mic) {
@@ -684,7 +933,7 @@ function drawMeetScreenCanvas() {
   ctx.fillRect(0, barY, W, 48);
   const btns = ["Tắt mic", "Máy ảnh", "Chia sẻ", "Rời khỏi"];
   ctx.textAlign = "center";
-  ctx.font = "11px IBM Plex Sans, sans-serif";
+  ctx.font = '11px "Kefa III", serif';
   btns.forEach((b, i) => {
     const bx = W * 0.2 + i * (W * 0.18);
     ctx.fillStyle = i === 3 ? "#ea4335" : "#5f6368";
@@ -696,26 +945,72 @@ function drawMeetScreenCanvas() {
   });
 }
 
-function initCanvasTextures() {
+async function initCanvasTextures() {
   drawTimelineCanvas();
   drawArchiveCanvas();
-  drawPaintingDawn();
-  drawPaintingNight();
   drawMeetScreenCanvas();
+
+  const paintingResults = await Promise.all([
+    drawPaintingPhoto("paintingDawnCanvas", "./painting-1-san-sang-framed.jpg"),
+    drawPaintingPhoto("paintingEmberCanvas", "./painting-2-dan-than-framed.jpg"),
+    drawPaintingPhoto("paintingNightCanvas", "./painting-3-ket-noi-framed.jpg"),
+    drawPaintingPhoto("paintingEchoCanvas", "./painting-4-lan-xa-framed.jpg"),
+    drawPaintingPhoto("paintingGoldCanvas", "./painting-5-thich-nghi-framed.jpg")
+  ]);
+
+  /* Ensure newspaper image texture is applied (uses <img> in a-assets, not canvas) */
+  function refreshNewspaperTexture() {
+    const el = document.getElementById("newspaperArtifact");
+    if (!el) return false;
+    const mesh = el.getObject3D("mesh");
+    if (mesh && mesh.material) {
+      if (mesh.material.map) {
+        mesh.material.map.needsUpdate = true;
+      } else {
+        el.setAttribute("material", "src", "#newspaperImage");
+      }
+      mesh.material.needsUpdate = true;
+      return true;
+    }
+    return false;
+  }
+  if (!refreshNewspaperTexture()) {
+    const el = document.getElementById("newspaperArtifact");
+    if (el) {
+      const tryRefresh = () => {
+        if (refreshNewspaperTexture()) {
+          el.removeEventListener("loaded", tryRefresh);
+          el.removeEventListener("object3dset", tryRefresh);
+        }
+      };
+      el.addEventListener("loaded", tryRefresh);
+      el.addEventListener("object3dset", tryRefresh);
+    }
+    setTimeout(refreshNewspaperTexture, 1500);
+    setTimeout(refreshNewspaperTexture, 4000);
+  }
+
+  if (!paintingResults[0]) drawPaintingDawn();
+  if (!paintingResults[1]) drawPaintingEmber();
+  if (!paintingResults[2]) drawPaintingNight();
+  if (!paintingResults[3]) drawPaintingEcho();
+  if (!paintingResults[4]) drawPaintingGold();
 }
 
 /* ════════════════════════════════════════
    INTRO SPLASH
 ════════════════════════════════════════ */
-function dismissSplash() {
+function dismissSplash(options = {}) {
   if (!introSplash) return;
+  const { showIntroToggle = true } = options;
   introSplash.classList.add("is-exiting");
   setTimeout(() => {
     introSplash.style.display = "none";
     introSplash.removeAttribute("aria-modal");
+    if (!showIntroToggle) return;
     // Start showing intro toggle after 5s
     setTimeout(() => {
-      if (introToggle) {
+      if (introToggle && !guideModeActive) {
         introToggle.hidden = false;
         updateIntroToggle();
       }
@@ -802,8 +1097,18 @@ function renderArtifact(key) {
 
   artifactTag.textContent      = item.tag;
   artifactTitle.textContent    = item.title;
-  artifactSubtitle.textContent = item.subtitle;
-  artifactBody.innerHTML       = item.body.map(p => `<p>${p}</p>`).join("");
+  if (item.subtitle && key.startsWith("painting-")) {
+    artifactSubtitle.textContent = item.subtitle;
+    artifactSubtitle.style.display = "";
+  } else {
+    artifactSubtitle.textContent = "";
+    artifactSubtitle.style.display = "none";
+  }
+  const bodyHtml = item.body.map(p => `<p>${p}</p>`).join("");
+  const imageHtml = item.image
+    ? `<figure class="artifact-figure"><img src="${item.image}" alt="${item.title}" loading="lazy"></figure>`
+    : "";
+  artifactBody.innerHTML       = bodyHtml + imageHtml;
   artifactPanel.classList.remove("overlay--hidden");
   markExplored(key);
 }
@@ -857,6 +1162,110 @@ function animateCameraTo(x, z) {
   cameraRig.setAttribute("animation__move", `property: position; to: ${x} 1.6 ${z}; dur: 430; easing: easeInOutQuad`);
 }
 
+function getGuideMoveDuration(fromX, fromZ, toX, toZ) {
+  const distance = Math.hypot(toX - fromX, toZ - fromZ);
+  const raw = distance / GUIDE_MOVE_SPEED_UNITS_PER_SEC * 1000;
+  return Math.max(GUIDE_MIN_MOVE_MS, Math.min(GUIDE_MAX_MOVE_MS, Math.round(raw)));
+}
+
+function waitMs(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function waitForAFrameAnimation(el, name, fallbackMs) {
+  return new Promise(resolve => {
+    if (!el) { resolve(); return; }
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      el.removeEventListener("animationcomplete__" + name, finish);
+      resolve();
+    };
+    el.addEventListener("animationcomplete__" + name, finish);
+    setTimeout(finish, Math.max(120, fallbackMs + 180));
+  });
+}
+
+function computeCameraRotationFromLookAt(from, target) {
+  const dx = target.x - from.x;
+  const dy = (target.y || 1.65) - from.y;
+  const dz = target.z - from.z;
+  const horizontal = Math.max(0.0001, Math.hypot(dx, dz));
+  const yaw = AFRAME && AFRAME.THREE ? AFRAME.THREE.MathUtils.radToDeg(Math.atan2(-dx, -dz)) : 0;
+  const pitch = AFRAME && AFRAME.THREE ? AFRAME.THREE.MathUtils.radToDeg(Math.atan2(dy, horizontal)) : 0;
+  return { x: Math.max(-35, Math.min(18, pitch)), y: yaw, z: 0 };
+}
+
+function animateGuideCameraLookAt(stop, dur = 1200) {
+  if (!mainCamera || !cameraRig || !stop || !stop.lookAt) return Promise.resolve();
+  const from = {
+    x: cameraRig.object3D.position.x,
+    y: cameraRig.object3D.position.y,
+    z: cameraRig.object3D.position.z
+  };
+  const rot = computeCameraRotationFromLookAt(from, stop.lookAt);
+  mainCamera.setAttribute("animation__guide_look", `property: rotation; to: ${rot.x} ${rot.y} ${rot.z}; dur: ${dur}; easing: easeInOutQuad`);
+  return waitForAFrameAnimation(mainCamera, "guide_look", dur);
+}
+
+/**
+ * Move camera to a tour stop, ensuring the viewer NEVER backs into an object.
+ * Strategy: if the viewer would need to walk backwards (or back away from the
+ * previous object), rotate to face the destination FIRST, then walk forward.
+ */
+async function animateGuideCameraTo(stop) {
+  if (!cameraRig || !stop) return Promise.resolve();
+  const current = cameraRig.object3D.position;
+  const moveDx = stop.x - current.x;
+  const moveDz = stop.z - current.z;
+  const moveDist = Math.hypot(moveDx, moveDz);
+
+  if (moveDist < 0.15) {
+    /* Already at position — just rotate to face the object */
+    await animateGuideCameraLookAt(stop, 900);
+    return;
+  }
+
+  /* Calculate the movement direction as a yaw angle */
+  const THREE = AFRAME.THREE;
+  const moveYaw = THREE.MathUtils.radToDeg(Math.atan2(-moveDx, -moveDz));
+
+  /* Calculate where the viewer SHOULD look (at the new stop's object) */
+  const newLookRot = computeCameraRotationFromLookAt(
+    { x: current.x, y: current.y, z: current.z },
+    stop.lookAt || { x: stop.x, y: 1.65, z: stop.z }
+  );
+
+  /* Also check where the viewer is CURRENTLY looking (at the previous object) */
+  const camRot = mainCamera.object3D.rotation;
+  const currentYaw = THREE.MathUtils.radToDeg(camRot.y);
+
+  /* Angle between movement direction and where viewer should look */
+  let diffNewLook = ((newLookRot.y - moveYaw) % 360 + 540) % 360 - 180;
+
+  /* Angle between movement direction and where viewer is currently looking */
+  let diffCurrentLook = ((currentYaw - moveYaw) % 360 + 540) % 360 - 180;
+
+  /* Pre-rotate if EITHER:
+     - Walking backwards relative to the new object (diffNewLook > 90°), OR
+     - Backing away from the current view (diffCurrentLook > 90°)
+     In both cases, first rotate to face where we're going, then walk forward. */
+  const needsPreRotate = Math.abs(diffNewLook) > 90 || Math.abs(diffCurrentLook) > 90;
+
+  if (needsPreRotate) {
+    /* ── Phase 1: Rotate in place to face the destination object ── */
+    await animateGuideCameraLookAt(stop, 700);
+  }
+
+  /* ── Phase 2: Walk to position (now facing forward) ── */
+  const dur = getGuideMoveDuration(current.x, current.z, stop.x, stop.z);
+  cameraRig.setAttribute("animation__guide_move", `property: position; to: ${stop.x} 1.6 ${stop.z}; dur: ${dur}; easing: easeInOutSine`);
+  /* Keep looking at the object while walking (refines angle as position changes) */
+  void animateGuideCameraLookAt(stop, Math.min(dur, 1800));
+  return waitForAFrameAnimation(cameraRig, "guide_move", dur);
+}
+
 function focusArtifact(key) {
   const point = focusPoints[key];
   if (!point || !cameraRig) return;
@@ -866,7 +1275,7 @@ function focusArtifact(key) {
 }
 
 function teleportToPoint(point) {
-  if (isNewspaperOpen() || !point || !cameraRig || !AFRAME.THREE) return;
+  if (guideModeActive || isNewspaperOpen() || !point || !cameraRig || !AFRAME.THREE) return;
   const current = cameraRig.object3D.position;
   const moveVector = new AFRAME.THREE.Vector3(point.x - current.x, 0, point.z - current.z);
   if (moveVector.lengthSq() < 0.01) return;
@@ -1038,72 +1447,357 @@ async function enterFullscreenOnMobile() {
    AMBIENT AUDIO
 ════════════════════════════════════════ */
 function createAmbientAudio() {
-  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContextClass) return;
-  const context = new AudioContextClass();
-  const master  = context.createGain();
-  const filter  = context.createBiquadFilter();
-  const lfo     = context.createOscillator();
-  const lfoGain = context.createGain();
-  const shimmer = context.createOscillator();
-  const shimmerGain = context.createGain();
-
-  master.gain.value    = 0.11;
-  filter.type          = "lowpass";
-  filter.frequency.value = 1180;
-  filter.Q.value       = 0.7;
-  lfo.type             = "sine";
-  lfo.frequency.value  = 0.06;
-  lfoGain.gain.value   = 220;
-  shimmer.type         = "sine";
-  shimmer.frequency.value = 0.12;
-  shimmerGain.gain.value  = 0.018;
-
-  master.connect(filter);
-  filter.connect(context.destination);
-  lfo.connect(lfoGain);
-  lfoGain.connect(filter.frequency);
-  shimmer.connect(shimmerGain);
-  shimmerGain.connect(master.gain);
-
-  [
-    { frequency: 196.0,  gain: 0.05,  type: "sine",     detune: -4 },
-    { frequency: 246.94, gain: 0.043, type: "triangle", detune:  3 },
-    { frequency: 293.66, gain: 0.034, type: "sine",     detune:  1 },
-    { frequency: 392.0,  gain: 0.018, type: "sine",     detune: -2 }
-  ].forEach(v => {
-    const osc  = context.createOscillator();
-    const gain = context.createGain();
-    osc.type = v.type; osc.frequency.value = v.frequency; osc.detune.value = v.detune;
-    gain.gain.value = v.gain;
-    osc.connect(gain); gain.connect(master); osc.start();
-  });
-
-  lfo.start(); shimmer.start();
-  audioState.context = context;
+  const audioEl = document.getElementById("ambientAudio");
+  if (!audioEl) return;
+  audioEl.volume = 0.11;
+  audioEl.play().catch(() => {});
+  audioState.audioElement = audioEl;
   audioState.started = true;
 }
 
 async function ensureAmbientAudioStarted() {
   if (!audioState.enabled) return;
   if (!audioState.started) createAmbientAudio();
-  if (!audioState.context) return;
-  if (audioState.context.state === "suspended") await audioState.context.resume();
+  const el = audioState.audioElement;
+  if (el && el.paused) el.play().catch(() => {});
 }
 
 async function toggleAudio() {
   audioState.enabled = !audioState.enabled;
+  const el = audioState.audioElement;
   if (!audioState.started && audioState.enabled) {
     await ensureAmbientAudioStarted();
-  } else if (audioState.context) {
-    audioState.enabled ? await audioState.context.resume() : await audioState.context.suspend();
+  } else if (el) {
+    audioState.enabled ? el.play().catch(() => {}) : el.pause();
   }
   if (audioButton) audioButton.textContent = audioState.enabled ? "Tắt nhạc" : "Bật nhạc";
 }
 
 /* ════════════════════════════════════════
+   GUIDE TOUR MODE
+════════════════════════════════════════ */
+function setGuideMode(active) {
+  guideModeActive = active;
+  document.body.classList.toggle("is-guide-mode", active);
+  hideTooltip();
+  if (helpPanel) helpPanel.hidden = true;
+  closeArtifact();
+  if (newspaperView && !newspaperView.classList.contains("overlay--hidden")) closeNewspaper();
+  if (introToggle) introToggle.hidden = active;
+  if (cameraRig) cameraRig.setAttribute("keyboard-walk", `speed: ${active ? 0 : 4.65}`);
+  if (mainCursor) mainCursor.setAttribute("raycaster", active ? "objects: .guide-disabled" : "objects: .clickable, .teleportable");
+  if (mainCamera) mainCamera.setAttribute("look-controls", `touchEnabled: ${active ? "false" : "true"}; mouseEnabled: ${active ? "false" : "true"}; magicWindowTrackingEnabled: ${(!active && hasEnteredRoom) ? "true" : "false"}`);
+}
+
+function prepareRoomEntry({ guide = false } = {}) {
+  hasEnteredRoom = true;
+  document.body.classList.remove("is-rotate-lock");
+  if (rotatePrompt) rotatePrompt.hidden = true;
+  if (isMobileDevice) showGyroPrompt();
+  dismissSplash({ showIntroToggle: !guide });
+  if (isMobileDevice && !needsIOSGyroPermission() && !guide) setGyroEnabled(true);
+}
+
+function updateGuideStatus(stopIndex, stop) {
+  let el = document.getElementById("guideStatus");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "guideStatus";
+    el.className = "guide-status glass";
+    el.setAttribute("aria-live", "polite");
+    document.body.appendChild(el);
+  }
+  const total = GUIDE_TOUR_STOPS.length;
+  el.innerHTML = `<p class="eyebrow">Tour tự động</p><strong>${stop.label}</strong><span>Điểm ${stopIndex + 1} / ${total}</span>`;
+  el.hidden = false;
+}
+
+function hideGuideStatus() {
+  const el = document.getElementById("guideStatus");
+  if (el) el.hidden = true;
+}
+
+function playGuideNarration(stop) {
+  return new Promise(resolve => {
+    if (!guideNarrationAudio || !stop.audio) {
+      setTimeout(resolve, GUIDE_DEFAULT_DWELL_MS);
+      return;
+    }
+    const resolvedSrc = resolveAssetPath(stop.audio);
+    const pageRelativeSrc = new URL(stop.audio.replace(/^\.\//, ""), window.location.href).href;
+    // #region agent log
+    fetch("http://127.0.0.1:7843/ingest/01331089-563f-42cb-97fe-7a8aedf37343",{method:"POST",headers:{"Content-Type":"application/json","X-Debug-Session-Id":"852166"},body:JSON.stringify({sessionId:"852166",runId:"pre-fix",hypothesisId:"A",location:"script.js:playGuideNarration:entry",message:"narration load attempt",data:{stopKey:stop.key,rawAudio:stop.audio,resolvedSrc,pageRelativeSrc,pageHref:location.href,pagePathname:location.pathname,scriptSrc:document.querySelector('script[src*="script.js"]')?.src||null},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      guideNarrationAudio.removeEventListener("ended", finish);
+      guideNarrationAudio.removeEventListener("error", onError);
+      guideNarrationAudio.removeEventListener("loadedmetadata", onMeta);
+      clearTimeout(errorTimer);
+      resolve();
+    };
+    const onError = () => {
+      // #region agent log
+      fetch("http://127.0.0.1:7843/ingest/01331089-563f-42cb-97fe-7a8aedf37343",{method:"POST",headers:{"Content-Type":"application/json","X-Debug-Session-Id":"852166"},body:JSON.stringify({sessionId:"852166",runId:"pre-fix",hypothesisId:"B",location:"script.js:playGuideNarration:error",message:"audio element error",data:{stopKey:stop.key,resolvedSrc,mediaError:guideNarrationAudio.error?.code,networkState:guideNarrationAudio.networkState,readyState:guideNarrationAudio.readyState},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
+      /* On error, wait a reasonable time then move on */
+      setTimeout(finish, stop.fallbackMs || GUIDE_DEFAULT_DWELL_MS);
+    };
+    const onMeta = () => {
+      // #region agent log
+      fetch("http://127.0.0.1:7843/ingest/01331089-563f-42cb-97fe-7a8aedf37343",{method:"POST",headers:{"Content-Type":"application/json","X-Debug-Session-Id":"852166"},body:JSON.stringify({sessionId:"852166",runId:"pre-fix",hypothesisId:"D",location:"script.js:playGuideNarration:metadata",message:"audio metadata loaded",data:{stopKey:stop.key,resolvedSrc,durationSec:guideNarrationAudio.duration},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
+      /* Store the real audio duration for sub-tour timing */
+      if (guideNarrationAudio.duration && isFinite(guideNarrationAudio.duration)) {
+        stop._actualAudioMs = guideNarrationAudio.duration * 1000;
+      }
+    };
+    /* Safety timeout: only fires if neither "ended" nor "error" fires
+       (e.g. browser stalled). Set generously — 3× fallback or 5 min max —
+       so it never cuts a playing narration short. */
+    const safetyMs = Math.min(300000, (stop.fallbackMs || GUIDE_DEFAULT_DWELL_MS) * 3);
+    const errorTimer = setTimeout(finish, safetyMs);
+    guideNarrationAudio.pause();
+    guideNarrationAudio.currentTime = 0;
+    guideNarrationAudio.src = resolvedSrc;
+    guideNarrationAudio.volume = 0.95;
+    guideNarrationAudio.addEventListener("loadedmetadata", onMeta, { once: true });
+    guideNarrationAudio.addEventListener("ended", finish, { once: true });
+    guideNarrationAudio.addEventListener("error", onError, { once: true });
+    guideNarrationAudio.play().then(() => {
+      // #region agent log
+      fetch("http://127.0.0.1:7843/ingest/01331089-563f-42cb-97fe-7a8aedf37343",{method:"POST",headers:{"Content-Type":"application/json","X-Debug-Session-Id":"852166"},body:JSON.stringify({sessionId:"852166",runId:"pre-fix",hypothesisId:"C",location:"script.js:playGuideNarration:playOk",message:"audio play started",data:{stopKey:stop.key,resolvedSrc},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
+    }).catch((playErr) => {
+      // #region agent log
+      fetch("http://127.0.0.1:7843/ingest/01331089-563f-42cb-97fe-7a8aedf37343",{method:"POST",headers:{"Content-Type":"application/json","X-Debug-Session-Id":"852166"},body:JSON.stringify({sessionId:"852166",runId:"pre-fix",hypothesisId:"C",location:"script.js:playGuideNarration:playBlocked",message:"audio play rejected",data:{stopKey:stop.key,resolvedSrc,playErr:String(playErr)},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
+      /* If autoplay is blocked, fall back to a fixed wait */
+      setTimeout(finish, stop.fallbackMs || GUIDE_DEFAULT_DWELL_MS);
+    });
+    fetch(resolvedSrc, { method: "HEAD" }).then((res) => {
+      // #region agent log
+      fetch("http://127.0.0.1:7843/ingest/01331089-563f-42cb-97fe-7a8aedf37343",{method:"POST",headers:{"Content-Type":"application/json","X-Debug-Session-Id":"852166"},body:JSON.stringify({sessionId:"852166",runId:"pre-fix",hypothesisId:"B",location:"script.js:playGuideNarration:head",message:"audio HEAD probe",data:{stopKey:stop.key,resolvedSrc,status:res.status,ok:res.ok},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
+    }).catch((headErr) => {
+      // #region agent log
+      fetch("http://127.0.0.1:7843/ingest/01331089-563f-42cb-97fe-7a8aedf37343",{method:"POST",headers:{"Content-Type":"application/json","X-Debug-Session-Id":"852166"},body:JSON.stringify({sessionId:"852166",runId:"pre-fix",hypothesisId:"B",location:"script.js:playGuideNarration:headFail",message:"audio HEAD failed",data:{stopKey:stop.key,resolvedSrc,headErr:String(headErr)},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
+    });
+  });
+}
+
+function showGuideCompletionNotice() {
+  return new Promise(resolve => {
+    const notice = document.createElement("div");
+    notice.className = "guide-complete";
+    notice.setAttribute("role", "dialog");
+    notice.setAttribute("aria-modal", "true");
+    notice.innerHTML = `
+      <div class="guide-complete__card glass">
+        <p class="eyebrow">Hoàn tất tour dẫn đường</p>
+        <h2>Bạn có thể tự do tham quan</h2>
+        <p>Chế độ dẫn đường đã kết thúc. Bây giờ bạn có thể tự xoay nhìn, di chuyển và mở từng hiện vật như chế độ tham quan bình thường.</p>
+        <button type="button" class="button" id="guideCompleteBtn">Bắt đầu tham quan tự do</button>
+      </div>`;
+    document.body.appendChild(notice);
+    const close = () => {
+      notice.remove();
+      resolve();
+    };
+    const btn = notice.querySelector("#guideCompleteBtn");
+    if (btn) btn.addEventListener("click", close, { once: true });
+    setTimeout(close, 7000);
+  });
+}
+
+function openGuideStopPanel(stop) {
+  if (!stop || !stop.open) {
+    closeArtifact();
+    return;
+  }
+  if (stop.key === "newspaper") {
+    /* Show the newspaper overlay instead of the small artifact panel,
+       because the camera is positioned above the newspaper stand and
+       the viewer cannot see it properly from the 3D scene. */
+    openNewspaper();
+    return;
+  }
+  renderArtifact(stop.key);
+}
+
+/** Smoothly pan the camera to look at a new target from the current rig position */
+function animateGuideCameraPanTo(lookAtTarget, dur = 1200) {
+  if (!mainCamera || !cameraRig || !lookAtTarget) return Promise.resolve();
+  const from = {
+    x: cameraRig.object3D.position.x,
+    y: cameraRig.object3D.position.y,
+    z: cameraRig.object3D.position.z
+  };
+  const rot = computeCameraRotationFromLookAt(from, lookAtTarget);
+  mainCamera.setAttribute("animation__guide_look", `property: rotation; to: ${rot.x} ${rot.y} ${rot.z}; dur: ${dur}; easing: easeInOutQuad`);
+  return waitForAFrameAnimation(mainCamera, "guide_look", dur);
+}
+
+/** Run the painting sub-tour: pan left→right across 5 paintings while audio plays */
+async function runPaintingSubTourWithNarration(stop, stopIndex, narrationDone) {
+  const subStops = stop.subStops;
+  if (!subStops || subStops.length === 0) {
+    await narrationDone;
+    return;
+  }
+
+  /* Narration is already playing — look at center painting */
+  await animateGuideCameraLookAt(stop, 900);
+
+  /* Open the center painting panel briefly */
+  renderArtifact("painting-night");
+  await waitMs(1200);
+
+  /* Calculate per-painting dwell: total audio minus intro time, divided by 5.
+     Use the actual audio duration if available (set by playGuideNarration's
+     loadedmetadata handler), otherwise fall back to a generous estimate. */
+  const audioDuration = stop._actualAudioMs || (stop.fallbackMs || GUIDE_DEFAULT_DWELL_MS);
+  const introTime = 2100;
+  const panDuration = 900;
+  const perPaintingDwell = Math.max(800, Math.round((audioDuration - introTime - panDuration * 6) / subStops.length));
+
+  /* Pan through each painting left→right */
+  for (let p = 0; p < subStops.length; p++) {
+    if (!guideTourRunning) break;
+    const sub = subStops[p];
+    closeArtifact();
+
+    /* Smooth pan to this painting */
+    await animateGuideCameraPanTo(sub.lookAt, panDuration);
+    await waitMs(200);
+
+    /* Open this painting's info panel */
+    renderArtifact(sub.key);
+    updateGuideStatus(stopIndex, { label: `${stop.label} — ${sub.label}`, key: stop.key });
+
+    /* Wait the dwell time for this painting */
+    await waitMs(perPaintingDwell);
+  }
+
+  closeArtifact();
+  /* Wait for narration to finish if it's still playing — never cut it short */
+  await narrationDone;
+}
+
+async function runGuideTour() {
+  if (guideTourRunning) return;
+  guideTourRunning = true;
+  guideTourStarted = true;
+  setGuideMode(true);
+  /* Mute ambient background music during guided tour so narration is clear */
+  if (audioState.audioElement) {
+    audioState.audioElement.pause();
+    audioState.audioElement.volume = 0;
+  }
+  if (cameraRig) cameraRig.object3D.position.set(GUIDE_START.x, 1.6, GUIDE_START.z);
+  await waitMs(250);
+  for (let i = 0; i < GUIDE_TOUR_STOPS.length; i++) {
+    if (!guideTourRunning) break;
+    const stop = GUIDE_TOUR_STOPS[i];
+    updateGuideStatus(i, stop);
+
+    /* Start narration FIRST so audio begins loading/playing during
+       the camera transition.  This eliminates the "silent gap" caused
+       by leading silence in the audio files — by the time the camera
+       arrives at the object the narrator is already speaking. */
+    const narrationDone = playGuideNarration(stop);
+
+    /* Move camera to the stop while narration is already playing */
+    await animateGuideCameraTo(stop);
+    await animateGuideCameraLookAt(stop, 900);
+
+    /* Check if this is a painting-tour stop with sub-stops */
+    if (stop.open === "painting-tour" && stop.subStops && stop.subStops.length > 0) {
+      /* Painting sub-tour manages its own timing relative to audio.
+         We already started narration above, so pass the promise. */
+      await runPaintingSubTourWithNarration(stop, i, narrationDone);
+    } else {
+      /* Open the info panel / overlay now that the camera has arrived */
+      openGuideStopPanel(stop);
+      /* Wait for the full narration to finish — never cut it short */
+      await narrationDone;
+      /* Close whichever panel is open — artifact or newspaper overlay */
+      if (stop.key === "newspaper") {
+        closeNewspaper();
+      } else {
+        closeArtifact();
+      }
+    }
+    /* Brief pause before moving to the next stop */
+    await waitMs(600);
+  }
+  if (guideNarrationAudio) guideNarrationAudio.pause();
+  hideGuideStatus();
+  setGuideMode(false);
+  guideTourRunning = false;
+  if (introToggle) {
+    introToggle.hidden = false;
+    updateIntroToggle();
+  }
+  /* Restore ambient background music now that the guided tour is over */
+  if (audioState.audioElement) {
+    audioState.audioElement.volume = 0.11;
+  }
+  ensureAmbientAudioStarted();
+  await showGuideCompletionNotice();
+}
+
+async function startGuideExperience() {
+  prepareRoomEntry({ guide: true });
+  if (isMobileDevice) await enterFullscreenOnMobile();
+  setTimeout(runGuideTour, 780);
+}
+
+async function startFreeExperience() {
+  prepareRoomEntry({ guide: false });
+  if (isMobileDevice) await enterFullscreenOnMobile();
+  /* Start ambient background music in free exploration mode */
+  ensureAmbientAudioStarted();
+}
+
+/* ════════════════════════════════════════
    ACTION HANDLER
 ════════════════════════════════════════ */
+/* Return to the intro splash screen (home) from free exploration mode */
+function returnToHome() {
+  /* If a guide tour is running, stop it first */
+  if (guideTourRunning) {
+    guideTourRunning = false;
+    if (guideNarrationAudio) guideNarrationAudio.pause();
+    setGuideMode(false);
+    hideGuideStatus();
+  }
+  /* Close any open panels */
+  closeArtifact();
+  if (newspaperView && !newspaperView.classList.contains("overlay--hidden")) closeNewspaper();
+  if (helpPanel) helpPanel.hidden = true;
+  /* Pause ambient audio while on the intro splash screen */
+  if (audioState.audioElement && !audioState.audioElement.paused) {
+    audioState.audioElement.pause();
+  }
+  /* Hide the intro shell toggle while splash is visible */
+  if (introToggle) introToggle.hidden = true;
+  /* Show the intro splash again */
+  if (introSplash) {
+    introSplash.classList.remove("is-exiting");
+    introSplash.style.display = "";
+    introSplash.style.visibility = "visible";
+    introSplash.style.pointerEvents = "";
+    introSplash.setAttribute("aria-modal", "true");
+  }
+  /* Reset room entry state so re-entering works correctly */
+  hasEnteredRoom = false;
+  guideTourStarted = false;
+}
+
 function handleAction(action) {
   if (action === "close-panel")      closeArtifact();
   if (action === "toggle-help")      helpPanel.hidden = !helpPanel.hidden;
@@ -1111,6 +1805,7 @@ function handleAction(action) {
   if (action === "close-newspaper")  closeNewspaper();
   if (action === "reload-newspaper") reloadNewspaper();
   if (action === "toggle-audio")     toggleAudio();
+  if (action === "return-home")      returnToHome();
   if (action === "toggle-topbar" && topBar) {
     topBar.classList.toggle("is-collapsed");
     updateTopBarToggle();
@@ -1147,23 +1842,30 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   updateTopBarToggle();
 
-  // Canvas textures — run as soon as DOM is ready
-  initCanvasTextures();
+  // Canvas textures — đợi Kefa III tải xong rồi mới vẽ chữ
+  void (async () => {
+    if (document.fonts) {
+      try {
+        await Promise.all([
+          document.fonts.load('400 1em "Kefa III"'),
+          document.fonts.load('700 1em "Kefa III"')
+        ]);
+      } catch (_) {
+        await document.fonts.ready;
+      }
+    }
+    await initCanvasTextures();
+  })();
 
   // Cursor ring
   initCursorRing();
 
-  // Intro splash dismiss
+  // Intro splash mode selection
   if (introEnterBtn) {
-    introEnterBtn.addEventListener("click", async () => {
-      hasEnteredRoom = true;
-      document.body.classList.remove("is-rotate-lock");
-      if (rotatePrompt) rotatePrompt.hidden = true;
-      if (isMobileDevice) showGyroPrompt();
-      if (isMobileDevice) await enterFullscreenOnMobile();
-      dismissSplash();
-      if (isMobileDevice && !needsIOSGyroPermission()) setGyroEnabled(true);
-    });
+    introEnterBtn.addEventListener("click", startFreeExperience);
+  }
+  if (guideTourBtn) {
+    guideTourBtn.addEventListener("click", startGuideExperience);
   }
 
   // Fullscreen listeners
@@ -1199,6 +1901,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     node.addEventListener("click", () => {
+      if (guideModeActive) return;
       if (!key) return;
       if (key === "newspaper") { openNewspaper(); return; }
       renderArtifact(key);
@@ -1208,6 +1911,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Teleportable surfaces use their own click events, with the shared mouse raycaster as fallback.
   document.querySelectorAll(".teleportable").forEach(node => {
     node.addEventListener("click", (event) => {
+      if (guideModeActive) return;
       const targetPoint = getTeleportIntersection(node, event);
       if (targetPoint) teleportToPoint(targetPoint);
     });
@@ -1221,6 +1925,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Journey dropdown
   if (journeySelect) {
     journeySelect.addEventListener("change", () => {
+      if (guideModeActive) return;
       const key = journeySelect.value;
       if (!key) return;
       focusArtifact(key);
@@ -1236,10 +1941,10 @@ document.addEventListener("DOMContentLoaded", () => {
     closeNewspaper();
   });
 
-  // Also close splash on Escape / Space
+  // Also enter free-tour mode from splash on Escape / Space / Enter
   document.addEventListener("keydown", (e) => {
     if ((e.key === "Escape" || e.key === " " || e.key === "Enter") && introSplash && !introSplash.classList.contains("is-exiting") && introSplash.style.display !== "none") {
-      dismissSplash();
+      startFreeExperience();
     }
   });
 
