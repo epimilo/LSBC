@@ -1194,11 +1194,59 @@ function animateGuideCameraLookAt(stop, dur = 1200) {
   return waitForAFrameAnimation(mainCamera, "guide_look", dur);
 }
 
-function animateGuideCameraTo(stop) {
+/**
+ * Move camera to a tour stop, ensuring the viewer NEVER backs into an object.
+ * Strategy: if the viewer would need to walk backwards (or back away from the
+ * previous object), rotate to face the destination FIRST, then walk forward.
+ */
+async function animateGuideCameraTo(stop) {
   if (!cameraRig || !stop) return Promise.resolve();
   const current = cameraRig.object3D.position;
+  const moveDx = stop.x - current.x;
+  const moveDz = stop.z - current.z;
+  const moveDist = Math.hypot(moveDx, moveDz);
+
+  if (moveDist < 0.15) {
+    /* Already at position — just rotate to face the object */
+    await animateGuideCameraLookAt(stop, 900);
+    return;
+  }
+
+  /* Calculate the movement direction as a yaw angle */
+  const THREE = AFRAME.THREE;
+  const moveYaw = THREE.MathUtils.radToDeg(Math.atan2(-moveDx, -moveDz));
+
+  /* Calculate where the viewer SHOULD look (at the new stop's object) */
+  const newLookRot = computeCameraRotationFromLookAt(
+    { x: current.x, y: current.y, z: current.z },
+    stop.lookAt || { x: stop.x, y: 1.65, z: stop.z }
+  );
+
+  /* Also check where the viewer is CURRENTLY looking (at the previous object) */
+  const camRot = mainCamera.object3D.rotation;
+  const currentYaw = THREE.MathUtils.radToDeg(camRot.y);
+
+  /* Angle between movement direction and where viewer should look */
+  let diffNewLook = ((newLookRot.y - moveYaw) % 360 + 540) % 360 - 180;
+
+  /* Angle between movement direction and where viewer is currently looking */
+  let diffCurrentLook = ((currentYaw - moveYaw) % 360 + 540) % 360 - 180;
+
+  /* Pre-rotate if EITHER:
+     - Walking backwards relative to the new object (diffNewLook > 90°), OR
+     - Backing away from the current view (diffCurrentLook > 90°)
+     In both cases, first rotate to face where we're going, then walk forward. */
+  const needsPreRotate = Math.abs(diffNewLook) > 90 || Math.abs(diffCurrentLook) > 90;
+
+  if (needsPreRotate) {
+    /* ── Phase 1: Rotate in place to face the destination object ── */
+    await animateGuideCameraLookAt(stop, 700);
+  }
+
+  /* ── Phase 2: Walk to position (now facing forward) ── */
   const dur = getGuideMoveDuration(current.x, current.z, stop.x, stop.z);
   cameraRig.setAttribute("animation__guide_move", `property: position; to: ${stop.x} 1.6 ${stop.z}; dur: ${dur}; easing: easeInOutSine`);
+  /* Keep looking at the object while walking (refines angle as position changes) */
   void animateGuideCameraLookAt(stop, Math.min(dur, 1800));
   return waitForAFrameAnimation(cameraRig, "guide_move", dur);
 }
