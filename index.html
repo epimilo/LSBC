@@ -1,363 +1,381 @@
-<!DOCTYPE html>
-<html lang="vi">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>Phòng Trưng Bày 360</title>
-    <meta name="description" content="Phòng trưng bày 360 độ với tiểu cảnh họp trực tuyến, vật phẩm tương tác và trang báo tương tác." />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet" />
-    <link rel="preload" href="./fonts/KefaIII.ttf" as="font" type="font/ttf" crossorigin />
-    <link rel="stylesheet" href="./styles.css" />
-    <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
-    <script src="./script.js" defer></script>
-  </head>
-  <body>
-
-    <!-- INTRO SPLASH -->
-    <div class="intro-splash" id="introSplash" role="dialog" aria-modal="true" aria-label="Màn hình giới thiệu">
-      <div class="intro-splash__bg"></div>
-      <div class="intro-splash__content">
-        <p class="intro-splash__eyebrow">Triển lãm tri ân</p>
-        <img class="intro-splash__logo" src="./Asset 2.svg" alt="IN DẤU" />
-        <p class="intro-splash__lede">
-          Chào mừng bạn đến với triển lãm In Dấu, nơi tái hiện hành trình khó khăn của báo in Việt Nam trong thời kỳ COVID-19.
-          Qua những hình ảnh, hiện vật tác nghiệp và tư liệu chân thực, chúng tôi mong muốn khắc họa những khó khăn mà các tòa soạn và phóng viên phải đối mặt trong thời gian dịch bệnh diễn ra.
-        </p>
-        <div class="intro-splash__choices" aria-label="Chọn chế độ tham quan">
-          <button type="button" class="intro-splash__enter intro-splash__enter--guide" id="guideTourBtn">
-            <span class="intro-splash__enter-text">Trải nghiệm tham quan tự động kèm thuyết minh</span>
-            <span class="intro-splash__enter-arrow" aria-hidden="true">→</span>
-          </button>
-          <button type="button" class="intro-splash__enter intro-splash__enter--free" id="introEnterBtn">
-            <span class="intro-splash__enter-text">Tham quan tự do</span>
-            <span class="intro-splash__enter-arrow" aria-hidden="true">→</span>
-          </button>
-        </div>
-      </div>
-      <div class="intro-splash__scroll-hint" aria-hidden="true">
-        <span class="intro-splash__scroll-dot"></span>
-        <span class="intro-splash__scroll-dot"></span>
-        <span class="intro-splash__scroll-dot"></span>
-      </div>
-    </div>
-
-    <!-- TOOLTIP -->
-    <div class="artifact-tooltip" id="artifactTooltip" aria-hidden="true"></div>
-
-    <!-- CURSOR RING -->
-    <div class="cursor-ring" id="cursorRing" aria-hidden="true">
-      <div class="cursor-ring__inner"></div>
-    </div>
-
-    <div class="gyro-prompt glass" id="gyroPrompt" hidden>
-      <p class="gyro-prompt__title">Bật xoay bằng cảm biến</p>
-      <p class="gyro-prompt__text">Cho phép truy cập chuyển động để xoay nhìn bằng điện thoại.</p>
-      <button type="button" class="button button--small" id="gyroEnableBtn">Bật cảm biến</button>
-    </div>
-    <div class="rotate-prompt glass" id="rotatePrompt" hidden>
-      <p class="rotate-prompt__title">Nên xoay ngang màn hình</p>
-      <p class="rotate-prompt__text">Để có trải nghiệm tốt nhất, hãy xoay điện thoại sang màn hình ngang.</p>
-    </div>
-
-    <main class="app-shell" id="appShell">
-      <section class="hud">
-        <div class="intro-shell" id="introShell">
-          <div class="hud__intro glass">
-            <p class="eyebrow">Triển lãm tri ân</p>
-            <h1>IN DẤU</h1>
-            <p class="lede">
-              Chào mừng bạn đến với triển lãm In Dấu, nơi tái hiện hành trình khó khăn của báo in Việt Nam trong thời kỳ COVID-19.
-              Qua những hình ảnh, hiện vật tác nghiệp và tư liệu chân thực, chúng tôi mong muốn khắc họa những khó khăn mà các tòa soạn và phóng viên phải đối mặt trong thời gian dịch bệnh diễn ra.
-            </p>
-            <div class="hud__actions">
-              <button type="button" class="button" data-action="toggle-help">Cách tương tác</button>
-              <button type="button" class="button" data-action="return-home" id="returnHomeBtn">Màn hình chính</button>
-            </div>
-          </div>
-          <button type="button" class="intro-shell__toggle" id="introToggle" data-action="toggle-intro" aria-label="Thu gọn bảng giới thiệu" hidden>
-            <span class="intro-shell__toggle-mark" id="introToggleMark">×</span>
-          </button>
-        </div>
-
-      </section>
-
-      <!-- PROGRESS COUNTER -->
-      <div class="progress-counter glass" id="progressCounter" aria-live="polite">
-        <span class="progress-counter__nums"><span id="progressCount">0</span><span class="progress-counter__sep"> / 11</span></span>
-        <span class="progress-counter__label">đã khám phá</span>
-        <div class="progress-counter__bar"><div class="progress-counter__fill" id="progressFill"></div></div>
-      </div>
-
-      <section class="top-bar glass" aria-label="Hành trình phòng trưng bày">
-        <div class="top-bar__header">
-          <p class="eyebrow">Hành trình</p>
-          <button type="button" class="top-bar__toggle" data-action="toggle-topbar" id="topBarToggle" aria-label="Thu gọn hành trình">
-            <span id="topBarToggleMark">−</span>
-          </button>
-        </div>
-        <div class="top-bar__content" id="topBarContent">
-          <label class="top-bar__field" for="journeySelect">
-            <select id="journeySelect" class="top-bar__select">
-              <option value="">Chọn một điểm dừng</option>
-              <option value="timeline">Dòng thời gian đại dịch COVID</option>
-              <option value="typewriter">Sạp báo bị phong toả</option>
-              <option value="painting-cluster">Cụm 5 tranh tường phải</option>
-              <option value="hazmat-exhibit">Trang phục bảo hộ</option>
-              <option value="meeting-setup">Cuộc họp giao ban trực tuyến</option>
-              <option value="newspaper">Việt Nam News số 30/03/2020</option>
-              <option value="cityscape">Quy hoạch hệ thống báo chí</option>
-            </select>
-          </label>
-          <div class="top-bar__actions">
-            <button type="button" class="button button--small" data-action="toggle-audio" id="audioButton">Tắt nhạc</button>
-          </div>
-        </div>
-      </section>
-
-      <section class="help-panel glass" id="helpPanel" hidden>
-        <div class="panel-header">
-          <div>
-            <p class="eyebrow">Hướng dẫn</p>
-            <h2>Cẩm nang trải nghiệm triển lãm "In Dấu"</h2>
-          </div>
-          <button type="button" class="icon-button" data-action="close-help" aria-label="Đóng hướng dẫn">×</button>
-        </div>
-        <ul class="help-list">
-          <li><strong>Hướng nhìn:</strong> Kéo chuột hoặc vuốt màn hình để xoay nhìn 360 độ.</li>
-          <li><strong>Di chuyển bằng chuột:</strong> Bấm vào bất kỳ bề mặt nào trong phòng, kể cả sàn và tường, để di đến gần điểm đó.</li>
-          <li><strong>Di chuyển bằng bàn phím:</strong> Trên máy tính, dùng phím mũi tên hoặc các phím W A S D để đi lại tự do (theo hướng nhìn).</li>
-          <li><strong>Mở bảng thông tin hiện vật:</strong> Bấm vào hiện vật để bảng thông tin hiển thị.</li>
-          <li><strong>Sử dụng bảng hành trình:</strong> Sử dụng dropdown Hành trình ở phía trên để nhảy nhanh tới từng điểm dừng.</li>
-        </ul>
-        <p style="margin:0.8rem 0 0.3rem;font-weight:600;font-size:0.85rem;">✦ Lưu ý khác:</p>
-        <ul class="help-list" style="margin-top:0.2rem;">
-          <li>Để có trải nghiệm tốt nhất, hãy truy cập bằng máy tính/máy tính bảng.</li>
-          <li>Có thể dùng nút toàn màn hình ở góc dưới phải để mở toàn màn hình.</li>
-          <li>Nhạc nền sẽ tự động bật, có thể tắt hoặc bật lại bằng nút ở khung hành trình.</li>
-        </ul>
-      </section>
-
-      <!-- ARTIFACT PANEL — full-height, slides from right -->
-      <section class="overlay overlay--hidden glass" id="artifactPanel" aria-live="polite">
-        <div class="panel-header">
-          <div>
-            <p class="eyebrow" id="artifactTag">Vật phẩm</p>
-            <h2 id="artifactTitle">Tiêu đề</h2>
-          </div>
-          <button type="button" class="icon-button" data-action="close-panel" aria-label="Đóng thông tin">×</button>
-        </div>
-        <p class="artifact-subtitle" id="artifactSubtitle"></p>
-        <div class="artifact-body" id="artifactBody"></div>
-      </section>
-
-      <section class="newspaper overlay overlay--hidden" id="newspaperView" aria-live="polite">
-        <div class="newspaper__toolbar">
-          <div>
-            <p class="eyebrow">Từ phòng trưng bày sang mặt báo</p>
-            <h2>Việt Nam News số 30/03/2020</h2>
-          </div>
-          <div class="newspaper__actions">
-            <a class="button button--light" href="./to-bao-cuoi-cung.html" target="_blank" rel="noreferrer">Mở riêng 1 tab</a>
-            <button type="button" class="button button--light" data-action="reload-newspaper">Tải lại tờ báo</button>
-            <button type="button" class="button button--light" data-action="close-newspaper">Trở lại phòng</button>
-          </div>
-        </div>
-        <div class="newspaper__pages">
-          <iframe id="newspaperFrame" class="newspaper__frame" src="./to-bao-cuoi-cung.html" title="Việt Nam News số 30/03/2020" loading="lazy"></iframe>
-        </div>
-      </section>
-
-      <!-- A-FRAME SCENE -->
-      <section class="scene-wrap" id="sceneWrap">
-        <a-scene renderer="antialias: true; colorManagement: true" background="color: #111111" vr-mode-ui="enabled: true" device-orientation-permission-ui="enabled: false" loading-screen="enabled: false" embedded>
-          <a-assets timeout="30000">
-            <img id="paperTexture" alt="" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%23f3ead9'/%3E%3Cg fill='none' stroke='%23d3c3a5' stroke-width='1' opacity='.45'%3E%3Cpath d='M0 64h512M0 128h512M0 192h512M0 256h512M0 320h512M0 384h512M0 448h512'/%3E%3Cpath d='M64 0v512M128 0v512M192 0v512M256 0v512M320 0v512M384 0v512M448 0v512'/%3E%3C/g%3E%3C/svg%3E" />
-            <img id="newspaperImage" crossorigin="anonymous" src="./viet-nam-news-dung-xuat-ban-mot-to-bao-in-vi-nguoi-nhiem-covid-19.jpg" />
-            <!-- newsstand model loaded via URL on entity -->
-            <canvas id="timelineCanvas" width="512" height="682"></canvas>
-            <canvas id="archiveCanvas" width="512" height="256"></canvas>
-            <canvas id="paintingDawnCanvas" width="630" height="440"></canvas>
-            <canvas id="paintingEmberCanvas" width="630" height="440"></canvas>
-            <canvas id="paintingNightCanvas" width="610" height="420"></canvas>
-            <canvas id="paintingEchoCanvas" width="630" height="440"></canvas>
-            <canvas id="paintingGoldCanvas" width="630" height="440"></canvas>
-            <canvas id="meetScreenCanvas" width="720" height="405"></canvas>
-          </a-assets>
-
-          <a-entity light="type: ambient; color: #dce8ff; intensity: 1.62"></a-entity>
-          <a-entity light="type: point; color: #ffe2a0; intensity: 2.2; distance: 28" position="0 4.8 0"></a-entity>
-          <a-entity light="type: point; color: #7fb2ff; intensity: 1.2; distance: 24" position="-4.2 2.8 -2.8"></a-entity>
-          <a-entity light="type: point; color: #ffd6a8; intensity: 1.28; distance: 24" position="4.1 2.9 -2.2"></a-entity>
-          <a-entity light="type: point; color: #f2f0ea; intensity: 1.12; distance: 24" position="0 3.8 7.2"></a-entity>
-          <a-entity light="type: point; color: #f7ead7; intensity: 0.92; distance: 20" position="0 3.1 -7.1"></a-entity>
-          <a-entity light="type: directional; color: #fff1cf; intensity: 0.72" position="0 5.4 1.5"></a-entity>
-
-          <a-sky color="#171b24"></a-sky>
-          <a-plane class="teleportable" data-surface="floor" position="0 0 0" rotation="-90 0 0" width="18" height="18" color="#38281f" material="roughness: 1; metalness: 0.05"></a-plane>
-          <a-plane class="teleportable" data-surface="floor" position="0 0.04 0" rotation="-90 0 0" width="17.2" height="17.2" material="color: #ffffff; transparent: true; opacity: 0.0"></a-plane>
-
-          <a-box class="teleportable" data-surface="wall" position="0 2.7 -9" width="18" height="5.4" depth="0.3" color="#2b2624"></a-box>
-          <a-box class="teleportable" data-surface="wall" position="0 2.7 9" width="18" height="5.4" depth="0.3" color="#252120"></a-box>
-          <a-box class="teleportable" data-surface="wall" position="9 2.7 0" width="0.3" height="5.4" depth="18" color="#211c1b"></a-box>
-          <a-box class="teleportable" data-surface="wall" position="-9 2.7 0" width="0.3" height="5.4" depth="18" color="#211c1b"></a-box>
-          <a-box position="0 5.4 0" width="18" height="0.2" depth="18" color="#171717"></a-box>
-
-          <!-- Sáng nhẹ cho tiểu cảnh họp (trọng tâm) -->
-          <a-entity light="type: point; color: #fff0dd; intensity: 1.75; distance: 16" position="0 3.85 -4.1"></a-entity>
-
-          <!-- Màn hình họp trực tuyến (tường sau — cùng nhóm với bàn) -->
-          <a-box position="0 2.65 -8.86" width="5.5" height="2.95" depth="0.12" color="#121418"></a-box>
-          <a-plane class="clickable" data-artifact="meeting-setup" data-label="Cuộc họp giao ban trực tuyến" position="0 2.65 -8.76" width="5.15" height="2.68" material="src: #meetScreenCanvas; shader: flat"></a-plane>
-
-          <!-- Bàn họp gần màn hình — không ghế, không người; laptop lớn hơn -->
-          <a-box position="0 0.56 -5.42" width="3.45" height="1.08" depth="1.62" color="#32261f"></a-box>
-          <a-box position="0 1.1 -5.42" width="3.58" height="0.09" depth="1.76" color="#4a3828"></a-box>
-          <a-box position="-1.05 1.17 -5.32" width="0.88" height="0.038" depth="0.62" color="#252a35"></a-box>
-          <a-box position="-1.05 1.44 -5.25" width="0.8" height="0.54" depth="0.038" rotation="-15 0 0" color="#1a3558"></a-box>
-          <a-box position="-1.05 1.21 -5.16" width="0.58" height="0.014" depth="0.34" color="#3d4654"></a-box>
-          <a-box position="0 1.17 -5.36" width="0.88" height="0.038" depth="0.62" color="#252a35"></a-box>
-          <a-box position="0 1.44 -5.29" width="0.8" height="0.54" depth="0.038" rotation="-15 0 0" color="#1a3558"></a-box>
-          <a-box position="0 1.21 -5.2" width="0.58" height="0.014" depth="0.34" color="#3d4654"></a-box>
-          <a-box position="1.05 1.17 -5.32" width="0.88" height="0.038" depth="0.62" color="#252a35"></a-box>
-          <a-box position="1.05 1.44 -5.25" width="0.8" height="0.54" depth="0.038" rotation="-15 0 0" color="#1a3558"></a-box>
-          <a-box position="1.05 1.21 -5.16" width="0.58" height="0.014" depth="0.34" color="#3d4654"></a-box>
-          <a-box class="clickable" data-artifact="meeting-setup" data-label="Cuộc họp giao ban trực tuyến" position="0 1.28 -5.42" width="3.35" height="0.72" depth="1.52" material="color: #ffffff; transparent: true; opacity: 0.03" shadow="cast: false"></a-box>
-          <!-- Desk lamp glow to illuminate laptops -->
-          <a-entity light="type: point; color: #c8ddf0; intensity: 0.6; distance: 2.5; decay: 2" position="-1.05 1.25 -5.28"></a-entity>
-          <a-entity light="type: point; color: #c8ddf0; intensity: 0.6; distance: 2.5; decay: 2" position="0 1.25 -5.32"></a-entity>
-          <a-entity light="type: point; color: #c8ddf0; intensity: 0.6; distance: 2.5; decay: 2" position="1.05 1.25 -5.28"></a-entity>
-
-          <!-- Mô hình đồ bảo hộ — lồng kính sát tường sau, trái màn họp -->
-          <a-entity id="hazmatExhibit" position="-6.05 0 -7.05" scale="1.28 1.28 1.28">
-            <a-box class="teleportable" data-surface="pedestal" position="0 0.11 0" width="1.85" height="0.22" depth="1.52" color="#4f433c"></a-box>
-            <a-box position="0 0.235 0" width="1.98" height="0.035" depth="1.66" material="color: #ffe1af; emissive: #ffd49d; emissiveIntensity: 0.95; transparent: true; opacity: 0.34; roughness: 0.18; metalness: 0.05"></a-box>
-            <!-- Base light glow -->
-            <a-entity light="type: point; color: #ffe8c0; intensity: 0.8; distance: 3.5; decay: 2" position="0 0.35 0"></a-entity>
-            <a-box position="0 1.72 0" width="1.72" height="3.12" depth="1.35" material="color: #d2e4ff; transparent: true; opacity: 0.15; roughness: 0.06; metalness: 0.15; side: double; depthWrite: false"></a-box>
-            <a-box position="0 1.72 0" width="1.74" height="3.14" depth="1.37" material="color: #1a1a1a; wireframe: true; shader: flat; depthWrite: false"></a-box>
-            <a-entity
-              id="hazmatCharacter"
-              position="0 1.44 0.14"
-              rotation="0 0 0"
-              scale="1.22 1.22 1.22"
-              gltf-model="./hazmat-character-fixed.glb"
-              hazmat-display
-            ></a-entity>
-            <a-entity light="type: point; color: #ffe5b8; intensity: 1.25; distance: 6.8; decay: 2" position="0 1.18 0.15"></a-entity>
-            <a-entity light="type: point; color: #fff6e8; intensity: 1.65; distance: 8" position="0 2.25 0.75"></a-entity>
-            <a-entity light="type: point; color: #cfe6ff; intensity: 0.72; distance: 5" position="0 1.15 -0.62"></a-entity>
-            <a-box class="clickable" data-artifact="hazmat-exhibit" data-label="Trang phục bảo hộ" position="0 1.65 0.72" width="1.15" height="2.55" depth="0.05" material="color: #ffffff; transparent: true; opacity: 0.04"></a-box>
-          </a-entity>
-
-          <!-- NEWSPAPER — museum display stand with image (scaled 1.4×) -->
-          <!-- Base plate -->
-          <a-box class="teleportable" data-surface="pedestal" position="0 0.056 3.48" width="0.98" height="0.112" depth="0.7" material="color: #c8c8c8; roughness: 0.6; metalness: 0.3"></a-box>
-          <!-- Pole (shortened so it doesn't pierce the tilted frame) -->
-          <a-cylinder position="0 0.941 3.48" radius="0.035" height="1.658" material="color: #b0b0b0; roughness: 0.4; metalness: 0.55"></a-cylinder>
-          <!-- Tilted frame back panel (portrait: 1.03w × 1.46h) -->
-          <a-box position="0 2.27 3.33" rotation="-18 0 0" width="1.036" height="1.456" depth="0.025" material="color: #d8d8d8; roughness: 0.5; metalness: 0.2"></a-box>
-          <!-- Frame border top -->
-          <a-box position="0 3.01 3.1" rotation="-18 0 0" width="1.148" height="0.053" depth="0.053" material="color: #a8a8a8; roughness: 0.4; metalness: 0.5"></a-box>
-          <!-- Frame border bottom -->
-          <a-box position="0 1.53 3.56" rotation="-18 0 0" width="1.148" height="0.053" depth="0.053" material="color: #a8a8a8; roughness: 0.4; metalness: 0.5"></a-box>
-          <!-- Frame border left -->
-          <a-box position="-0.546 2.27 3.29" rotation="-18 0 0" width="0.053" height="1.54" depth="0.053" material="color: #a8a8a8; roughness: 0.4; metalness: 0.5"></a-box>
-          <!-- Frame border right -->
-          <a-box position="0.546 2.27 3.29" rotation="-18 0 0" width="0.053" height="1.54" depth="0.053" material="color: #a8a8a8; roughness: 0.4; metalness: 0.5"></a-box>
-          <!-- Newspaper image on tilted plane (portrait 445:640) -->
-          <a-plane id="newspaperArtifact" class="clickable" data-artifact="newspaper" data-label="Việt Nam News số 30/03/2020" position="0 2.27 3.34" rotation="-18 0 0" width="0.98" height="1.4" material="src: #newspaperImage; shader: flat" shadow="cast: true"></a-plane>
-          <!-- Spotlight on display -->
-          <a-entity light="type: spot; color: #fff5e0; intensity: 1.8; angle: 35; penumbra: 0.6; decay: 1.5; distance: 5" position="0 3.8 3.9" rotation="-35 0 0"></a-entity>
-
-
-          <!-- QUY HOẠCH CƠ CẤU TÒA SOẠN — sa bàn trong lồng kính (bên phải stand báo) -->
-          <a-entity id="cityscapeGroup" position="3.5 0 3.48">
-            <!-- Tall pedestal base (sa bàn style) -->
-            <a-box class="teleportable" data-surface="pedestal" position="0 0.46 0" width="1.85" height="0.92" depth="1.52" material="color: #4f433c; roughness: 0.7; metalness: 0.2"></a-box>
-            <!-- Pedestal top bevel -->
-            <a-box position="0 0.93 0" width="1.88" height="0.04" depth="1.55" material="color: #5a5048; roughness: 0.6; metalness: 0.25"></a-box>
-            <!-- Pedestal light strip -->
-            <a-box position="0 0.955 0" width="1.90" height="0.025" depth="1.57" material="color: #ffe1af; emissive: #ffd49d; emissiveIntensity: 0.95; transparent: true; opacity: 0.34; roughness: 0.18; metalness: 0.05"></a-box>
-            <!-- Base light glow -->
-            <a-entity light="type: point; color: #ffe8c0; intensity: 0.8; distance: 3.5; decay: 2" position="0 1.05 0"></a-entity>
-            <!-- Glass case — semi-transparent panels (shorter, proportional to model) -->
-            <a-box position="0 2.18 0" width="1.52" height="2.4" depth="1.2" material="color: #d2e4ff; transparent: true; opacity: 0.15; roughness: 0.06; metalness: 0.15; side: double; depthWrite: false"></a-box>
-            <!-- Glass case — wireframe edge lines -->
-            <a-box position="0 2.18 0" width="1.54" height="2.42" depth="1.22" material="color: #1a1a1a; wireframe: true; shader: flat; depthWrite: false"></a-box>
-            <!-- City buildings model (sa bàn) — on top of tall pedestal -->
-            <a-entity
-              position="-0.142 1.18 -0.208"
-              rotation="0 -30 0"
-              scale="0.28 0.28 0.28"
-              gltf-model="./low-poly_city_buildings.glb"
-              shadow="cast: true; receive: false"
-            ></a-entity>
-            <!-- Lights inside case -->
-            <a-entity light="type: point; color: #ffe5b8; intensity: 1.1; distance: 5; decay: 2" position="0 1.8 0.15"></a-entity>
-            <a-entity light="type: point; color: #fff6e8; intensity: 1.4; distance: 6; position="0 2.6 0.6"></a-entity>
-            <a-entity light="type: point; color: #cfe6ff; intensity: 0.6; distance: 4; position="0 1.8 -0.5"></a-entity>
-            <!-- Invisible hitbox for click interaction (front face) -->
-            <a-box class="clickable" data-artifact="cityscape" data-label="Quy hoạch hệ thống báo chí" position="0 2.1 0.65" width="1.15" height="2.2" depth="0.05" material="color: #ffffff; transparent: true; opacity: 0; shader: flat" visible="true"></a-box>
-          </a-entity>
-
-
-          <!-- SẠP BÁO (gần tường phải, phía sau phòng) -->
-          <a-entity id="newsstandGroup" position="5.8 0 -5.2">
-            <!-- Pedestal base -->
-            <a-box class="teleportable" data-surface="pedestal" position="0 0.11 0" width="2.0" height="0.22" depth="1.5" material="color: #4a4340; roughness: 0.7; metalness: 0.2"></a-box>
-            <!-- Pedestal light strip -->
-            <a-box position="0 0.225 0" width="2.02" height="0.03" depth="1.52" material="color: #ffe5b0; emissive: #ffd080; emissiveIntensity: 0.85; transparent: true; opacity: 0.45; roughness: 0.15; metalness: 0.05"></a-box>
-            <!-- Newsstand model (visual only) -->
-            <a-entity
-              position="0 1.82 0"
-              rotation="0 -14 0"
-              scale="3.2 3.2 3.2"
-              gltf-model="./Hitem3d-1778980352426.compressed.glb"
-              shadow="cast: true; receive: false"
-            ></a-entity>
-            <!-- Invisible hitbox for click interaction -->
-            <a-box class="clickable" data-artifact="typewriter" data-label="Sạp báo bị phong toả" position="0 1.9 0" width="1.5" height="3.2" depth="1.1" material="color: #ffffff; transparent: true; opacity: 0; shader: flat" visible="true"></a-box>
-            <!-- Light above -->
-            <a-entity light="type: point; color: #ffe5bb; intensity: 1.4; distance: 6; decay: 2" position="0 3.4 0.4"></a-entity>
-          </a-entity>
-
-          <!-- TIMELINE (dời sát tường trái) -->
-          <a-box class="clickable" data-artifact="timeline" data-label="Dòng thời gian đại dịch COVID" position="-6.85 1.8 2.92" width="1.36" height="1.82" depth="0.16" color="#63584e"></a-box>
-          <a-plane class="clickable" data-artifact="timeline" data-label="Dòng thời gian đại dịch COVID" position="-6.83 1.8 3.02" width="1.12" height="1.52" material="src: #timelineCanvas"></a-plane>
-
-          <!-- CỤM 5 TRANH (tường phải, lấy bức giữa làm tâm điểm hành trình) -->
-          <a-entity light="type: point; color: #ffe4ba; intensity: 0.94; distance: 6.5; decay: 2" position="7.55 4.06 -5.15"></a-entity>
-          <a-box position="8.84 2.66 -5.15" rotation="0 -90 0" width="1.42" height="1.04" depth="0.08" color="#5a4537"></a-box>
-          <a-plane class="clickable" data-artifact="painting-dawn" data-label="Sẵn sàng" position="8.78 2.66 -5.15" rotation="0 -90 0" width="1.16" height="0.8" material="src: #paintingDawnCanvas; shader: flat"></a-plane>
-
-          <a-entity light="type: point; color: #ffe3b8; intensity: 0.96; distance: 6.5; decay: 2" position="7.55 4.06 0.95"></a-entity>
-          <a-box position="8.84 2.66 0.95" rotation="0 -90 0" width="1.42" height="1.04" depth="0.08" color="#4f3c34"></a-box>
-          <a-plane class="clickable" data-artifact="painting-ember" data-label="Dấn thân" position="8.78 2.66 0.95" rotation="0 -90 0" width="1.16" height="0.8" material="src: #paintingEmberCanvas; shader: flat"></a-plane>
-
-          <a-entity light="type: point; color: #ffe8c8; intensity: 1.16; distance: 7.2; decay: 2" position="7.5 3.6 -1.45"></a-entity>
-          <a-box position="8.84 2.1 -1.45" rotation="0 -90 0" width="1.56" height="1.12" depth="0.08" color="#493339"></a-box>
-          <a-plane class="clickable" data-artifact="painting-night" data-label="Kết nối" position="8.78 2.1 -1.45" rotation="0 -90 0" width="1.28" height="0.88" material="src: #paintingNightCanvas; shader: flat"></a-plane>
-
-          <a-entity light="type: point; color: #ffe2b5; intensity: 0.94; distance: 6.5; decay: 2" position="7.55 2.72 -3.6"></a-entity>
-          <a-box position="8.84 1.42 -3.6" rotation="0 -90 0" width="1.42" height="1.04" depth="0.08" color="#48505a"></a-box>
-          <a-plane class="clickable" data-artifact="painting-echo" data-label="Lăn xả" position="8.78 1.42 -3.6" rotation="0 -90 0" width="1.16" height="0.8" material="src: #paintingEchoCanvas; shader: flat"></a-plane>
-
-          <a-entity light="type: point; color: #ffe4b8; intensity: 0.94; distance: 6.5; decay: 2" position="7.55 2.72 2.65"></a-entity>
-          <a-box position="8.84 1.42 2.65" rotation="0 -90 0" width="1.42" height="1.04" depth="0.08" color="#6b543f"></a-box>
-          <a-plane class="clickable" data-artifact="painting-gold" data-label="Thích nghi" position="8.78 1.42 2.65" rotation="0 -90 0" width="1.16" height="0.8" material="src: #paintingGoldCanvas; shader: flat"></a-plane>
-
-          <!-- Camera rig -->
-          <a-entity id="cameraRig" position="0 1.6 8.48" keyboard-walk="speed: 4.65">
-            <a-camera id="mainCamera" look-controls="touchEnabled: true; mouseEnabled: true; magicWindowTrackingEnabled: true" wasd-controls="enabled: false">
-              <a-entity id="mainCursor" cursor="rayOrigin: mouse" raycaster="objects: .clickable, .teleportable"></a-entity>
-            </a-camera>
-          </a-entity>
-        </a-scene>
-      </section>
-    </main>
-    <audio id="ambientAudio" src="./ambient-music.mp3" loop preload="auto"></audio>
-    <audio id="guideNarrationAudio" preload="auto"></audio>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Description" content="Phòng trưng bày 360 độ với tiểu cảnh họp trực tuyến, vật phẩm tương tác và trang báo tương tác.">
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.3">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Times; -webkit-text-stroke: #000000}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Times; -webkit-text-stroke: #000000; min-height: 14.0px}
+    span.s1 {font-kerning: none}
+  </style>
+</head>
+<body>
+<p class="p1"><span class="s1">&lt;!DOCTYPE html&gt;</span></p>
+<p class="p1"><span class="s1">&lt;html lang="vi"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;head&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8" /&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" /&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;title&gt;Phòng Trưng Bày 360&lt;/title&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;meta name="description" content="Phòng trưng bày 360 độ với tiểu cảnh họp trực tuyến, vật phẩm tương tác và trang báo tương tác." /&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;link rel="preconnect" href="https://fonts.googleapis.com" /&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;link rel="preconnect" href="https://fonts.gstatic.com" crossorigin /&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&amp;display=swap" rel="stylesheet" /&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;link rel="preload" href="./fonts/KefaIII.ttf" as="font" type="font/ttf" crossorigin /&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;link rel="stylesheet" href="./styles.css" /&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script src="https://aframe.io/releases/1.7.1/aframe.min.js"&gt;&lt;/script&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script src="./script.js" defer&gt;&lt;/script&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/head&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;body&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- INTRO SPLASH --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="intro-splash" id="introSplash" role="dialog" aria-modal="true" aria-label="Màn hình giới thiệu"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div class="intro-splash__bg"&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div class="intro-splash__content"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;p class="intro-splash__eyebrow"&gt;Triển lãm tri ân&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;img class="intro-splash__logo" src="./Asset 2.svg" alt="IN DẤU" /&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;p class="intro-splash__lede"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>Chào mừng bạn đến với triển lãm In Dấu, nơi tái hiện hành trình khó khăn của báo in Việt Nam trong thời kỳ COVID-19.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>Qua những hình ảnh, hiện vật tác nghiệp và tư liệu chân thực, chúng tôi mong muốn khắc họa những khó khăn mà các tòa soạn và phóng viên phải đối mặt trong thời gian dịch bệnh diễn ra.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="intro-splash__choices" aria-label="Chọn chế độ tham quan"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;button type="button" class="intro-splash__enter intro-splash__enter--guide" id="guideTourBtn"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;span class="intro-splash__enter-text"&gt;Trải nghiệm tham quan tự động kèm thuyết minh&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;span class="intro-splash__enter-arrow" aria-hidden="true"&gt;→&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;button type="button" class="intro-splash__enter intro-splash__enter--free" id="introEnterBtn"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;span class="intro-splash__enter-text"&gt;Tham quan tự do&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;span class="intro-splash__enter-arrow" aria-hidden="true"&gt;→&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div class="intro-splash__scroll-hint" aria-hidden="true"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;span class="intro-splash__scroll-dot"&gt;&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;span class="intro-splash__scroll-dot"&gt;&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;span class="intro-splash__scroll-dot"&gt;&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- TOOLTIP --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="artifact-tooltip" id="artifactTooltip" aria-hidden="true"&gt;&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- CURSOR RING --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="cursor-ring" id="cursorRing" aria-hidden="true"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div class="cursor-ring__inner"&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="gyro-prompt glass" id="gyroPrompt" hidden&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;p class="gyro-prompt__title"&gt;Bật xoay bằng cảm biến&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;p class="gyro-prompt__text"&gt;Cho phép truy cập chuyển động để xoay nhìn bằng điện thoại.&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;button type="button" class="button button--small" id="gyroEnableBtn"&gt;Bật cảm biến&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="rotate-prompt glass" id="rotatePrompt" hidden&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;p class="rotate-prompt__title"&gt;Nên xoay ngang màn hình&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;p class="rotate-prompt__text"&gt;Để có trải nghiệm tốt nhất, hãy xoay điện thoại sang màn hình ngang.&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;main class="app-shell" id="appShell"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;section class="hud"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="intro-shell" id="introShell"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="hud__intro glass"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;p class="eyebrow"&gt;Triển lãm tri ân&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;h1&gt;IN DẤU&lt;/h1&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;p class="lede"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>Chào mừng bạn đến với triển lãm In Dấu, nơi tái hiện hành trình khó khăn của báo in Việt Nam trong thời kỳ COVID-19.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>Qua những hình ảnh, hiện vật tác nghiệp và tư liệu chân thực, chúng tôi mong muốn khắc họa những khó khăn mà các tòa soạn và phóng viên phải đối mặt trong thời gian dịch bệnh diễn ra.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="hud__actions"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;button type="button" class="button" data-action="toggle-help"&gt;Cách tương tác&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;button type="button" class="button" data-action="return-home" id="returnHomeBtn"&gt;Màn hình chính&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;button type="button" class="intro-shell__toggle" id="introToggle" data-action="toggle-intro" aria-label="Thu gọn bảng giới thiệu" hidden&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;span class="intro-shell__toggle-mark" id="introToggleMark"&gt;×&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/section&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;!-- PROGRESS COUNTER --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div class="progress-counter glass" id="progressCounter" aria-live="polite"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;span class="progress-counter__nums"&gt;&lt;span id="progressCount"&gt;0&lt;/span&gt;&lt;span class="progress-counter__sep"&gt; / 11&lt;/span&gt;&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;span class="progress-counter__label"&gt;đã khám phá&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="progress-counter__bar"&gt;&lt;div class="progress-counter__fill" id="progressFill"&gt;&lt;/div&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;section class="top-bar glass" aria-label="Hành trình phòng trưng bày"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="top-bar__header"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;p class="eyebrow"&gt;Hành trình&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;button type="button" class="top-bar__toggle" data-action="toggle-topbar" id="topBarToggle" aria-label="Thu gọn hành trình"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;span id="topBarToggleMark"&gt;−&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="top-bar__content" id="topBarContent"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;label class="top-bar__field" for="journeySelect"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;select id="journeySelect" class="top-bar__select"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;option value=""&gt;Chọn một điểm dừng&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;option value="timeline"&gt;Dòng thời gian đại dịch COVID&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;option value="typewriter"&gt;Sạp báo bị phong toả&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;option value="painting-cluster"&gt;Cụm 5 tranh tường phải&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;option value="hazmat-exhibit"&gt;Trang phục bảo hộ&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;option value="meeting-setup"&gt;Cuộc họp giao ban trực tuyến&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;option value="newspaper"&gt;Việt Nam News số 30/03/2020&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;option value="cityscape"&gt;Quy hoạch hệ thống báo chí&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/select&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/label&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="top-bar__actions"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;button type="button" class="button button--small" data-action="toggle-audio" id="audioButton"&gt;Tắt nhạc&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/section&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;section class="help-panel glass" id="helpPanel" hidden&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="panel-header"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;p class="eyebrow"&gt;Hướng dẫn&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;h2&gt;Cẩm nang trải nghiệm triển lãm "In Dấu"&lt;/h2&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;button type="button" class="icon-button" data-action="close-help" aria-label="Đóng hướng dẫn"&gt;×&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;ul class="help-list"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;li&gt;&lt;strong&gt;Hướng nhìn:&lt;/strong&gt; Kéo chuột hoặc vuốt màn hình để xoay nhìn 360 độ.&lt;/li&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;li&gt;&lt;strong&gt;Di chuyển bằng chuột:&lt;/strong&gt; Bấm vào bất kỳ bề mặt nào trong phòng, kể cả sàn và tường, để di đến gần điểm đó.&lt;/li&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;li&gt;&lt;strong&gt;Di chuyển bằng bàn phím:&lt;/strong&gt; Trên máy tính, dùng phím mũi tên hoặc các phím W A S D để đi lại tự do (theo hướng nhìn).&lt;/li&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;li&gt;&lt;strong&gt;Mở bảng thông tin hiện vật:&lt;/strong&gt; Bấm vào hiện vật để bảng thông tin hiển thị.&lt;/li&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;li&gt;&lt;strong&gt;Sử dụng bảng hành trình:&lt;/strong&gt; Sử dụng dropdown Hành trình ở phía trên để nhảy nhanh tới từng điểm dừng.&lt;/li&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/ul&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;p style="margin:0.8rem 0 0.3rem;font-weight:600;font-size:0.85rem;"&gt;✦ Lưu ý khác:&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;ul class="help-list" style="margin-top:0.2rem;"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;li&gt;Để có trải nghiệm tốt nhất, hãy truy cập bằng máy tính/máy tính bảng.&lt;/li&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;li&gt;Có thể dùng nút toàn màn hình ở góc dưới phải để mở toàn màn hình.&lt;/li&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;li&gt;Nhạc nền sẽ tự động bật, có thể tắt hoặc bật lại bằng nút ở khung hành trình.&lt;/li&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/ul&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/section&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;!-- ARTIFACT PANEL — full-height, slides from right --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;section class="overlay overlay--hidden glass" id="artifactPanel" aria-live="polite"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="panel-header"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;p class="eyebrow" id="artifactTag"&gt;Vật phẩm&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;h2 id="artifactTitle"&gt;Tiêu đề&lt;/h2&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;button type="button" class="icon-button" data-action="close-panel" aria-label="Đóng thông tin"&gt;×&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;p class="artifact-subtitle" id="artifactSubtitle"&gt;&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="artifact-body" id="artifactBody"&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/section&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;section class="newspaper overlay overlay--hidden" id="newspaperView" aria-live="polite"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="newspaper__toolbar"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;p class="eyebrow"&gt;Từ phòng trưng bày sang mặt báo&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;h2&gt;Việt Nam News số 30/03/2020&lt;/h2&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="newspaper__actions"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;a class="button button--light" href="./to-bao-cuoi-cung.html" target="_blank" rel="noreferrer"&gt;Mở riêng 1 tab&lt;/a&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;button type="button" class="button button--light" data-action="reload-newspaper"&gt;Tải lại tờ báo&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;button type="button" class="button button--light" data-action="close-newspaper"&gt;Trở lại phòng&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="newspaper__pages"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;iframe id="newspaperFrame" class="newspaper__frame" src="./to-bao-cuoi-cung.html" title="Việt Nam News số 30/03/2020" loading="lazy"&gt;&lt;/iframe&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/section&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;!-- A-FRAME SCENE --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;section class="scene-wrap" id="sceneWrap"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;a-scene renderer="antialias: true; colorManagement: true" background="color: #111111" vr-mode-ui="enabled: true" device-orientation-permission-ui="enabled: false" loading-screen="enabled: false" embedded&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-assets timeout="30000"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;img id="paperTexture" alt="" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%23f3ead9'/%3E%3Cg fill='none' stroke='%23d3c3a5' stroke-width='1' opacity='.45'%3E%3Cpath d='M0 64h512M0 128h512M0 192h512M0 256h512M0 320h512M0 384h512M0 448h512'/%3E%3Cpath d='M64 0v512M128 0v512M192 0v512M256 0v512M320 0v512M384 0v512M448 0v512'/%3E%3C/g%3E%3C/svg%3E" /&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;img id="newspaperImage" crossorigin="anonymous" src="./viet-nam-news-dung-xuat-ban-mot-to-bao-in-vi-nguoi-nhiem-covid-19.jpg" /&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;!-- newsstand model loaded via URL on entity --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;canvas id="timelineCanvas" width="512" height="682"&gt;&lt;/canvas&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;canvas id="archiveCanvas" width="512" height="256"&gt;&lt;/canvas&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;canvas id="paintingDawnCanvas" width="630" height="440"&gt;&lt;/canvas&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;canvas id="paintingEmberCanvas" width="630" height="440"&gt;&lt;/canvas&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;canvas id="paintingNightCanvas" width="610" height="420"&gt;&lt;/canvas&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;canvas id="paintingEchoCanvas" width="630" height="440"&gt;&lt;/canvas&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;canvas id="paintingGoldCanvas" width="630" height="440"&gt;&lt;/canvas&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;canvas id="meetScreenCanvas" width="720" height="405"&gt;&lt;/canvas&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/a-assets&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-entity light="type: ambient; color: #dce8ff; intensity: 1.62"&gt;&lt;/a-entity&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-entity light="type: point; color: #ffe2a0; intensity: 2.2; distance: 28" position="0 4.8 0"&gt;&lt;/a-entity&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-entity light="type: point; color: #7fb2ff; intensity: 1.2; distance: 24" position="-4.2 2.8 -2.8"&gt;&lt;/a-entity&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-entity light="type: point; color: #ffd6a8; intensity: 1.28; distance: 24" position="4.1 2.9 -2.2"&gt;&lt;/a-entity&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-entity light="type: point; color: #f2f0ea; intensity: 1.12; distance: 24" position="0 3.8 7.2"&gt;&lt;/a-entity&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-entity light="type: point; color: #f7ead7; intensity: 0.92; distance: 20" position="0 3.1 -7.1"&gt;&lt;/a-entity&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-entity light="type: directional; color: #fff1cf; intensity: 0.72" position="0 5.4 1.5"&gt;&lt;/a-entity&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-sky color="#171b24"&gt;&lt;/a-sky&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-plane class="teleportable" data-surface="floor" position="0 0 0" rotation="-90 0 0" width="18" height="18" color="#38281f" material="roughness: 1; metalness: 0.05"&gt;&lt;/a-plane&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-plane class="teleportable" data-surface="floor" position="0 0.04 0" rotation="-90 0 0" width="17.2" height="17.2" material="color: #ffffff; transparent: true; opacity: 0.0"&gt;&lt;/a-plane&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-box class="teleportable" data-surface="wall" position="0 2.7 -9" width="18" height="5.4" depth="0.3" color="#2b2624"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-box class="teleportable" data-surface="wall" position="0 2.7 9" width="18" height="5.4" depth="0.3" color="#252120"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-box class="teleportable" data-surface="wall" position="9 2.7 0" width="0.3" height="5.4" depth="18" color="#211c1b"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-box class="teleportable" data-surface="wall" position="-9 2.7 0" width="0.3" height="5.4" depth="18" color="#211c1b"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-box position="0 5.4 0" width="18" height="0.2" depth="18" color="#171717"&gt;&lt;/a-box&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;!-- Sáng nhẹ cho tiểu cảnh họp (trọng tâm) --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-entity light="type: point; color: #fff0dd; intensity: 1.75; distance: 16" position="0 3.85 -4.1"&gt;&lt;/a-entity&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;!-- Màn hình họp trực tuyến (tường sau — cùng nhóm với bàn) --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-box position="0 2.65 -8.86" width="5.5" height="2.95" depth="0.12" color="#121418"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-plane class="clickable" data-artifact="meeting-setup" data-label="Cuộc họp giao ban trực tuyến" position="0 2.65 -8.76" width="5.15" height="2.68" material="src: #meetScreenCanvas; shader: flat"&gt;&lt;/a-plane&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;!-- Bàn họp gần màn hình — không ghế, không người; laptop lớn hơn --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-box position="0 0.56 -5.42" width="3.45" height="1.08" depth="1.62" color="#32261f"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-box position="0 1.1 -5.42" width="3.58" height="0.09" depth="1.76" color="#4a3828"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-box position="-1.05 1.17 -5.32" width="0.88" height="0.038" depth="0.62" color="#252a35"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-box position="-1.05 1.44 -5.25" width="0.8" height="0.54" depth="0.038" rotation="-15 0 0" color="#1a3558"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-box position="-1.05 1.21 -5.16" width="0.58" height="0.014" depth="0.34" color="#3d4654"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-box position="0 1.17 -5.36" width="0.88" height="0.038" depth="0.62" color="#252a35"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-box position="0 1.44 -5.29" width="0.8" height="0.54" depth="0.038" rotation="-15 0 0" color="#1a3558"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-box position="0 1.21 -5.2" width="0.58" height="0.014" depth="0.34" color="#3d4654"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-box position="1.05 1.17 -5.32" width="0.88" height="0.038" depth="0.62" color="#252a35"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-box position="1.05 1.44 -5.25" width="0.8" height="0.54" depth="0.038" rotation="-15 0 0" color="#1a3558"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-box position="1.05 1.21 -5.16" width="0.58" height="0.014" depth="0.34" color="#3d4654"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-box class="clickable" data-artifact="meeting-setup" data-label="Cuộc họp giao ban trực tuyến" position="0 1.28 -5.42" width="3.35" height="0.72" depth="1.52" material="color: #ffffff; transparent: true; opacity: 0.03" shadow="cast: false"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;!-- Desk lamp glow to illuminate laptops --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-entity light="type: point; color: #c8ddf0; intensity: 0.6; distance: 2.5; decay: 2" position="-1.05 1.25 -5.28"&gt;&lt;/a-entity&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-entity light="type: point; color: #c8ddf0; intensity: 0.6; distance: 2.5; decay: 2" position="0 1.25 -5.32"&gt;&lt;/a-entity&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-entity light="type: point; color: #c8ddf0; intensity: 0.6; distance: 2.5; decay: 2" position="1.05 1.25 -5.28"&gt;&lt;/a-entity&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;!-- Mô hình đồ bảo hộ — lồng kính sát tường sau, trái màn họp --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-entity id="hazmatExhibit" position="-6.05 0 -7.05" scale="1.28 1.28 1.28"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;a-box class="teleportable" data-surface="pedestal" position="0 0.11 0" width="1.85" height="0.22" depth="1.52" color="#4f433c"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;a-box position="0 0.235 0" width="1.98" height="0.035" depth="1.66" material="color: #ffe1af; emissive: #ffd49d; emissiveIntensity: 0.95; transparent: true; opacity: 0.34; roughness: 0.18; metalness: 0.05"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;!-- Base light glow --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;a-entity light="type: point; color: #ffe8c0; intensity: 0.8; distance: 3.5; decay: 2" position="0 0.35 0"&gt;&lt;/a-entity&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;a-box position="0 1.72 0" width="1.72" height="3.12" depth="1.35" material="color: #d2e4ff; transparent: true; opacity: 0.15; roughness: 0.06; metalness: 0.15; side: double; depthWrite: false"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;a-box position="0 1.72 0" width="1.74" height="3.14" depth="1.37" material="color: #1a1a1a; wireframe: true; shader: flat; depthWrite: false"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;a-entity</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>id="hazmatCharacter"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>position="0 1.44 0.14"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>rotation="0 0 0"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>scale="1.22 1.22 1.22"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>gltf-model="./hazmat-character-fixed.glb"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>hazmat-display</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&gt;&lt;/a-entity&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;a-entity light="type: point; color: #ffe5b8; intensity: 1.25; distance: 6.8; decay: 2" position="0 1.18 0.15"&gt;&lt;/a-entity&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;a-entity light="type: point; color: #fff6e8; intensity: 1.65; distance: 8" position="0 2.25 0.75"&gt;&lt;/a-entity&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;a-entity light="type: point; color: #cfe6ff; intensity: 0.72; distance: 5" position="0 1.15 -0.62"&gt;&lt;/a-entity&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;a-box class="clickable" data-artifact="hazmat-exhibit" data-label="Trang phục bảo hộ" position="0 1.65 0.72" width="1.15" height="2.55" depth="0.05" material="color: #ffffff; transparent: true; opacity: 0.04"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/a-entity&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;!-- NEWSPAPER — museum display stand with image (scaled 1.4×) --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;!-- Base plate --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-box class="teleportable" data-surface="pedestal" position="0 0.056 3.48" width="0.98" height="0.112" depth="0.7" material="color: #c8c8c8; roughness: 0.6; metalness: 0.3"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;!-- Pole (shortened so it doesn't pierce the tilted frame) --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-cylinder position="0 0.941 3.48" radius="0.035" height="1.658" material="color: #b0b0b0; roughness: 0.4; metalness: 0.55"&gt;&lt;/a-cylinder&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;!-- Tilted frame back panel (portrait: 1.03w × 1.46h) --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-box position="0 2.27 3.33" rotation="-18 0 0" width="1.036" height="1.456" depth="0.025" material="color: #d8d8d8; roughness: 0.5; metalness: 0.2"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;!-- Frame border top --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-box position="0 3.01 3.1" rotation="-18 0 0" width="1.148" height="0.053" depth="0.053" material="color: #a8a8a8; roughness: 0.4; metalness: 0.5"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;!-- Frame border bottom --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-box position="0 1.53 3.56" rotation="-18 0 0" width="1.148" height="0.053" depth="0.053" material="color: #a8a8a8; roughness: 0.4; metalness: 0.5"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;!-- Frame border left --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-box position="-0.546 2.27 3.29" rotation="-18 0 0" width="0.053" height="1.54" depth="0.053" material="color: #a8a8a8; roughness: 0.4; metalness: 0.5"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;!-- Frame border right --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-box position="0.546 2.27 3.29" rotation="-18 0 0" width="0.053" height="1.54" depth="0.053" material="color: #a8a8a8; roughness: 0.4; metalness: 0.5"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;!-- Newspaper image on tilted plane (portrait 445:640) --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-plane id="newspaperArtifact" class="clickable" data-artifact="newspaper" data-label="Việt Nam News số 30/03/2020" position="0 2.27 3.34" rotation="-18 0 0" width="0.98" height="1.4" material="src: #newspaperImage; shader: flat" shadow="cast: true"&gt;&lt;/a-plane&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;!-- Spotlight on display --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-entity light="type: spot; color: #fff5e0; intensity: 1.8; angle: 35; penumbra: 0.6; decay: 1.5; distance: 5" position="0 3.8 3.9" rotation="-35 0 0"&gt;&lt;/a-entity&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;!-- QUY HOẠCH CƠ CẤU TÒA SOẠN — sa bàn trong lồng kính (bên phải stand báo) --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-entity id="cityscapeGroup" position="3.5 0 3.48"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;!-- Tall pedestal base (sa bàn style) --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;a-box class="teleportable" data-surface="pedestal" position="0 0.46 0" width="1.85" height="0.92" depth="1.52" material="color: #4f433c; roughness: 0.7; metalness: 0.2"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;!-- Pedestal top bevel --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;a-box position="0 0.93 0" width="1.88" height="0.04" depth="1.55" material="color: #5a5048; roughness: 0.6; metalness: 0.25"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;!-- Pedestal light strip --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;a-box position="0 0.955 0" width="1.90" height="0.025" depth="1.57" material="color: #ffe1af; emissive: #ffd49d; emissiveIntensity: 0.95; transparent: true; opacity: 0.34; roughness: 0.18; metalness: 0.05"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;!-- Base light glow --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;a-entity light="type: point; color: #ffe8c0; intensity: 0.8; distance: 3.5; decay: 2" position="0 1.05 0"&gt;&lt;/a-entity&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;!-- Glass case — semi-transparent panels (shorter, proportional to model) --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;a-box position="0 2.18 0" width="1.52" height="2.4" depth="1.2" material="color: #d2e4ff; transparent: true; opacity: 0.15; roughness: 0.06; metalness: 0.15; side: double; depthWrite: false"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;!-- Glass case — wireframe edge lines --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;a-box position="0 2.18 0" width="1.54" height="2.42" depth="1.22" material="color: #1a1a1a; wireframe: true; shader: flat; depthWrite: false"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;!-- City buildings model (sa bàn) — on top of tall pedestal --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;a-entity</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>position="-0.142 1.18 -0.208"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>rotation="0 -30 0"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>scale="0.28 0.28 0.28"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>gltf-model="./low-poly_city_buildings.glb"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>shadow="cast: true; receive: false"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&gt;&lt;/a-entity&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;!-- Lights inside case --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;a-entity light="type: point; color: #ffe5b8; intensity: 1.1; distance: 5; decay: 2" position="0 1.8 0.15"&gt;&lt;/a-entity&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;a-entity light="type: point; color: #fff6e8; intensity: 1.4; distance: 6; position="0 2.6 0.6"&gt;&lt;/a-entity&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;a-entity light="type: point; color: #cfe6ff; intensity: 0.6; distance: 4; position="0 1.8 -0.5"&gt;&lt;/a-entity&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;!-- Invisible hitbox for click interaction (front face) --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;a-box class="clickable" data-artifact="cityscape" data-label="Quy hoạch hệ thống báo chí" position="0 2.1 0.65" width="1.15" height="2.2" depth="0.05" material="color: #ffffff; transparent: true; opacity: 0; shader: flat" visible="true"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/a-entity&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;!-- SẠP BÁO (gần tường phải, phía sau phòng) --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-entity id="newsstandGroup" position="5.8 0 -5.2"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;!-- Pedestal base --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;a-box class="teleportable" data-surface="pedestal" position="0 0.11 0" width="2.0" height="0.22" depth="1.5" material="color: #4a4340; roughness: 0.7; metalness: 0.2"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;!-- Pedestal light strip --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;a-box position="0 0.225 0" width="2.02" height="0.03" depth="1.52" material="color: #ffe5b0; emissive: #ffd080; emissiveIntensity: 0.85; transparent: true; opacity: 0.45; roughness: 0.15; metalness: 0.05"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;!-- Newsstand model (visual only) --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;a-entity</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>position="0 1.82 0"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>rotation="0 -14 0"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>scale="3.2 3.2 3.2"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>gltf-model="./Hitem3d-1778980352426.compressed.glb"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>shadow="cast: true; receive: false"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&gt;&lt;/a-entity&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;!-- Invisible hitbox for click interaction --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;a-box class="clickable" data-artifact="typewriter" data-label="Sạp báo bị phong toả" position="0 1.9 0" width="1.5" height="3.2" depth="1.1" material="color: #ffffff; transparent: true; opacity: 0; shader: flat" visible="true"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;!-- Light above --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;a-entity light="type: point; color: #ffe5bb; intensity: 1.4; distance: 6; decay: 2" position="0 3.4 0.4"&gt;&lt;/a-entity&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/a-entity&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;!-- TIMELINE (dời sát tường trái) --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-box class="clickable" data-artifact="timeline" data-label="Dòng thời gian đại dịch COVID" position="-6.85 1.8 2.92" width="1.36" height="1.82" depth="0.16" color="#63584e"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-plane class="clickable" data-artifact="timeline" data-label="Dòng thời gian đại dịch COVID" position="-6.83 1.8 3.02" width="1.12" height="1.52" material="src: #timelineCanvas"&gt;&lt;/a-plane&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;!-- CỤM 5 TRANH (tường phải, lấy bức giữa làm tâm điểm hành trình) --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-entity light="type: point; color: #ffe4ba; intensity: 0.94; distance: 6.5; decay: 2" position="7.55 4.06 -5.15"&gt;&lt;/a-entity&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-box position="8.84 2.66 -5.15" rotation="0 -90 0" width="1.42" height="1.04" depth="0.08" color="#5a4537"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-plane class="clickable" data-artifact="painting-dawn" data-label="Sẵn sàng" position="8.78 2.66 -5.15" rotation="0 -90 0" width="1.16" height="0.8" material="src: #paintingDawnCanvas; shader: flat"&gt;&lt;/a-plane&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-entity light="type: point; color: #ffe3b8; intensity: 0.96; distance: 6.5; decay: 2" position="7.55 4.06 0.95"&gt;&lt;/a-entity&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-box position="8.84 2.66 0.95" rotation="0 -90 0" width="1.42" height="1.04" depth="0.08" color="#4f3c34"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-plane class="clickable" data-artifact="painting-ember" data-label="Dấn thân" position="8.78 2.66 0.95" rotation="0 -90 0" width="1.16" height="0.8" material="src: #paintingEmberCanvas; shader: flat"&gt;&lt;/a-plane&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-entity light="type: point; color: #ffe8c8; intensity: 1.16; distance: 7.2; decay: 2" position="7.5 3.6 -1.45"&gt;&lt;/a-entity&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-box position="8.84 2.1 -1.45" rotation="0 -90 0" width="1.56" height="1.12" depth="0.08" color="#493339"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-plane class="clickable" data-artifact="painting-night" data-label="Kết nối" position="8.78 2.1 -1.45" rotation="0 -90 0" width="1.28" height="0.88" material="src: #paintingNightCanvas; shader: flat"&gt;&lt;/a-plane&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-entity light="type: point; color: #ffe2b5; intensity: 0.94; distance: 6.5; decay: 2" position="7.55 2.72 -3.6"&gt;&lt;/a-entity&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-box position="8.84 1.42 -3.6" rotation="0 -90 0" width="1.42" height="1.04" depth="0.08" color="#48505a"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-plane class="clickable" data-artifact="painting-echo" data-label="Lăn xả" position="8.78 1.42 -3.6" rotation="0 -90 0" width="1.16" height="0.8" material="src: #paintingEchoCanvas; shader: flat"&gt;&lt;/a-plane&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-entity light="type: point; color: #ffe4b8; intensity: 0.94; distance: 6.5; decay: 2" position="7.55 2.72 2.65"&gt;&lt;/a-entity&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-box position="8.84 1.42 2.65" rotation="0 -90 0" width="1.42" height="1.04" depth="0.08" color="#6b543f"&gt;&lt;/a-box&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-plane class="clickable" data-artifact="painting-gold" data-label="Thích nghi" position="8.78 1.42 2.65" rotation="0 -90 0" width="1.16" height="0.8" material="src: #paintingGoldCanvas; shader: flat"&gt;&lt;/a-plane&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;!-- Camera rig --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a-entity id="cameraRig" position="0 1.6 8.48" keyboard-walk="speed: 4.65"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;a-camera id="mainCamera" look-controls="touchEnabled: true; mouseEnabled: true; magicWindowTrackingEnabled: true" wasd-controls="enabled: false"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;a-entity id="mainCursor" cursor="rayOrigin: mouse" raycaster="objects: .clickable, .teleportable"&gt;&lt;/a-entity&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/a-camera&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/a-entity&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/a-scene&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/section&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/main&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;audio id="ambientAudio" src="./ambient-music.mp3" loop preload="auto"&gt;&lt;/audio&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;audio id="guideNarrationAudio" preload="auto"&gt;&lt;/audio&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/body&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/html&gt;</span></p>
 </body>
 </html>
