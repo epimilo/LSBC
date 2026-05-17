@@ -22,11 +22,10 @@ const artifactContent = {
   },
   timeline: {
     tag: "Cột mốc",
-    title: "Khung lịch trên tường",
-    subtitle: "Mặt phẳng để treo các mốc thời gian, chuyển đổi, và những ngày đánh dấu.",
+    title: "Dòng thời gian đại dịch COVID tại Việt Nam",
+    subtitle: "Biểu đồ thời gian ghi lại những biến động và tinh thần kiên cường trong đại dịch.",
     body: [
-      "Người xem có thể bắt đầu hành trình tại đây để nắm bối cảnh tổng quan trước khi đi sâu vào các vật phẩm có tính cá nhân hơn.",
-      "Trong bản thật, bạn chỉ cần thay nội dung này bằng timeline và hình scan tài liệu nếu cần."
+      "Dòng thời gian của Đại dịch COVID-19 ở Việt Nam được tái hiện qua những mốc thời gian cụ thể. Biểu đồ thời gian này không chỉ ghi lại những biến động, thách thức chưa từng có của xã hội và ngành báo chí, mà còn ghi lại những cột mốc vô giá về tinh thần kiên cường, nỗ lực thích ứng của con người trong đại dịch."
     ]
   },
   archive: {
@@ -372,6 +371,78 @@ if (typeof AFRAME !== "undefined" && !AFRAME.components["keyboard-walk"]) {
 
 /* ── State ── */
 const audioState = { audioElement: null, enabled: true, started: false };
+
+/* ── Audio Unlock System ──
+   Browsers block audio.play() without prior user gesture.
+   This system ensures audio is unlocked on the FIRST user interaction
+   (click, touch, keydown) so that subsequent programmatic plays succeed. */
+let _audioUnlocked = false;
+const _pendingAudioPlays = [];
+let _audioCtx = null;
+
+/** Try to play an audio element, respecting the browser's autoplay policy.
+ *  If audio is not yet unlocked, queues the play for when it becomes unlocked. */
+function robustAudioPlay(el) {
+  if (!el) return Promise.resolve();
+  if (_audioUnlocked) {
+    return el.play().catch(err => {
+      console.warn('[Audio] play() failed even after unlock:', err?.name || err);
+      // Retry once after a short delay — sometimes the browser needs a tick
+      return new Promise(resolve => {
+        setTimeout(() => { el.play().then(resolve).catch(resolve); }, 150);
+      });
+    });
+  }
+  // Not unlocked yet — queue it
+  return new Promise(resolve => {
+    _pendingAudioPlays.push({ el, resolve });
+  });
+}
+
+/** Called on the first user gesture to unlock audio playback.
+ *  Creates and resumes an AudioContext, plays+pauses all <audio> elements
+ *  to "whitelist" them for future programmatic plays. */
+function _unlockAudio() {
+  if (_audioUnlocked) return;
+  _audioUnlocked = true;
+
+  // 1) Unlock AudioContext
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (AC && !_audioCtx) _audioCtx = new AC();
+    if (_audioCtx && _audioCtx.state === 'suspended') _audioCtx.resume();
+  } catch (_) {}
+
+  // 2) Play+pause every <audio> on the page to "prime" them
+  document.querySelectorAll('audio').forEach(a => {
+    try {
+      const p = a.play();
+      if (p && typeof p.then === 'function') {
+        p.then(() => { a.pause(); if (a.currentTime) a.currentTime = 0; }).catch(() => {});
+      }
+    } catch (_) {}
+  });
+
+  // 3) Flush any queued plays
+  const queue = _pendingAudioPlays.splice(0);
+  queue.forEach(({ el, resolve }) => {
+    el.play().then(resolve).catch(resolve);
+  });
+}
+
+// Listen for ANY user gesture to unlock audio as early as possible
+function _initAudioUnlockListeners() {
+  const events = ['pointerdown', 'touchstart', 'touchend', 'click', 'keydown'];
+  let attached = false;
+  function onFirstGesture() {
+    _unlockAudio();
+    if (attached) events.forEach(e => document.removeEventListener(e, onFirstGesture, true));
+    attached = false;
+  }
+  events.forEach(e => document.addEventListener(e, onFirstGesture, { capture: true, once: false, passive: true }));
+  attached = true;
+}
+_initAudioUnlockListeners();
 const GUIDE_START = { x: 0, z: 8.48 };
 const GUIDE_DEFAULT_DWELL_MS = 8500;
 const GUIDE_MOVE_SPEED_UNITS_PER_SEC = 2.45;
@@ -394,20 +465,6 @@ const GUIDE_TOUR_STOPS = [
   { key: "cityscape", label: "Quy hoạch hệ thống báo chí", x: 1.2, z: 1.0, lookAt: { x: 3.5, y: 2.1, z: 3.48 }, audio: "./audio/guide-08.mp3", fallbackMs: 50000, open: "artifact" },
   { key: "outro", label: "Trở về điểm bắt đầu", x: 0, z: 7.0, lookAt: { x: 0, y: 1.85, z: 0 }, audio: "./audio/guide-09.mp3", fallbackMs: 12000, open: null }
 ];
-
-/** Resolve static assets from script.js URL (fixes GitHub Pages project subpaths). */
-function resolveAssetPath(relativePath) {
-  if (!relativePath) return relativePath;
-  const rel = String(relativePath).replace(/^\.\//, "");
-  const scriptEl = document.querySelector('script[src*="script.js"]');
-  const base = scriptEl && scriptEl.src ? scriptEl.src : window.location.href;
-  try {
-    return new URL(rel, base).href;
-  } catch {
-    return relativePath;
-  }
-}
-
 const exploredSet = new Set();
 
 /* ════════════════════════════════════════
@@ -433,27 +490,32 @@ function drawTimelineCanvas() {
 
   // Title
   ctx.fillStyle = "#3b2a14";
-  ctx.font = "bold 28px serif";
+  ctx.font = "bold 22px serif";
   ctx.textAlign = "center";
-  ctx.fillText("DÒNG THỜI GIAN", W / 2, 50);
+  ctx.fillText("DÒNG THỜI GIAN ĐẠI DỊCH", W / 2, 38);
+  ctx.font = "bold 18px serif";
+  ctx.fillText("COVID TẠI VIỆT NAM", W / 2, 62);
 
   // Divider
   ctx.strokeStyle = "#b38e5f";
   ctx.lineWidth = 1.5;
-  ctx.beginPath(); ctx.moveTo(40, 65); ctx.lineTo(W - 40, 65); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(40, 76); ctx.lineTo(W - 40, 76); ctx.stroke();
 
   const events = [
-    { year: "1954", text: "Thành lập tòa soạn" },
-    { year: "1968", text: "Số báo đặc biệt chiến tranh" },
-    { year: "1975", text: "Thống nhất đất nước" },
-    { year: "1986", text: "Thời kỳ Đổi Mới" },
-    { year: "1995", text: "Bình thường hóa quan hệ" },
-    { year: "2010", text: "Chuyển đổi kỹ thuật số" },
-    { year: "2024", text: "Việt Nam News số 30/03/2020" },
+    { year: "23/01", text: "Ca nhiễm COVID-19 đầu tiên tại VN" },
+    { year: "25/01", text: "VN công bố ca nhiễm thứ 2" },
+    { year: "02/2020", text: "Biện pháp giãn cách xã hội đầu tiên" },
+    { year: "03/2020", text: "Chỉ thị 16 — cách ly toàn xã hội" },
+    { year: "07/2020", text: "Đợt dịch thứ 2 bùng phát Đà Nẵng" },
+    { year: "01/2021", text: "Ca nhiễm cộng đồng đầu tiên đợt 3" },
+    { year: "05/2021", text: "Đại dịch bùng phát mạnh ở TP.HCM, BN" },
+    { year: "07/2021", text: "Chỉ thị 16 tại TP.HCM và các tỉnh phía Nam" },
+    { year: "11/2021", text: "VN đạt tỷ lệ tiêm chủng cao, mở cửa trở lại" },
+    { year: "2022", text: "Bình thường hóa, khôi phục kinh tế xã hội" },
   ];
 
   const lineX = W / 2;
-  const startY = 100;
+  const startY = 104;
   const step = (H - 150) / (events.length - 1);
 
   // Timeline line
@@ -467,37 +529,37 @@ function drawTimelineCanvas() {
 
     // Dot
     ctx.fillStyle = "#c57c37";
-    ctx.beginPath(); ctx.arc(lineX, y, 7, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(lineX, y, 6, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = "#ece3d1";
-    ctx.beginPath(); ctx.arc(lineX, y, 4, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(lineX, y, 3.5, 0, Math.PI * 2); ctx.fill();
 
     // Connector
-    const connEnd = isLeft ? 60 : W - 60;
+    const connEnd = isLeft ? 55 : W - 55;
     ctx.strokeStyle = "#c9a86c";
     ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(lineX, y); ctx.lineTo(connEnd, y); ctx.stroke();
 
     // Year label
     ctx.fillStyle = "#7a5c2e";
-    ctx.font = "bold 16px monospace";
+    ctx.font = "bold 12px monospace";
     ctx.textAlign = isLeft ? "right" : "left";
-    ctx.fillText(ev.year, isLeft ? connEnd - 6 : connEnd + 6, y - 8);
+    ctx.fillText(ev.year, isLeft ? connEnd - 5 : connEnd + 5, y - 6);
 
     // Event text
     ctx.fillStyle = "#3b2a14";
-    ctx.font = "13px serif";
+    ctx.font = "11px serif";
     ctx.textAlign = isLeft ? "right" : "left";
     const words = ev.text.split(" ");
     let line = "";
-    let lineY = y + 10;
+    let lineY = y + 8;
     words.forEach(w => {
       const test = line + (line ? " " : "") + w;
-      if (ctx.measureText(test).width > 160 && line) {
-        ctx.fillText(line, isLeft ? connEnd - 6 : connEnd + 6, lineY);
-        line = w; lineY += 15;
+      if (ctx.measureText(test).width > 150 && line) {
+        ctx.fillText(line, isLeft ? connEnd - 5 : connEnd + 5, lineY);
+        line = w; lineY += 13;
       } else { line = test; }
     });
-    ctx.fillText(line, isLeft ? connEnd - 6 : connEnd + 6, lineY);
+    ctx.fillText(line, isLeft ? connEnd - 5 : connEnd + 5, lineY);
   });
 }
 
@@ -1450,16 +1512,16 @@ function createAmbientAudio() {
   const audioEl = document.getElementById("ambientAudio");
   if (!audioEl) return;
   audioEl.volume = 0.11;
-  audioEl.play().catch(() => {});
   audioState.audioElement = audioEl;
   audioState.started = true;
+  robustAudioPlay(audioEl);
 }
 
 async function ensureAmbientAudioStarted() {
   if (!audioState.enabled) return;
   if (!audioState.started) createAmbientAudio();
   const el = audioState.audioElement;
-  if (el && el.paused) el.play().catch(() => {});
+  if (el && el.paused) robustAudioPlay(el);
 }
 
 async function toggleAudio() {
@@ -1468,7 +1530,7 @@ async function toggleAudio() {
   if (!audioState.started && audioState.enabled) {
     await ensureAmbientAudioStarted();
   } else if (el) {
-    audioState.enabled ? el.play().catch(() => {}) : el.pause();
+    audioState.enabled ? robustAudioPlay(el) : el.pause();
   }
   if (audioButton) audioButton.textContent = audioState.enabled ? "Tắt nhạc" : "Bật nhạc";
 }
@@ -1523,11 +1585,6 @@ function playGuideNarration(stop) {
       setTimeout(resolve, GUIDE_DEFAULT_DWELL_MS);
       return;
     }
-    const resolvedSrc = resolveAssetPath(stop.audio);
-    const pageRelativeSrc = new URL(stop.audio.replace(/^\.\//, ""), window.location.href).href;
-    // #region agent log
-    fetch("http://127.0.0.1:7843/ingest/01331089-563f-42cb-97fe-7a8aedf37343",{method:"POST",headers:{"Content-Type":"application/json","X-Debug-Session-Id":"852166"},body:JSON.stringify({sessionId:"852166",runId:"pre-fix",hypothesisId:"A",location:"script.js:playGuideNarration:entry",message:"narration load attempt",data:{stopKey:stop.key,rawAudio:stop.audio,resolvedSrc,pageRelativeSrc,pageHref:location.href,pagePathname:location.pathname,scriptSrc:document.querySelector('script[src*="script.js"]')?.src||null},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
     let done = false;
     const finish = () => {
       if (done) return;
@@ -1535,56 +1592,52 @@ function playGuideNarration(stop) {
       guideNarrationAudio.removeEventListener("ended", finish);
       guideNarrationAudio.removeEventListener("error", onError);
       guideNarrationAudio.removeEventListener("loadedmetadata", onMeta);
+      guideNarrationAudio.removeEventListener("canplaythrough", onCanPlay);
       clearTimeout(errorTimer);
+      clearTimeout(loadTimeout);
       resolve();
     };
-    const onError = () => {
-      // #region agent log
-      fetch("http://127.0.0.1:7843/ingest/01331089-563f-42cb-97fe-7a8aedf37343",{method:"POST",headers:{"Content-Type":"application/json","X-Debug-Session-Id":"852166"},body:JSON.stringify({sessionId:"852166",runId:"pre-fix",hypothesisId:"B",location:"script.js:playGuideNarration:error",message:"audio element error",data:{stopKey:stop.key,resolvedSrc,mediaError:guideNarrationAudio.error?.code,networkState:guideNarrationAudio.networkState,readyState:guideNarrationAudio.readyState},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
+    const onError = (err) => {
+      console.warn('[Guide Narration] Audio error for', stop.audio, err);
       /* On error, wait a reasonable time then move on */
       setTimeout(finish, stop.fallbackMs || GUIDE_DEFAULT_DWELL_MS);
     };
     const onMeta = () => {
-      // #region agent log
-      fetch("http://127.0.0.1:7843/ingest/01331089-563f-42cb-97fe-7a8aedf37343",{method:"POST",headers:{"Content-Type":"application/json","X-Debug-Session-Id":"852166"},body:JSON.stringify({sessionId:"852166",runId:"pre-fix",hypothesisId:"D",location:"script.js:playGuideNarration:metadata",message:"audio metadata loaded",data:{stopKey:stop.key,resolvedSrc,durationSec:guideNarrationAudio.duration},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
       /* Store the real audio duration for sub-tour timing */
       if (guideNarrationAudio.duration && isFinite(guideNarrationAudio.duration)) {
         stop._actualAudioMs = guideNarrationAudio.duration * 1000;
       }
+    };
+    const onCanPlay = () => {
+      /* Audio is ready to play — attempt playback immediately */
+      robustAudioPlay(guideNarrationAudio).catch(() => {
+        /* If still blocked, the user-interaction unlock will flush it */
+      });
     };
     /* Safety timeout: only fires if neither "ended" nor "error" fires
        (e.g. browser stalled). Set generously — 3× fallback or 5 min max —
        so it never cuts a playing narration short. */
     const safetyMs = Math.min(300000, (stop.fallbackMs || GUIDE_DEFAULT_DWELL_MS) * 3);
     const errorTimer = setTimeout(finish, safetyMs);
+    /* If audio doesn't load within 8 seconds, move on */
+    const loadTimeout = setTimeout(() => {
+      if (!done && guideNarrationAudio.readyState < 2) {
+        console.warn('[Guide Narration] Load timeout for', stop.audio);
+        finish();
+      }
+    }, 8000);
     guideNarrationAudio.pause();
     guideNarrationAudio.currentTime = 0;
-    guideNarrationAudio.src = resolvedSrc;
+    guideNarrationAudio.src = stop.audio;
     guideNarrationAudio.volume = 0.95;
+    guideNarrationAudio.load();
     guideNarrationAudio.addEventListener("loadedmetadata", onMeta, { once: true });
+    guideNarrationAudio.addEventListener("canplaythrough", onCanPlay, { once: true });
     guideNarrationAudio.addEventListener("ended", finish, { once: true });
     guideNarrationAudio.addEventListener("error", onError, { once: true });
-    guideNarrationAudio.play().then(() => {
-      // #region agent log
-      fetch("http://127.0.0.1:7843/ingest/01331089-563f-42cb-97fe-7a8aedf37343",{method:"POST",headers:{"Content-Type":"application/json","X-Debug-Session-Id":"852166"},body:JSON.stringify({sessionId:"852166",runId:"pre-fix",hypothesisId:"C",location:"script.js:playGuideNarration:playOk",message:"audio play started",data:{stopKey:stop.key,resolvedSrc},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
-    }).catch((playErr) => {
-      // #region agent log
-      fetch("http://127.0.0.1:7843/ingest/01331089-563f-42cb-97fe-7a8aedf37343",{method:"POST",headers:{"Content-Type":"application/json","X-Debug-Session-Id":"852166"},body:JSON.stringify({sessionId:"852166",runId:"pre-fix",hypothesisId:"C",location:"script.js:playGuideNarration:playBlocked",message:"audio play rejected",data:{stopKey:stop.key,resolvedSrc,playErr:String(playErr)},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
-      /* If autoplay is blocked, fall back to a fixed wait */
-      setTimeout(finish, stop.fallbackMs || GUIDE_DEFAULT_DWELL_MS);
-    });
-    fetch(resolvedSrc, { method: "HEAD" }).then((res) => {
-      // #region agent log
-      fetch("http://127.0.0.1:7843/ingest/01331089-563f-42cb-97fe-7a8aedf37343",{method:"POST",headers:{"Content-Type":"application/json","X-Debug-Session-Id":"852166"},body:JSON.stringify({sessionId:"852166",runId:"pre-fix",hypothesisId:"B",location:"script.js:playGuideNarration:head",message:"audio HEAD probe",data:{stopKey:stop.key,resolvedSrc,status:res.status,ok:res.ok},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
-    }).catch((headErr) => {
-      // #region agent log
-      fetch("http://127.0.0.1:7843/ingest/01331089-563f-42cb-97fe-7a8aedf37343",{method:"POST",headers:{"Content-Type":"application/json","X-Debug-Session-Id":"852166"},body:JSON.stringify({sessionId:"852166",runId:"pre-fix",hypothesisId:"B",location:"script.js:playGuideNarration:headFail",message:"audio HEAD failed",data:{stopKey:stop.key,resolvedSrc,headErr:String(headErr)},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
+    /* Also attempt playback immediately in case audio is already cached */
+    robustAudioPlay(guideNarrationAudio).catch(() => {
+      /* If autoplay is blocked, fall back to waiting for unlock or timeout */
     });
   });
 }
@@ -1746,17 +1799,21 @@ async function runGuideTour() {
   if (audioState.audioElement) {
     audioState.audioElement.volume = 0.11;
   }
-  ensureAmbientAudioStarted();
+  if (audioState.enabled) ensureAmbientAudioStarted();
   await showGuideCompletionNotice();
 }
 
 async function startGuideExperience() {
+  /* User just clicked — this is a user gesture, unlock audio NOW */
+  _unlockAudio();
   prepareRoomEntry({ guide: true });
   if (isMobileDevice) await enterFullscreenOnMobile();
   setTimeout(runGuideTour, 780);
 }
 
 async function startFreeExperience() {
+  /* User just clicked — this is a user gesture, unlock audio NOW */
+  _unlockAudio();
   prepareRoomEntry({ guide: false });
   if (isMobileDevice) await enterFullscreenOnMobile();
   /* Start ambient background music in free exploration mode */
@@ -1878,8 +1935,11 @@ document.addEventListener("DOMContentLoaded", () => {
   setTimeout(bindSceneFullscreenButton, 300);
   setTimeout(bindSceneFullscreenButton, 1200);
 
-  // Audio priming
-  const primeAudio = () => ensureAmbientAudioStarted();
+  // Audio priming — also ensures audio unlock on any user interaction
+  const primeAudio = () => {
+    _unlockAudio();
+    ensureAmbientAudioStarted();
+  };
   document.addEventListener("pointerdown", primeAudio, { passive: true });
   document.addEventListener("keydown", primeAudio);
 
