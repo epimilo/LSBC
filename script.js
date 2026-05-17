@@ -372,66 +372,6 @@ if (typeof AFRAME !== "undefined" && !AFRAME.components["keyboard-walk"]) {
 
 /* ── State ── */
 const audioState = { audioElement: null, enabled: true, started: false };
-
-/* ── Audio unlock context ──
-   Browsers (especially on GitHub Pages / HTTPS production) require that
-   ANY audio element is first "touched" (played + immediately paused) inside
-   a synchronous user-gesture handler before it can be programmatically
-   played later from async code or setTimeout callbacks.
-   We keep a shared AudioContext and a flag so we only do this once. */
-let _audioUnlocked = false;
-let _sharedAudioCtx = null;
-
-function getAudioContext() {
-  if (!_sharedAudioCtx) {
-    try { _sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
-  }
-  return _sharedAudioCtx;
-}
-
-/**
- * Must be called synchronously inside a user-gesture event handler.
- * Plays+pauses guideNarrationAudio (with empty src) to register the element
- * with the browser's autoplay allowlist, and resumes the AudioContext.
- */
-function unlockAudioElements() {
-  if (_audioUnlocked) return;
-  _audioUnlocked = true;
-
-  /* Resume / unlock Web Audio context */
-  const ctx = getAudioContext();
-  if (ctx && ctx.state === 'suspended') {
-    ctx.resume().catch(() => {});
-  }
-
-  /* Unlock ambientAudio */
-  const amb = document.getElementById('ambientAudio');
-  if (amb) {
-    amb.play().then(() => amb.pause()).catch(() => {});
-  }
-
-  /* Unlock guideNarrationAudio — this is the critical one.
-     We must touch it while still inside the gesture stack so that
-     later async .play() calls (from runGuideTour / setTimeout) succeed.
-     Use a tiny 1-frame silent MP3 as the src so play() doesn't reject
-     due to missing/empty src (which would leave the element still locked). */
-  if (guideNarrationAudio) {
-    /* Minimal valid silent MP3 (44 bytes, 1 frame, ~26ms) as base64 data-URI */
-    const silentMp3 = "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjI5LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAADhgCenp6enp6enp6enp6enp6enp6enp6enp6enp6enp6enp6enp6enp6enp6enp6e////////////////////////////////////////////////////////////////AAAAAExhdmM1OC41NQAAAAAAAAAAAAAAACQAAAAAAAAAA4YHbHAAAAAAAAAAAAAAAAAAAA//tQZAAP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV";
-    guideNarrationAudio.src = silentMp3;
-    guideNarrationAudio.muted = true;
-    guideNarrationAudio.play().then(() => {
-      guideNarrationAudio.pause();
-      guideNarrationAudio.muted = false;
-      guideNarrationAudio.currentTime = 0;
-      guideNarrationAudio.src = "";  /* clear so real src assignment in playGuideNarration works cleanly */
-      guideNarrationAudio.removeAttribute("src");
-    }).catch(() => {
-      guideNarrationAudio.muted = false;
-      guideNarrationAudio.removeAttribute("src");
-    });
-  }
-}
 const GUIDE_START = { x: 0, z: 8.48 };
 const GUIDE_DEFAULT_DWELL_MS = 8500;
 const GUIDE_MOVE_SPEED_UNITS_PER_SEC = 2.45;
@@ -454,6 +394,20 @@ const GUIDE_TOUR_STOPS = [
   { key: "cityscape", label: "Quy hoạch hệ thống báo chí", x: 1.2, z: 1.0, lookAt: { x: 3.5, y: 2.1, z: 3.48 }, audio: "./audio/guide-08.mp3", fallbackMs: 50000, open: "artifact" },
   { key: "outro", label: "Trở về điểm bắt đầu", x: 0, z: 7.0, lookAt: { x: 0, y: 1.85, z: 0 }, audio: "./audio/guide-09.mp3", fallbackMs: 12000, open: null }
 ];
+
+/** Resolve static assets from script.js URL (fixes GitHub Pages project subpaths). */
+function resolveAssetPath(relativePath) {
+  if (!relativePath) return relativePath;
+  const rel = String(relativePath).replace(/^\.\//, "");
+  const scriptEl = document.querySelector('script[src*="script.js"]');
+  const base = scriptEl && scriptEl.src ? scriptEl.src : window.location.href;
+  try {
+    return new URL(rel, base).href;
+  } catch {
+    return relativePath;
+  }
+}
+
 const exploredSet = new Set();
 
 /* ════════════════════════════════════════
@@ -1569,6 +1523,11 @@ function playGuideNarration(stop) {
       setTimeout(resolve, GUIDE_DEFAULT_DWELL_MS);
       return;
     }
+    const resolvedSrc = resolveAssetPath(stop.audio);
+    const pageRelativeSrc = new URL(stop.audio.replace(/^\.\//, ""), window.location.href).href;
+    // #region agent log
+    fetch("http://127.0.0.1:7843/ingest/01331089-563f-42cb-97fe-7a8aedf37343",{method:"POST",headers:{"Content-Type":"application/json","X-Debug-Session-Id":"852166"},body:JSON.stringify({sessionId:"852166",runId:"pre-fix",hypothesisId:"A",location:"script.js:playGuideNarration:entry",message:"narration load attempt",data:{stopKey:stop.key,rawAudio:stop.audio,resolvedSrc,pageRelativeSrc,pageHref:location.href,pagePathname:location.pathname,scriptSrc:document.querySelector('script[src*="script.js"]')?.src||null},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
     let done = false;
     const finish = () => {
       if (done) return;
@@ -1580,10 +1539,16 @@ function playGuideNarration(stop) {
       resolve();
     };
     const onError = () => {
+      // #region agent log
+      fetch("http://127.0.0.1:7843/ingest/01331089-563f-42cb-97fe-7a8aedf37343",{method:"POST",headers:{"Content-Type":"application/json","X-Debug-Session-Id":"852166"},body:JSON.stringify({sessionId:"852166",runId:"pre-fix",hypothesisId:"B",location:"script.js:playGuideNarration:error",message:"audio element error",data:{stopKey:stop.key,resolvedSrc,mediaError:guideNarrationAudio.error?.code,networkState:guideNarrationAudio.networkState,readyState:guideNarrationAudio.readyState},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
       /* On error, wait a reasonable time then move on */
       setTimeout(finish, stop.fallbackMs || GUIDE_DEFAULT_DWELL_MS);
     };
     const onMeta = () => {
+      // #region agent log
+      fetch("http://127.0.0.1:7843/ingest/01331089-563f-42cb-97fe-7a8aedf37343",{method:"POST",headers:{"Content-Type":"application/json","X-Debug-Session-Id":"852166"},body:JSON.stringify({sessionId:"852166",runId:"pre-fix",hypothesisId:"D",location:"script.js:playGuideNarration:metadata",message:"audio metadata loaded",data:{stopKey:stop.key,resolvedSrc,durationSec:guideNarrationAudio.duration},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
       /* Store the real audio duration for sub-tour timing */
       if (guideNarrationAudio.duration && isFinite(guideNarrationAudio.duration)) {
         stop._actualAudioMs = guideNarrationAudio.duration * 1000;
@@ -1596,36 +1561,31 @@ function playGuideNarration(stop) {
     const errorTimer = setTimeout(finish, safetyMs);
     guideNarrationAudio.pause();
     guideNarrationAudio.currentTime = 0;
-    guideNarrationAudio.src = stop.audio;
+    guideNarrationAudio.src = resolvedSrc;
     guideNarrationAudio.volume = 0.95;
-    guideNarrationAudio.muted = false;
     guideNarrationAudio.addEventListener("loadedmetadata", onMeta, { once: true });
     guideNarrationAudio.addEventListener("ended", finish, { once: true });
     guideNarrationAudio.addEventListener("error", onError, { once: true });
-
-    /* Resume AudioContext first (required on some browsers after page idle) */
-    const ctx = getAudioContext();
-    const doPlay = () => {
-      guideNarrationAudio.play().catch(err => {
-        /* If still blocked (e.g. policy not satisfied), retry once after a
-           short delay — the unlock from startGuideExperience should have
-           registered the element; a brief wait can resolve timing issues. */
-        console.warn('[GuideAudio] play() blocked, retrying in 200ms:', err);
-        setTimeout(() => {
-          guideNarrationAudio.play().catch(err2 => {
-            console.error('[GuideAudio] play() blocked on retry:', err2);
-            /* Final fallback: use timed wait so tour still advances */
-            setTimeout(finish, stop.fallbackMs || GUIDE_DEFAULT_DWELL_MS);
-          });
-        }, 200);
-      });
-    };
-
-    if (ctx && ctx.state === 'suspended') {
-      ctx.resume().then(doPlay).catch(doPlay);
-    } else {
-      doPlay();
-    }
+    guideNarrationAudio.play().then(() => {
+      // #region agent log
+      fetch("http://127.0.0.1:7843/ingest/01331089-563f-42cb-97fe-7a8aedf37343",{method:"POST",headers:{"Content-Type":"application/json","X-Debug-Session-Id":"852166"},body:JSON.stringify({sessionId:"852166",runId:"pre-fix",hypothesisId:"C",location:"script.js:playGuideNarration:playOk",message:"audio play started",data:{stopKey:stop.key,resolvedSrc},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
+    }).catch((playErr) => {
+      // #region agent log
+      fetch("http://127.0.0.1:7843/ingest/01331089-563f-42cb-97fe-7a8aedf37343",{method:"POST",headers:{"Content-Type":"application/json","X-Debug-Session-Id":"852166"},body:JSON.stringify({sessionId:"852166",runId:"pre-fix",hypothesisId:"C",location:"script.js:playGuideNarration:playBlocked",message:"audio play rejected",data:{stopKey:stop.key,resolvedSrc,playErr:String(playErr)},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
+      /* If autoplay is blocked, fall back to a fixed wait */
+      setTimeout(finish, stop.fallbackMs || GUIDE_DEFAULT_DWELL_MS);
+    });
+    fetch(resolvedSrc, { method: "HEAD" }).then((res) => {
+      // #region agent log
+      fetch("http://127.0.0.1:7843/ingest/01331089-563f-42cb-97fe-7a8aedf37343",{method:"POST",headers:{"Content-Type":"application/json","X-Debug-Session-Id":"852166"},body:JSON.stringify({sessionId:"852166",runId:"pre-fix",hypothesisId:"B",location:"script.js:playGuideNarration:head",message:"audio HEAD probe",data:{stopKey:stop.key,resolvedSrc,status:res.status,ok:res.ok},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
+    }).catch((headErr) => {
+      // #region agent log
+      fetch("http://127.0.0.1:7843/ingest/01331089-563f-42cb-97fe-7a8aedf37343",{method:"POST",headers:{"Content-Type":"application/json","X-Debug-Session-Id":"852166"},body:JSON.stringify({sessionId:"852166",runId:"pre-fix",hypothesisId:"B",location:"script.js:playGuideNarration:headFail",message:"audio HEAD failed",data:{stopKey:stop.key,resolvedSrc,headErr:String(headErr)},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
+    });
   });
 }
 
@@ -1791,20 +1751,12 @@ async function runGuideTour() {
 }
 
 async function startGuideExperience() {
-  /* CRITICAL: unlock BOTH audio elements synchronously while we are still
-     inside the user-gesture (button click) call stack.  Without this,
-     browsers on GitHub Pages / HTTPS production will silently block every
-     guideNarrationAudio.play() call that happens later inside async code
-     or setTimeout callbacks, causing the narration to be completely silent
-     even though ambient music (which is unlocked separately) works fine. */
-  unlockAudioElements();
   prepareRoomEntry({ guide: true });
   if (isMobileDevice) await enterFullscreenOnMobile();
   setTimeout(runGuideTour, 780);
 }
 
 async function startFreeExperience() {
-  unlockAudioElements();
   prepareRoomEntry({ guide: false });
   if (isMobileDevice) await enterFullscreenOnMobile();
   /* Start ambient background music in free exploration mode */
