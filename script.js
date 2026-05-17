@@ -372,6 +372,66 @@ if (typeof AFRAME !== "undefined" && !AFRAME.components["keyboard-walk"]) {
 
 /* ── State ── */
 const audioState = { audioElement: null, enabled: true, started: false };
+
+/* ── Audio unlock context ──
+   Browsers (especially on GitHub Pages / HTTPS production) require that
+   ANY audio element is first "touched" (played + immediately paused) inside
+   a synchronous user-gesture handler before it can be programmatically
+   played later from async code or setTimeout callbacks.
+   We keep a shared AudioContext and a flag so we only do this once. */
+let _audioUnlocked = false;
+let _sharedAudioCtx = null;
+
+function getAudioContext() {
+  if (!_sharedAudioCtx) {
+    try { _sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+  }
+  return _sharedAudioCtx;
+}
+
+/**
+ * Must be called synchronously inside a user-gesture event handler.
+ * Plays+pauses guideNarrationAudio (with empty src) to register the element
+ * with the browser's autoplay allowlist, and resumes the AudioContext.
+ */
+function unlockAudioElements() {
+  if (_audioUnlocked) return;
+  _audioUnlocked = true;
+
+  /* Resume / unlock Web Audio context */
+  const ctx = getAudioContext();
+  if (ctx && ctx.state === 'suspended') {
+    ctx.resume().catch(() => {});
+  }
+
+  /* Unlock ambientAudio */
+  const amb = document.getElementById('ambientAudio');
+  if (amb) {
+    amb.play().then(() => amb.pause()).catch(() => {});
+  }
+
+  /* Unlock guideNarrationAudio — this is the critical one.
+     We must touch it while still inside the gesture stack so that
+     later async .play() calls (from runGuideTour / setTimeout) succeed.
+     Use a tiny 1-frame silent MP3 as the src so play() doesn't reject
+     due to missing/empty src (which would leave the element still locked). */
+  if (guideNarrationAudio) {
+    /* Minimal valid silent MP3 (44 bytes, 1 frame, ~26ms) as base64 data-URI */
+    const silentMp3 = "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjI5LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAADhgCenp6enp6enp6enp6enp6enp6enp6enp6enp6enp6enp6enp6enp6enp6enp6e////////////////////////////////////////////////////////////////AAAAAExhdmM1OC41NQAAAAAAAAAAAAAAACQAAAAAAAAAA4YHbHAAAAAAAAAAAAAAAAAAAA//tQZAAP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV";
+    guideNarrationAudio.src = silentMp3;
+    guideNarrationAudio.muted = true;
+    guideNarrationAudio.play().then(() => {
+      guideNarrationAudio.pause();
+      guideNarrationAudio.muted = false;
+      guideNarrationAudio.currentTime = 0;
+      guideNarrationAudio.src = "";  /* clear so real src assignment in playGuideNarration works cleanly */
+      guideNarrationAudio.removeAttribute("src");
+    }).catch(() => {
+      guideNarrationAudio.muted = false;
+      guideNarrationAudio.removeAttribute("src");
+    });
+  }
+}
 const GUIDE_START = { x: 0, z: 8.48 };
 const GUIDE_DEFAULT_DWELL_MS = 8500;
 const GUIDE_MOVE_SPEED_UNITS_PER_SEC = 2.45;
@@ -1538,13 +1598,34 @@ function playGuideNarration(stop) {
     guideNarrationAudio.currentTime = 0;
     guideNarrationAudio.src = stop.audio;
     guideNarrationAudio.volume = 0.95;
+    guideNarrationAudio.muted = false;
     guideNarrationAudio.addEventListener("loadedmetadata", onMeta, { once: true });
     guideNarrationAudio.addEventListener("ended", finish, { once: true });
     guideNarrationAudio.addEventListener("error", onError, { once: true });
-    guideNarrationAudio.play().catch(() => {
-      /* If autoplay is blocked, fall back to a fixed wait */
-      setTimeout(finish, stop.fallbackMs || GUIDE_DEFAULT_DWELL_MS);
-    });
+
+    /* Resume AudioContext first (required on some browsers after page idle) */
+    const ctx = getAudioContext();
+    const doPlay = () => {
+      guideNarrationAudio.play().catch(err => {
+        /* If still blocked (e.g. policy not satisfied), retry once after a
+           short delay — the unlock from startGuideExperience should have
+           registered the element; a brief wait can resolve timing issues. */
+        console.warn('[GuideAudio] play() blocked, retrying in 200ms:', err);
+        setTimeout(() => {
+          guideNarrationAudio.play().catch(err2 => {
+            console.error('[GuideAudio] play() blocked on retry:', err2);
+            /* Final fallback: use timed wait so tour still advances */
+            setTimeout(finish, stop.fallbackMs || GUIDE_DEFAULT_DWELL_MS);
+          });
+        }, 200);
+      });
+    };
+
+    if (ctx && ctx.state === 'suspended') {
+      ctx.resume().then(doPlay).catch(doPlay);
+    } else {
+      doPlay();
+    }
   });
 }
 
@@ -1710,12 +1791,20 @@ async function runGuideTour() {
 }
 
 async function startGuideExperience() {
+  /* CRITICAL: unlock BOTH audio elements synchronously while we are still
+     inside the user-gesture (button click) call stack.  Without this,
+     browsers on GitHub Pages / HTTPS production will silently block every
+     guideNarrationAudio.play() call that happens later inside async code
+     or setTimeout callbacks, causing the narration to be completely silent
+     even though ambient music (which is unlocked separately) works fine. */
+  unlockAudioElements();
   prepareRoomEntry({ guide: true });
   if (isMobileDevice) await enterFullscreenOnMobile();
   setTimeout(runGuideTour, 780);
 }
 
 async function startFreeExperience() {
+  unlockAudioElements();
   prepareRoomEntry({ guide: false });
   if (isMobileDevice) await enterFullscreenOnMobile();
   /* Start ambient background music in free exploration mode */
