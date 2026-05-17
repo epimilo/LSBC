@@ -95,7 +95,6 @@
             <select id="journeySelect" class="top-bar__select">
               <option value="">Chọn một điểm dừng</option>
               <option value="timeline">Khung lịch trên tường</option>
-              <option value="voice">Máy nghe ghi âm</option>
               <option value="typewriter">Sạp báo bị phong toả</option>
               <option value="painting-cluster">Cụm 5 tranh tường phải</option>
               <option value="hazmat-exhibit">Trang phục bảo hộ</option>
@@ -222,6 +221,8 @@
           <a-entity id="hazmatExhibit" position="-6.05 0 -7.05" scale="1.28 1.28 1.28">
             <a-box class="teleportable" data-surface="pedestal" position="0 0.11 0" width="1.85" height="0.22" depth="1.52" color="#4f433c"></a-box>
             <a-box position="0 0.235 0" width="1.98" height="0.035" depth="1.66" material="color: #ffe1af; emissive: #ffd49d; emissiveIntensity: 0.95; transparent: true; opacity: 0.34; roughness: 0.18; metalness: 0.05"></a-box>
+            <!-- Base light glow -->
+            <a-entity light="type: point; color: #ffe8c0; intensity: 0.8; distance: 3.5; decay: 2" position="0 0.35 0"></a-entity>
             <a-box position="0 1.72 0" width="1.72" height="3.12" depth="1.35" material="color: #d2e4ff; transparent: true; opacity: 0.15; roughness: 0.06; metalness: 0.15; side: double; depthWrite: false"></a-box>
             <a-box position="0 1.72 0" width="1.74" height="3.14" depth="1.37" material="color: #1a1a1a; wireframe: true; shader: flat; depthWrite: false"></a-box>
             <a-entity
@@ -238,55 +239,45 @@
             <a-box class="clickable" data-artifact="hazmat-exhibit" data-label="Trang phục bảo hộ" position="0 1.65 0.72" width="1.15" height="2.55" depth="0.05" material="color: #ffffff; transparent: true; opacity: 0.04"></a-box>
           </a-entity>
 
-          <!-- NEWSPAPER — museum display stand with image -->
+          <!-- NEWSPAPER — museum display stand with image (scaled 1.4×) -->
           <!-- Base plate -->
-          <a-box class="teleportable" data-surface="pedestal" position="0 0.04 3.48" width="0.7" height="0.08" depth="0.5" material="color: #c8c8c8; roughness: 0.6; metalness: 0.3"></a-box>
-          <!-- Pole -->
-          <a-cylinder position="0 0.8 3.48" radius="0.025" height="1.44" material="color: #b0b0b0; roughness: 0.4; metalness: 0.55"></a-cylinder>
-          <!-- Tilted frame back panel (portrait: 0.72w × 1.02h) -->
-          <a-box position="0 1.62 3.37" rotation="-18 0 0" width="0.74" height="1.04" depth="0.018" material="color: #d8d8d8; roughness: 0.5; metalness: 0.2"></a-box>
+          <a-box class="teleportable" data-surface="pedestal" position="0 0.056 3.48" width="0.98" height="0.112" depth="0.7" material="color: #c8c8c8; roughness: 0.6; metalness: 0.3"></a-box>
+          <!-- Pole (shortened so it doesn't pierce the tilted frame) -->
+          <a-cylinder position="0 0.941 3.48" radius="0.035" height="1.658" material="color: #b0b0b0; roughness: 0.4; metalness: 0.55"></a-cylinder>
+          <!-- Tilted frame back panel (portrait: 1.03w × 1.46h) -->
+          <a-box position="0 2.27 3.33" rotation="-18 0 0" width="1.036" height="1.456" depth="0.025" material="color: #d8d8d8; roughness: 0.5; metalness: 0.2"></a-box>
           <!-- Frame border top -->
-          <a-box position="0 2.15 3.25" rotation="-18 0 0" width="0.82" height="0.038" depth="0.038" material="color: #a8a8a8; roughness: 0.4; metalness: 0.5"></a-box>
+          <a-box position="0 3.01 3.1" rotation="-18 0 0" width="1.148" height="0.053" depth="0.053" material="color: #a8a8a8; roughness: 0.4; metalness: 0.5"></a-box>
           <!-- Frame border bottom -->
-          <a-box position="0 1.09 3.49" rotation="-18 0 0" width="0.82" height="0.038" depth="0.038" material="color: #a8a8a8; roughness: 0.4; metalness: 0.5"></a-box>
+          <a-box position="0 1.53 3.56" rotation="-18 0 0" width="1.148" height="0.053" depth="0.053" material="color: #a8a8a8; roughness: 0.4; metalness: 0.5"></a-box>
           <!-- Frame border left -->
-          <a-box position="-0.39 1.62 3.34" rotation="-18 0 0" width="0.038" height="1.1" depth="0.038" material="color: #a8a8a8; roughness: 0.4; metalness: 0.5"></a-box>
+          <a-box position="-0.546 2.27 3.29" rotation="-18 0 0" width="0.053" height="1.54" depth="0.053" material="color: #a8a8a8; roughness: 0.4; metalness: 0.5"></a-box>
           <!-- Frame border right -->
-          <a-box position="0.39 1.62 3.34" rotation="-18 0 0" width="0.038" height="1.1" depth="0.038" material="color: #a8a8a8; roughness: 0.4; metalness: 0.5"></a-box>
+          <a-box position="0.546 2.27 3.29" rotation="-18 0 0" width="0.053" height="1.54" depth="0.053" material="color: #a8a8a8; roughness: 0.4; metalness: 0.5"></a-box>
           <!-- Newspaper image on tilted plane (portrait 445:640) -->
-          <a-plane id="newspaperArtifact" class="clickable" data-artifact="newspaper" data-label="Việt Nam News số 30/03/2020" position="0 1.62 3.375" rotation="-18 0 0" width="0.7" height="1.0" material="src: #newspaperCanvas; shader: flat" shadow="cast: true"></a-plane>
+          <a-plane id="newspaperArtifact" class="clickable" data-artifact="newspaper" data-label="Việt Nam News số 30/03/2020" position="0 2.27 3.34" rotation="-18 0 0" width="0.98" height="1.4" material="src: #newspaperCanvas; shader: flat" shadow="cast: true"></a-plane>
           <!-- Spotlight on display -->
-          <a-entity light="type: spot; color: #fff5e0; intensity: 1.8; angle: 35; penumbra: 0.6; decay: 1.5; distance: 5" position="0 3.2 3.8" rotation="-35 0 0"></a-entity>
+          <a-entity light="type: spot; color: #fff5e0; intensity: 1.8; angle: 35; penumbra: 0.6; decay: 1.5; distance: 5" position="0 3.8 3.9" rotation="-35 0 0"></a-entity>
 
-          <!-- VOICE (dời trái) -->
-          <a-box class="teleportable" data-surface="pedestal" position="-5.35 0.58 -1.95" width="0.95" height="1.16" depth="0.95" color="#51453f"></a-box>
-          <a-box position="-5.35 1.175 -1.95" width="1.06" height="0.035" depth="1.06" material="color: #ffe0ad; emissive: #ffd39b; emissiveIntensity: 0.8; transparent: true; opacity: 0.28; roughness: 0.2; metalness: 0.04"></a-box>
-          <a-entity light="type: point; color: #ffe5bb; intensity: 0.94; distance: 4.5; decay: 2" position="-5.35 1.5 -1.95"></a-entity>
-          <a-cylinder class="clickable" data-artifact="voice" data-label="Máy nghe ghi âm" position="-5.35 1.18 -1.95" radius="0.31" height="0.52" color="#cfc6b8"></a-cylinder>
-          <a-box class="clickable" data-artifact="voice" data-label="Máy nghe ghi âm" position="-5.35 1.52 -1.73" width="0.56" height="0.06" depth="0.18" color="#111111"></a-box>
 
-          <!-- SẠP BÁO (gần tường phải, phía sau phòng) — 2 kệ sát nhau -->
+          <!-- SẠP BÁO (gần tường phải, phía sau phòng) -->
           <a-entity id="newsstandGroup" position="5.8 0 -5.2">
-            <!-- Kệ 1 (trái) — offset X -0.8 -->
+            <!-- Pedestal base -->
+            <a-box class="teleportable" data-surface="pedestal" position="0 0.11 0" width="2.0" height="0.22" depth="1.5" material="color: #4a4340; roughness: 0.7; metalness: 0.2"></a-box>
+            <!-- Pedestal light strip -->
+            <a-box position="0 0.225 0" width="2.02" height="0.03" depth="1.52" material="color: #ffe5b0; emissive: #ffd080; emissiveIntensity: 0.85; transparent: true; opacity: 0.45; roughness: 0.15; metalness: 0.05"></a-box>
+            <!-- Newsstand model (visual only) -->
             <a-entity
-              position="-0.8 0 0"
+              position="0 1.82 0"
               rotation="0 -14 0"
-              scale="0.12 0.12 0.12"
-              gltf-model="./newspaper_stand.glb"
+              scale="3.2 3.2 3.2"
+              gltf-model="./Hitem3d-1778980352426.compressed.glb"
               shadow="cast: true; receive: false"
             ></a-entity>
-            <!-- Kệ 2 (phải) — offset X +0.8 -->
-            <a-entity
-              position="0.8 0 0"
-              rotation="0 -14 0"
-              scale="0.12 0.12 0.12"
-              gltf-model="./newspaper_stand.glb"
-              shadow="cast: true; receive: false"
-            ></a-entity>
+            <!-- Invisible hitbox for click interaction -->
+            <a-box class="clickable" data-artifact="typewriter" data-label="Sạp báo bị phong toả" position="0 1.9 0" width="1.5" height="3.2" depth="1.1" material="color: #ffffff; transparent: true; opacity: 0; shader: flat" visible="true"></a-box>
             <!-- Light above -->
-            <a-entity light="type: point; color: #ffe5bb; intensity: 1.4; distance: 6; decay: 2" position="0 2.0 0.4"></a-entity>
-            <!-- Clickable area -->
-            <a-box class="clickable" data-artifact="typewriter" data-label="Sạp báo bị phong toả" position="0 1.0 0.8" width="3.0" height="2.0" depth="0.05" material="color: #ffffff; transparent: true; opacity: 0.04"></a-box>
+            <a-entity light="type: point; color: #ffe5bb; intensity: 1.4; distance: 6; decay: 2" position="0 3.4 0.4"></a-entity>
           </a-entity>
 
           <!-- TIMELINE (dời sát tường trái) -->

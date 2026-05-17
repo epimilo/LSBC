@@ -11,15 +11,7 @@
 
 /* ── Artifact content (tiếng Việt đầy đủ) ── */
 const artifactContent = {
-  voice: {
-    tag: "Âm thanh",
-    title: "Máy nghe ghi âm",
-    subtitle: "Trạm nghe cho những đoạn phỏng vấn, lời dẫn, và lớp kể chuyện bằng giọng nói.",
-    body: [
-      "Vật phẩm này hợp để mở ra transcript, audio clip, hoặc một lớp hỏi âm ngắn giữa những đoạn trưng bày có nhiều văn bản.",
-      "Trong demo, nó đóng vai trò điểm dừng cho một mảnh ký ức được kể bằng giọng nói thay vì bằng hình ảnh hay bộ chữ dài."
-    ]
-  },
+
   typewriter: {
     tag: "Văn bản",
     title: "Sạp báo bị phong toả",
@@ -121,7 +113,6 @@ const artifactContent = {
 const focusPoints = {
   timeline:        { x: -4.95, z: 2.05 },
   archive:         { x:  4.95, z: 2.05 },
-  voice:           { x: -3.65, z: -1.05 },
   typewriter:      { x:  4.0,  z: -2.8 },
   "painting-dawn": { x:  5.95, z: -1.55 },
   "painting-ember":{ x:  5.95, z: -1.55 },
@@ -137,7 +128,7 @@ const focusPoints = {
 const TELEPORT_OFFSETS = { floor: 1.2, wall: 2.55, pedestal: 1.95 };
 const MAX_TELEPORT_STEP = 2.75;
 const ROOM_LIMITS = { x: 7.5, z: 8.55 };
-const TOTAL_ARTIFACTS = 11;
+const TOTAL_ARTIFACTS = 10;
 /** Bán kính “thân” người xem trên mặt phẳng XZ — dùng cho va chạm bàn phím */
 const PLAYER_RADIUS_XZ = 0.42;
 /** Hộp va chạm tĩnh (tọa độ thế giới, trục XZ) — bàn, bục, tường sau, v.v. */
@@ -145,7 +136,6 @@ const WALK_COLLIDERS = [
   { minX: -7.25, maxX: -4.85, minZ: -7.95, maxZ: -6.15 },
   { minX: -2.05, maxX: 2.05, minZ: -6.35, maxZ: -4.45 },
   { minX: -1.05, maxX: 1.05, minZ: 2.5, maxZ: 4.55 },
-  { minX: -5.9, maxX: -4.78, minZ: -2.52, maxZ: -1.32 },
   { minX: 4.55, maxX: 7.05, minZ: -6.15, maxZ: -4.25 },
   { minX: -7.6, maxX: -6.05, minZ: 2.25, maxZ: 3.62 },
   { minX: -8.6, maxX: 8.6, minZ: -8.85, maxZ: -7.55 }
@@ -771,11 +761,93 @@ function drawPaintingGold() {
   ctx.fillText("Ánh giấy — Lưu dấu", W / 2, H - 22);
 }
 
+function drawNewspaperFallback() {
+  const canvas = document.getElementById("newspaperCanvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width, H = canvas.height;
+
+  /* Cream newspaper background */
+  ctx.fillStyle = "#f5eed8";
+  ctx.fillRect(0, 0, W, H);
+
+  /* Header band */
+  ctx.fillStyle = "#8b1a1a";
+  ctx.fillRect(0, 0, W, 68);
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "bold 26px serif";
+  ctx.textAlign = "center";
+  ctx.fillText("VIỆT NAM NEWS", W / 2, 46);
+
+  /* Date sub-header */
+  ctx.fillStyle = "#333333";
+  ctx.font = "11px sans-serif";
+  ctx.fillText("Thứ Hai, 30 tháng 3 năm 2020  •  Số đặc biệt", W / 2, 88);
+
+  /* Divider */
+  ctx.strokeStyle = "#222222";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(20, 98);
+  ctx.lineTo(W - 20, 98);
+  ctx.stroke();
+
+  /* Headline */
+  ctx.fillStyle = "#111111";
+  ctx.font = "bold 17px serif";
+  ctx.textAlign = "left";
+  const lines = ["Dừng xuất bản một tờ báo", "in vì người nhiễm COVID-19"];
+  let y = 126;
+  for (const line of lines) {
+    ctx.fillText(line, 22, y);
+    y += 22;
+  }
+
+  /* Body text simulation */
+  ctx.font = "9px sans-serif";
+  ctx.fillStyle = "#444444";
+  y = 180;
+  for (let row = 0; row < 38; row++) {
+    const w = 22 + Math.random() * (W - 64);
+    ctx.fillRect(22, y, w, 2);
+    y += 11;
+  }
+
+  /* Side column line */
+  ctx.strokeStyle = "#aaaaaa";
+  ctx.lineWidth = 0.5;
+  ctx.beginPath();
+  ctx.moveTo(W * 0.62, 100);
+  ctx.lineTo(W * 0.62, H - 30);
+  ctx.stroke();
+
+  /* Side column text */
+  ctx.fillStyle = "#333333";
+  ctx.font = "bold 11px serif";
+  ctx.fillText("Kinh tế -", W * 0.65, 118);
+  ctx.fillText("Thị trường", W * 0.65, 133);
+
+  ctx.font = "8px sans-serif";
+  ctx.fillStyle = "#555555";
+  y = 152;
+  for (let row = 0; row < 14; row++) {
+    const w = 22 + Math.random() * (W * 0.32);
+    ctx.fillRect(W * 0.65, y, w, 1.5);
+    y += 10;
+  }
+
+  /* Border */
+  ctx.strokeStyle = "#888888";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(1, 1, W - 2, H - 2);
+}
+
 async function drawPaintingPhoto(canvasId, imageSrc) {
   const canvas = document.getElementById(canvasId);
   if (!canvas || !imageSrc) return false;
   const ctx = canvas.getContext("2d");
   const img = new Image();
+  img.crossOrigin = "anonymous";
   img.decoding = "async";
   img.src = imageSrc;
 
@@ -788,7 +860,8 @@ async function drawPaintingPhoto(canvasId, imageSrc) {
         img.onerror = reject;
       });
     }
-  } catch (_) {
+  } catch (e) {
+    console.warn(`[drawPaintingPhoto] Failed to load "${imageSrc}" for canvas "${canvasId}":`, e);
     return false;
   }
 
@@ -903,9 +976,8 @@ async function initCanvasTextures() {
   drawArchiveCanvas();
   drawMeetScreenCanvas();
 
-  drawPaintingPhoto("newspaperCanvas", "./viet-nam-news-dung-xuat-ban-mot-to-bao-in-vi-nguoi-nhiem-covid-19.jpg");
-
-  const results = await Promise.all([
+  const [newspaperOk, ...paintingResults] = await Promise.all([
+    drawPaintingPhoto("newspaperCanvas", "./viet-nam-news-dung-xuat-ban-mot-to-bao-in-vi-nguoi-nhiem-covid-19.jpg"),
     drawPaintingPhoto("paintingDawnCanvas", "./painting-1-san-sang-framed.jpg"),
     drawPaintingPhoto("paintingEmberCanvas", "./painting-2-dan-than-framed.jpg"),
     drawPaintingPhoto("paintingNightCanvas", "./painting-3-ket-noi-framed.jpg"),
@@ -913,11 +985,53 @@ async function initCanvasTextures() {
     drawPaintingPhoto("paintingGoldCanvas", "./painting-5-thich-nghi-framed.jpg")
   ]);
 
-  if (!results[0]) drawPaintingDawn();
-  if (!results[1]) drawPaintingEmber();
-  if (!results[2]) drawPaintingNight();
-  if (!results[3]) drawPaintingEcho();
-  if (!results[4]) drawPaintingGold();
+  /* Force A-Frame to pick up the canvas texture after drawing.
+     A-Frame may have cached a blank canvas texture, so we need to
+     explicitly refresh it once the canvas has content. */
+  function refreshNewspaperTexture() {
+    const el = document.getElementById("newspaperArtifact");
+    if (!el) return false;
+    const mesh = el.getObject3D("mesh");
+    if (mesh && mesh.material) {
+      if (mesh.material.map) {
+        mesh.material.map.needsUpdate = true;
+      } else {
+        /* Material exists but has no texture map yet — force set src */
+        const canvas = document.getElementById("newspaperCanvas");
+        if (canvas) {
+          el.setAttribute("material", "src", "#newspaperCanvas");
+        }
+      }
+      mesh.material.needsUpdate = true;
+      return true;
+    }
+    return false;
+  }
+
+  if (!newspaperOk) drawNewspaperFallback();
+  if (!refreshNewspaperTexture()) {
+    /* Mesh not ready yet — retry when the entity loads */
+    const el = document.getElementById("newspaperArtifact");
+    if (el) {
+      const tryRefresh = () => {
+        if (refreshNewspaperTexture()) {
+          el.removeEventListener("loaded", tryRefresh);
+          el.removeEventListener("object3dset", tryRefresh);
+        }
+      };
+      el.addEventListener("loaded", tryRefresh);
+      el.addEventListener("object3dset", tryRefresh);
+    }
+    /* Safety net retries */
+    setTimeout(refreshNewspaperTexture, 1500);
+    setTimeout(refreshNewspaperTexture, 4000);
+  }
+
+  if (!paintingResults[0]) drawPaintingDawn();
+  if (!paintingResults[1]) drawPaintingEmber();
+  if (!paintingResults[2]) drawPaintingNight();
+  if (!paintingResults[3]) drawPaintingEcho();
+  if (!paintingResults[4]) drawPaintingGold();
 }
 
 /* ════════════════════════════════════════
